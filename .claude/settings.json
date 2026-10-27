@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake:*)",
+      "Bash(make:*)",
+      "Bash(/root/.local/rhvoice/bin/RHVoice-test:*)"
+    ]
+  }
+}
