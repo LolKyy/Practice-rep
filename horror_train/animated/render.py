@@ -695,7 +695,17 @@ def norm(word):
     return word.lower().replace("ё", "е").strip(PUNCT + "-")
 
 
+def read_mono(path):
+    with wave.open(str(path)) as wf:
+        pcm = np.frombuffer(wf.readframes(wf.getnframes()), "<i2").astype(float) / 32768
+        if wf.getnchannels() == 2:
+            pcm = pcm.reshape(-1, 2).mean(1)
+        return pcm, wf.getframerate()
+
+
 class Segment:
+    aligned = False
+
     def __init__(self, data, start):
         self.data, self.id, self.start = data, data["id"], start
         self.words = data["text"].split()
@@ -705,15 +715,15 @@ class Segment:
             bonus = 7 if w.rstrip("»\"").endswith((".", "?", "!", "…")) else 3 if w.endswith((",", ":", "—")) or w == "—" else 0
             weights.append(core + 1 + bonus)
         voice = VOICE / f"{self.id}.wav"
-        if voice.exists():
-            with wave.open(str(voice)) as wf:
-                self.speech = wf.getnframes() / wf.getframerate()
-            self.voice = voice
+        cum = np.concatenate([[0], np.cumsum(weights)[:-1]]) / sum(weights)
+        self.voice = voice if voice.exists() else None
+        if self.voice:
+            pcm, rate = read_mono(voice)
+            self.speech = len(pcm) / rate
+            self.word_starts = LEAD + self.align(pcm, rate, cum)
         else:
             self.speech = sum(weights) / CHARS_PER_SEC
-            self.voice = None
-        cum = np.concatenate([[0], np.cumsum(weights)[:-1]]) / sum(weights)
-        self.word_starts = LEAD + cum * self.speech
+            self.word_starts = LEAD + cum * self.speech
         self.dur = LEAD + self.speech + data.get("pause", .45)
         self.red = {norm(r) for r in data.get("red", [])}
         self.pages = self.paginate()
@@ -742,6 +752,31 @@ class Segment:
             if options:
                 best[end] = min(options, key=lambda o: o[0])
         return best[n][1]
+
+    def align(self, pcm, rate, cum):
+        """Привязывает фразы к паузам в записи: слова после знака препинания начинаются
+        с очередного куска речи. Если число пауз не совпало с числом фраз — равномерно."""
+        hop = int(rate * .01)
+        rms = np.sqrt(np.convolve(pcm ** 2, np.ones(hop) / hop, mode="same")[::hop])
+        voiced = rms > 10 ** (-40 / 20)
+        starts, run = [], 0
+        for i, v in enumerate(voiced):
+            if v and (not starts or run >= 12):  # пауза ≥ 0.12 с — новый кусок речи
+                starts.append(i * .01)
+            run = 0 if v else run + 1
+        phrase_starts = [0] + [i + 1 for i, w in enumerate(self.words[:-1])
+                               if w.rstrip("»\"").endswith((".", "?", "!", "…", ",", ":", "—")) or w == "—"]
+        if len(starts) != len(phrase_starts):
+            return cum * len(pcm) / rate
+        ends = starts[1:] + [len(pcm) / rate]
+        times = np.empty(len(self.words))
+        bounds = phrase_starts + [len(self.words)]
+        for k, (a, b) in enumerate(zip(bounds, bounds[1:])):
+            local = cum[a:b] - cum[a]
+            span = (cum[b] if b < len(cum) else 1.0) - cum[a]
+            times[a:b] = starts[k] + local / span * (ends[k] - starts[k])
+        self.aligned = True
+        return times
 
     def word_time(self, word):
         target = norm(word)
