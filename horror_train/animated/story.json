@@ -35,8 +35,8 @@
       "text": "В окно постучали. Три раза. Снаружи минус сорок, а до станции — сто сорок километров.",
       "red": ["раза"],
       "events": [{"type": "knock", "word": "постучали", "offset": 0.1},
-                 {"type": "knock", "word": "постучали", "offset": 0.9},
-                 {"type": "knock", "word": "постучали", "offset": 1.7}]
+                 {"type": "knock", "word": "постучали", "offset": 0.45},
+                 {"type": "knock", "word": "постучали", "offset": 0.8}]
     },
     {
       "id": "06", "scene": "window", "params": {"handprint_word": "ладонь"},
@@ -94,9 +94,9 @@
       "hud": {"place": "ТАМБУР", "time": "03:41", "count": 3},
       "text": "А в дверь тамбура стучат. Три раза. Ровно как в окно.",
       "red": ["окно"],
-      "events": [{"type": "knock", "word": "стучат", "offset": 0.15, "metal": true},
-                 {"type": "knock", "word": "стучат", "offset": 0.95, "metal": true},
-                 {"type": "knock", "word": "стучат", "offset": 1.75, "metal": true}]
+      "events": [{"type": "knock", "word": "стучат", "offset": 0.1, "metal": true},
+                 {"type": "knock", "word": "стучат", "offset": 0.45, "metal": true},
+                 {"type": "knock", "word": "стучат", "offset": 0.8, "metal": true}]
     },
     {
       "id": "14", "scene": "choice", "params": {"b_word": "или"},

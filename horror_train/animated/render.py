@@ -717,10 +717,14 @@ class Segment:
         voice = VOICE / f"{self.id}.wav"
         cum = np.concatenate([[0], np.cumsum(weights)[:-1]]) / sum(weights)
         self.voice = voice if voice.exists() else None
+        cues = voice.with_suffix(".cues.json")
         if self.voice:
             pcm, rate = read_mono(voice)
             self.speech = len(pcm) / rate
-            self.word_starts = LEAD + self.align(pcm, rate, cum)
+            if cues.exists():
+                self.word_starts = LEAD + self.from_cues(json.loads(cues.read_text(encoding="utf-8")), weights)
+            else:
+                self.word_starts = LEAD + self.align(pcm, rate, cum)
         else:
             self.speech = sum(weights) / CHARS_PER_SEC
             self.word_starts = LEAD + cum * self.speech
@@ -752,6 +756,21 @@ class Segment:
             if options:
                 best[end] = min(options, key=lambda o: o[0])
         return best[n][1]
+
+    def from_cues(self, cues, weights):
+        """Тайминг из субтитров озвучки (SRT ElevenLabs): каждая фраза — свой отрезок,
+        слова внутри фразы — по длине."""
+        times, i = [], 0
+        for cue in cues:
+            n = len(cue["text"].split())
+            w = np.array(weights[i:i + n], float)
+            local = np.concatenate([[0], np.cumsum(w)[:-1]]) / w.sum()
+            times.extend(cue["start"] + local * (cue["end"] - cue["start"]))
+            i += n
+        if i != len(self.words):
+            raise SystemExit(f"Сегмент {self.id}: текст в .cues.json не совпадает с story.json")
+        self.aligned = True
+        return np.array(times)
 
     def align(self, pcm, rate, cum):
         """Привязывает фразы к паузам в записи: слова после знака препинания начинаются
