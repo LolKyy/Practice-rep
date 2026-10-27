@@ -1,2 +1,5 @@
 04_audio/temp/temp_mix.wav
 __pycache__/
+animated/out/stills/
+animated/out/preview_*
+animated/out/_*
