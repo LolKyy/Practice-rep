@@ -809,12 +809,12 @@ def lighter_layer(t, x=612, y=930, blue=False, scale=1.0, k=1.0):
     d.rounded_rectangle((x - 27 * s, y + 25 * s, x + 28 * s, y + 110 * s), radius=10 * s, fill=(40, 40, 46))
     d.rounded_rectangle((x - 52 * s, y + 55 * s, x + 56 * s, y + 150 * s), radius=34 * s, fill=(150, 104, 80))
     d.rounded_rectangle((x + 28 * s, y + 30 * s, x + 64 * s, y + 70 * s), radius=16 * s, fill=(170, 120, 92))
-    if k > 0:
+    if k > .05:
         fx = x + 3 * math.sin(t * 17)
         fs = (.55 if blue else 1.0) * s * k
         outer, inner = ((90, 140, 255), (200, 225, 255)) if blue else ((255, 170, 60), (255, 236, 170))
         d.ellipse((fx - 13 * fs, y + 20 * s - 52 * fs, fx + 13 * fs, y + 20 * s), fill=outer)
-        d.ellipse((fx - 7 * fs, y + 20 * s - 34 * fs, fx + 7 * fs, y + 18 * s), fill=inner)
+        d.ellipse((fx - 7 * fs, y + 20 * s - 34 * fs, fx + 7 * fs, y + 20 * s - 2 * fs), fill=inner)
     return layer
 
 
