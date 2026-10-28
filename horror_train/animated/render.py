@@ -191,12 +191,14 @@ def petrovich(p, x, feet, h=640):
 
 
 def dima_back(p, x, y, s=1.0, c=(20, 20, 24)):
-    """Дима со спины: голова в ушанке и плечи шинели — передний план."""
-    p.ell(x - 190 * s, y + 110 * s, x + 190 * s, y + 420 * s, c)
-    p.ell(x - 92 * s, y - 70 * s, x + 92 * s, y + 140 * s, (30, 28, 30))
-    p.rect(x - 100 * s, y - 92 * s, x + 100 * s, y - 10 * s, (44, 40, 38), r=30)
-    p.rect(x - 110 * s, y - 20 * s, x - 70 * s, y + 90 * s, (44, 40, 38), r=16)
-    p.rect(x + 70 * s, y - 20 * s, x + 110 * s, y + 90 * s, (44, 40, 38), r=16)
+    """Дима со спины: ушанка и плечи шинели — передний план."""
+    p.ell(x - 210 * s, y + 120 * s, x + 210 * s, y + 520 * s, c)                    # плечи
+    p.rect(x - 50 * s, y + 60 * s, x + 50 * s, y + 160 * s, c)                      # шея
+    p.ell(x - 92 * s, y - 60 * s, x + 92 * s, y + 140 * s, (30, 28, 30))            # голова
+    hat = tuple(min(255, v + 18) for v in c)
+    p.ell(x - 108 * s, y - 110 * s, x + 108 * s, y + 30 * s, hat)                   # ушанка
+    p.ell(x - 122 * s, y - 20 * s, x - 70 * s, y + 110 * s, hat)                    # уши шапки
+    p.ell(x + 70 * s, y - 20 * s, x + 122 * s, y + 110 * s, hat)
 
 
 # ------------------------------------------------------------------ сцены
@@ -359,11 +361,143 @@ class CorridorScene(Scene):
         super().__init__(params)
         self.on, self.off = self.draw(True), self.draw(False)
         self.off_ajar = self.draw(False, ajar=True) if params.get("far_door_word") else None
+        if params.get("lighter"):
+            self.off = darken(self.off, .55)
+            self.lighter_glow = glow(610, 980, 760, (240, 160, 70), 150)
+
+    def window_quad(self, i, inset=.03):
+        def wall_pt(s, frac):
+            r = self.at(self.depth(s))
+            return (r[0], r[1] + (r[3] - r[1]) * frac)
+        s0, s1 = i / 5 + .03 + inset, (i + 1) / 5 - .05 - inset
+        return [wall_pt(s0, .35), wall_pt(s1, .35), wall_pt(s1, .58), wall_pt(s0, .58)]
 
     def render(self, t, ctx):
         if self.off_ajar is not None and t >= ctx.word_time(self.params["far_door_word"]):
             return self.off_ajar
-        return self.on if self.params.get("lights") == "on" else self.off
+        img = self.on if self.params.get("lights") == "on" else self.off
+        if self.params.get("shadow_words") or self.params.get("lighter"):
+            img = img.copy()
+        for i, word in enumerate(self.params.get("shadow_words", [])):
+            u = t - ctx.word_time(word)
+            if 0 <= u < 1.2:  # тёмная фигура прижимается к окну и уходит к следующему
+                layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                ImageDraw.Draw(layer).polygon(self.window_quad(i), fill=(4, 6, 10, int(235 * min(1, (1.2 - u) / .4))))
+                img = Image.alpha_composite(img, layer)
+        if self.params.get("lighter"):
+            k = .75 + .2 * math.sin(t * 23) + .05 * math.sin(t * 61)
+            g = self.lighter_glow.copy()
+            g.putalpha(g.getchannel("A").point(lambda v: v * k))
+            img = Image.alpha_composite(img, g)
+            d = ImageDraw.Draw(img)
+            d.rounded_rectangle((585, 955, 640, 1040), radius=10, fill=(40, 40, 46))
+            d.rounded_rectangle((560, 985, 668, 1080), radius=34, fill=(150, 104, 80))  # кулак с зажигалкой
+            d.rounded_rectangle((640, 960, 676, 1000), radius=16, fill=(170, 120, 92))  # большой палец
+            fx = 612 + 3 * math.sin(t * 17)
+            d.ellipse((fx - 13, 900, fx + 13, 950), fill=(255, 170, 60))
+            d.ellipse((fx - 7, 918, fx + 7, 948), fill=(255, 236, 170))
+        return img
+
+
+class CompartmentScene(Scene):
+    """Купе через открытую дверь: окно, столик, нижние и верхние полки.
+    mode: sleeping — спят под одеялами; watching — сидят лицом к окну;
+    petrovich — разбитое окно, у окна сидит Петрович, с рукавов капает чёрное."""
+
+    WIN = (380, 360, 700, 650)
+
+    def __init__(self, params):
+        super().__init__(params)
+        mode = params.get("mode", "sleeping")
+        p = Painter()
+        p.rect(0, 0, W, H, (120, 110, 94))
+        p.poly([(110, 0), (330, 250), (330, 1000), (110, 1260)], (150, 138, 116))
+        p.poly([(970, 0), (750, 250), (750, 1000), (970, 1260)], (138, 126, 106))
+        p.rect(330, 250, 750, 1000, (166, 154, 130))
+        p.poly([(110, 1260), (330, 1000), (750, 1000), (970, 1260)], (84, 64, 52))
+        p.poly([(110, 0), (970, 0), (750, 250), (330, 250)], (140, 136, 126))
+        x0, y0, x1, y1 = self.WIN
+        p.rect(x0 - 22, y0 - 22, x1 + 22, y1 + 22, (88, 66, 50), r=6)
+        p.rect(x0, y0, x1, y1, (14, 20, 34))
+        for sgn, x in ((-1, x0 - 10), (1, x1 + 10)):
+            p.poly([(x, y0 - 40), (x - sgn * 70, y0 - 40), (x - sgn * 40, y0 + 190), (x, y0 + 200)], (116, 40, 38))
+        p.rect(430, 700, 650, 730, (200, 200, 196))
+        p.rect(520, 730, 560, 1000, (90, 80, 70))
+        for sgn in (-1, 1):  # нижние и верхние полки
+            def X(x):
+                return 540 + sgn * (x - 540)
+            p.poly([(X(110), 1000), (X(330), 820), (X(440), 840), (X(330), 1080)], (122, 46, 40))
+            p.poly([(X(330), 1080), (X(440), 840), (X(440), 950), (X(330), 1230)], (88, 34, 30))
+            p.poly([(X(110), 470), (X(330), 430), (X(420), 445), (X(300), 500)], (122, 46, 40))
+            p.poly([(X(300), 500), (X(420), 445), (X(420), 470), (X(300), 535)], (88, 34, 30))
+        if mode == "sleeping":
+            for sgn in (-1, 1):
+                def X(x):
+                    return 540 + sgn * (x - 540)
+                p.poly([(X(130), 990), (X(330), 830), (X(420), 850), (X(320), 1050)], (70, 84, 104))
+                p.ell(X(300) - 40, 790, X(300) + 40, 850, (200, 200, 196))
+                p.ell(X(300) - 26, 776, X(300) + 26, 828, (150, 120, 100))
+                p.poly([(X(130), 465), (X(320), 432), (X(400), 447), (X(290), 492)], (70, 84, 104))
+        if mode == "watching":
+            for x, feet, s in ((380, 990, 1.0), (700, 990, 1.0), (300, 470, .55), (780, 470, .55)):
+                c = (26, 26, 30)
+                p.rect(x - 70 * s, feet - 230 * s, x + 70 * s, feet, c, r=int(40 * s))
+                p.ell(x - 42 * s, feet - 330 * s, x + 42 * s, feet - 230 * s, c)
+        if mode == "petrovich":
+            pts = [(x0, y0), (x0 + 90, y0 + 70), (x0 + 60, y0 + 160), (x0 + 150, y0 + 230), (x0 + 120, y1),
+                   (x1 - 40, y1), (x1 - 100, y0 + 220), (x1, y0 + 150), (x1 - 60, y0 + 60), (x1, y0)]
+            p.poly([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], (150, 172, 192))
+            p.poly(pts, (6, 10, 20))
+            px, feet = 470, 1000
+        if mode == "petrovich" and not params.get("no_figure"):
+            navy, navy_d = (56, 68, 100), (36, 44, 70)
+            p.rect(px - 95, feet - 330, px + 95, feet - 40, navy, r=40)
+            p.line([(px - 80, feet - 320), (px + 80, feet - 320)], (120, 140, 180), 8)  # свет окна на плечах
+            p.line([(px + 80, feet - 300), (px + 150, feet - 250), (px + 150, feet - 275)], navy, 44)
+            p.rect(px - 30, feet - 360, px + 30, feet - 320, (180, 150, 128))
+            p.ell(px - 62, feet - 470, px + 62, feet - 340, (74, 70, 68))  # затылок: сидит спиной
+            p.rect(px - 70, feet - 505, px + 70, feet - 445, navy_d, r=16)
+            p.rect(px - 78, feet - 458, px + 78, feet - 440, (16, 18, 26), r=6)
+            p.ell(px - 12, feet - 498, px + 12, feet - 474, (220, 186, 80))
+        img = darken(p.done(), .62)
+        img = Image.alpha_composite(img, glow(540, 500, 620, (110, 150, 220), 95))
+        self.base = Image.alpha_composite(img, glow(560, 1150, 800, (240, 160, 70), 90))
+        self.snow = Blizzard(n=320, seed=21, speed=.9)
+        self.mode = mode
+        if params.get("dima"):
+            p = Painter()
+            dima_back(p, 800, 980, 1.4, c=(40, 38, 42))
+            self.dima = darken(p.done(), .8)
+
+    def render(self, t, ctx):
+        img = self.snow.draw(self.base, t, clip=self.WIN)
+        if self.mode == "petrovich":
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(layer)
+            if self.params.get("storm_in"):  # снег задувает внутрь купе
+                for i in range(60):
+                    u = (t * .7 + i / 60) % 1
+                    x = 420 + (i * 37) % 260 + 300 * u * ((i % 3) - 1)
+                    y = 420 + 700 * u
+                    d.ellipse((x - 3, y - 3, x + 3, y + 3), fill=(220, 228, 238, int(200 * (1 - u))))
+            grow = 0.0
+            if "drip_word" in self.params:
+                grow = np.clip((t - ctx.word_time(self.params["drip_word"])) / 4.0, 0, 1)
+            grow = max(grow, self.params.get("puddle", 0.0))
+            if grow > 0:  # неровная лужа ползёт к камере
+                for cx, cy, kx, ky in ((610, 1000, 1, 1), (540, 1040, .7, .8), (680, 1060, .6, .9), (600, 1100, .5, 1.1)):
+                    rx, ry = (40 + 200 * grow) * kx, (12 + 70 * grow) * ky
+                    cy_ = 1000 + (cy - 1000) * grow
+                    d.ellipse((cx - rx, cy_ - ry, cx + rx, cy_ + ry), fill=(4, 4, 6, 250))
+                d.ellipse((580, 1000 + 20 * grow, 640, 1000 + 34 * grow), fill=(90, 100, 120, 140))
+                for k in range(3):  # капли с рукава
+                    u = (t * 1.3 + k / 3) % 1
+                    d.ellipse((617, 760 + 240 * u, 629, 776 + 240 * u), fill=(8, 8, 10, 255))
+                d.line([(623, 750), (623, 770)], fill=(8, 8, 10, 255), width=10)
+            img = Image.alpha_composite(img, layer)
+        if self.params.get("dima"):
+            img = Image.alpha_composite(img, self.dima)
+        return img
 
 
 class TambourScene(Scene):
@@ -384,11 +518,25 @@ class TambourScene(Scene):
         p.rect(500, 274, 580, 322, (46, 44, 40), r=6)
         p.rect(512, 282, 568, 314, (238, 160, 64), r=4)
         p.ell(310, 1158, 770, 1186, (200, 210, 222))
+        self.open = params.get("open", False)
+        if self.open:  # дверь распахнута: проём в буран, снег и босые следы внутрь
+            p.rect(300, 370, 780, 1170, (10, 14, 24))
+            p.poly([(300, 370), (170, 290), (170, 1270), (300, 1170)], (98, 104, 112))
+            p.poly([(320, 1170), (760, 1170), (900, 1600), (180, 1600)], (176, 186, 200))
+            for i in range(7):
+                u = i / 6
+                fx = 540 + (34 if i % 2 else -34) * (1 + u)
+                fy = 1200 + 330 * u
+                s = .7 + .8 * u
+                p.ell(fx - 16 * s, fy - 30 * s, fx + 16 * s, fy + 24 * s, (52, 56, 66))
+                for k in range(5):
+                    p.ell(fx - 18 * s + 9 * s * k, fy - 46 * s, fx - 11 * s + 9 * s * k, fy - 37 * s, (52, 56, 66))
         if with_conductor:
             petrovich(p, 150, 1180, 700)
-        else:
+        elif not self.open:
             dima_back(p, 900, 1180, 1.3)
         img = darken(p.done(), .42)
+        self.snow = Blizzard(n=260, seed=17, speed=.9)
         frost = np.random.default_rng(3).random((182, 232))
         frost = Image.fromarray((np.clip((frost - .55) * 3, 0, 1) * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.6))
         fl = Image.new("RGBA", frost.size, (210, 225, 238, 0))
@@ -397,6 +545,8 @@ class TambourScene(Scene):
         self.base = Image.alpha_composite(img, glow(540, 300, 620, (236, 152, 60), 130))
 
     def render(self, t, ctx):
+        if self.open:
+            return self.snow.draw(self.base, t, clip=(300, 370, 780, 1170))
         img = self.base.copy()
         ang = 0.0
         if "handle_word" in self.params:
@@ -649,6 +799,406 @@ class SpeakerScene(Scene):
         return img
 
 
+# ------------------------------------------------------------------ сцены части 3
+
+def lighter_layer(t, x=612, y=930, blue=False, scale=1.0, k=1.0):
+    """Кулак с зажигалкой и пламенем. blue — газ кончается: пламя маленькое и синее."""
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    s = scale
+    d.rounded_rectangle((x - 27 * s, y + 25 * s, x + 28 * s, y + 110 * s), radius=10 * s, fill=(40, 40, 46))
+    d.rounded_rectangle((x - 52 * s, y + 55 * s, x + 56 * s, y + 150 * s), radius=34 * s, fill=(150, 104, 80))
+    d.rounded_rectangle((x + 28 * s, y + 30 * s, x + 64 * s, y + 70 * s), radius=16 * s, fill=(170, 120, 92))
+    if k > 0:
+        fx = x + 3 * math.sin(t * 17)
+        fs = (.55 if blue else 1.0) * s * k
+        outer, inner = ((90, 140, 255), (200, 225, 255)) if blue else ((255, 170, 60), (255, 236, 170))
+        d.ellipse((fx - 13 * fs, y + 20 * s - 52 * fs, fx + 13 * fs, y + 20 * s), fill=outer)
+        d.ellipse((fx - 7 * fs, y + 20 * s - 34 * fs, fx + 7 * fs, y + 18 * s), fill=inner)
+    return layer
+
+
+_GLOW_CACHE = {}
+
+
+def flame_glow(x, y, blue, r=760, alpha=150):
+    key = (x, y, blue, r, alpha)
+    if key not in _GLOW_CACHE:
+        _GLOW_CACHE[key] = glow(x, y, r, (110, 150, 255) if blue else (240, 160, 70), alpha)
+    return _GLOW_CACHE[key]
+
+
+def add_glow(img, t, x, y, blue=False, r=760, alpha=150, k=1.0):
+    g = flame_glow(x, y, blue, r, alpha).copy()
+    flick = (.75 + .2 * math.sin(t * 23) + .05 * math.sin(t * 61)) * k
+    g.putalpha(g.getchannel("A").point(lambda v: v * flick))
+    return Image.alpha_composite(img, g)
+
+
+class PetrovichScene(CompartmentScene):
+    """Вагон 3 из части 2. slump_word / slumped — Петрович сполз, на полу пустой китель и фуражка."""
+
+    def __init__(self, params):
+        base = {"mode": "petrovich", "storm_in": True, "puddle": 1.0 if params.get("puddle") else 0.0}
+        super().__init__(dict(base, **{k: v for k, v in params.items() if k != "puddle"}))
+        self.params["puddle"] = base["puddle"]
+        empty = CompartmentScene({"mode": "petrovich", "no_figure": True, "storm_in": True, "puddle": 1.0})
+        p = Painter()
+        p.ell(330, 930, 610, 1010, (52, 62, 92))           # осевший китель
+        p.ell(380, 900, 560, 960, (44, 54, 82))
+        p.rect(640, 980, 760, 1010, (36, 44, 70), r=10)     # откатившаяся фуражка
+        p.rect(630, 1000, 770, 1012, (16, 18, 26), r=4)
+        p.ell(690, 984, 708, 1000, (220, 186, 80))
+        self.empty_base = Image.alpha_composite(empty.base, darken(p.done(), .62))
+        if params.get("dima_steps"):
+            p = Painter()
+            dima_back(p, 800, 980, 1.4, c=(40, 38, 42))
+            self.dima = darken(p.done(), .8)
+
+    def render(self, t, ctx):
+        slump = 0.0
+        if self.params.get("slumped"):
+            slump = 1.0
+        elif "slump_word" in self.params:
+            slump = float(np.clip((t - ctx.word_time(self.params["slump_word"])) / .7, 0, 1))
+        img = super().render(t, ctx)
+        if slump > 0:
+            saved = self.base
+            self.base = self.empty_base
+            empty = super().render(t, ctx)
+            self.base = saved
+            img = Image.blend(img.convert("RGB"), empty.convert("RGB"), slump).convert("RGBA")
+        if self.params.get("dima_steps"):  # Дима проходит мимо: передний план уезжает влево
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            layer.paste(self.dima, (-int(260 * min(1, t / 4)), 0))
+            img = Image.alpha_composite(img, layer)
+        return img
+
+
+class PuddleScene(Scene):
+    """Крупно пол: чёрная лужа, сапог Димы, рука с зажигалкой. Из лужи — длинные пальцы."""
+
+    BLOBS = [(470, 760, 230, 90), (380, 800, 150, 70), (560, 820, 170, 60), (430, 860, 120, 40)]
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = Painter()
+        p.vgrad(0, H, (58, 50, 46), (34, 30, 30))
+        for y in range(180, 1100, 70):
+            p.line([(0, y), (W, y + 30)], (48, 42, 40), 3)
+        p.poly([(760, 690), (980, 690), (1040, 860), (1080, 900), (1080, 990), (740, 990), (720, 900)], (22, 22, 24))
+        p.rect(770, 520, 960, 720, (26, 26, 28), r=20)      # голенище сапога
+        p.line([(760, 960), (1080, 960)], (40, 40, 44), 10)
+        self.base = darken(p.done(), .7)
+
+    def puddle(self, t, ctx):
+        pr = self.params
+        crawl = recoil = 0.0
+        if "crawl_word" in pr:
+            crawl = float(np.clip((t - ctx.word_time(pr["crawl_word"])) / 2.5, 0, 1))
+        if "recoil_word" in pr:
+            recoil = float(np.clip((t - ctx.word_time(pr["recoil_word"]) + .6) / .8, 0, 1))
+        elif pr.get("lighter"):
+            recoil = 1.0
+        layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        shrink = 1 - .25 * recoil
+        dx = -60 * recoil
+        for i, (x, y, rx, ry) in enumerate(self.BLOBS):
+            wob = 1 + .04 * math.sin(t * 2.3 + i)
+            d.ellipse((x + dx - rx * shrink * wob, y - ry * shrink, x + dx + rx * shrink * wob, y + ry * shrink),
+                      fill=(5, 5, 8, 250))
+        if crawl > 0 and recoil < 1:  # язык лужи тянется к сапогу
+            ext = crawl * (1 - recoil)
+            d.polygon([(640, 760), (640 + 140 * ext, 790 - 10 * ext), (650 + 150 * ext, 830), (620, 840)], fill=(5, 5, 8, 250))
+        d.arc((240 + dx, 690, 700 + dx, 900), 200, 330, fill=(70, 90, 130, 160), width=4)  # блик по краю
+        return layer.filter(ImageFilter.GaussianBlur(1.2)), recoil
+
+    def fingers(self, t, ctx):
+        pr = self.params
+        rise = burn = retreat = 0.0
+        if "fingers_word" in pr:
+            rise = .45 * float(np.clip((t - ctx.word_time(pr["fingers_word"])) / 1.8, 0, 1))
+        if "hand_rise_word" in pr:
+            rise = .45 + .55 * float(np.clip((t - ctx.word_time(pr["hand_rise_word"])) / 2.2, 0, 1))
+        if "burn_word" in pr:
+            rise = 1.0
+            burn = float(np.clip((t - ctx.word_time(pr["burn_word"])) / .3, 0, 1))
+        if "retreat_word" in pr:
+            retreat = float(np.clip((t - ctx.word_time(pr["retreat_word"]) + .4) / 1.0, 0, 1))
+            rise *= 1 - retreat
+        if rise <= 0:
+            return None, burn
+        layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        cx, base_y = 440, 770
+        palm_h = 220 * max(0, rise - .45) / .55
+        top = base_y - palm_h
+        if palm_h > 0:
+            d.rounded_rectangle((cx - 70, top, cx + 70, base_y), radius=40, fill=(4, 4, 6, 255))
+        curl = burn * .6
+        for i, ang in enumerate((-16, -6, 4, 14)):  # пальцы на треть длиннее человеческих
+            length = 280 * min(1, rise / .45) * (1 - curl)
+            a = math.radians(ang)
+            bx = cx - 52 + i * 35
+            ex, ey = bx + length * math.sin(a), top - length * math.cos(a)
+            d.line([(bx, top + 10), ((bx + ex) / 2 + 8, (top + ey) / 2), (ex, ey)], fill=(4, 4, 6, 255), width=20, joint="curve")
+            d.ellipse((ex - 10, ey - 10, ex + 10, ey + 10), fill=(4, 4, 6, 255))
+        if palm_h > 0:
+            d.line([(cx + 66, top + 60), (cx + 140, top - 40)], fill=(4, 4, 6, 255), width=22)
+        rim = layer.getchannel("A").filter(ImageFilter.FIND_EDGES).point(lambda v: min(255, v * 2))
+        edge = Image.new("RGBA", (W, H), (240, 170, 90, 0))
+        edge.putalpha(rim.point(lambda v: v * .5))
+        return Image.alpha_composite(layer, edge), burn
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = self.base.copy()
+        lit = pr.get("lighter", False)
+        if "lighter_word" in pr:
+            lit = t >= ctx.word_time(pr["lighter_word"])
+        if lit:
+            img = add_glow(img, t, 600, 700, r=820, alpha=170)
+        puddle, recoil = self.puddle(t, ctx)
+        img = Image.alpha_composite(img, puddle)
+        hand, burn = self.fingers(t, ctx)
+        if hand is not None:
+            img = Image.alpha_composite(img, hand)
+        if recoil > 0 and recoil < 1 or burn > 0:  # пар от шипящей воды
+            d = ImageDraw.Draw(img)
+            for i in range(14):
+                u = (t * .8 + i / 14) % 1
+                x = 470 + 30 * math.sin(i * 2.1) + 60 * (i % 5 - 2)
+                y = 760 - 260 * u
+                d.ellipse((x - 18 - 20 * u, y - 18 - 20 * u, x + 18 + 20 * u, y + 18 + 20 * u),
+                          fill=(190, 196, 206, int(110 * (1 - u))))
+        if lit:
+            lx, ly = (520, 560) if burn > 0 else (600, 560)
+            img = Image.alpha_composite(img, lighter_layer(t, lx, ly, scale=1.3, k=1.4 if burn > 0 else 1.0))
+        return img
+
+
+class StaffcarScene(Scene):
+    """Штабной вагон: стол, восемь стаканов в подстаканниках, пар. Иней ползёт по стёклам."""
+
+    WINS = [(150, 330, 480, 700), (600, 330, 930, 700)]
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = Painter()
+        p.rect(0, 0, W, H, (140, 124, 100))
+        p.rect(0, 0, W, 240, (120, 112, 100))
+        for x0, y0, x1, y1 in self.WINS:
+            p.rect(x0 - 20, y0 - 20, x1 + 20, y1 + 20, (92, 68, 50), r=6)
+            p.rect(x0, y0, x1, y1, (16, 22, 36))
+        p.rect(0, 740, W, 790, (110, 80, 58))
+        p.poly([(120, 800), (960, 800), (1040, 1000), (40, 1000)], (214, 210, 200))   # скатерть
+        p.poly([(40, 1000), (1040, 1000), (1040, 1030), (40, 1030)], (170, 166, 158))
+        self.glasses = []
+        for row, (y, sc) in enumerate(((845, .85), (930, 1.0))):
+            for i in range(4):
+                x = 260 + i * 190 + (40 if row == 0 else 0)
+                self.glasses.append((x, y, sc))
+                g = 34 * sc
+                p.poly([(x - g, y - 110 * sc), (x + g, y - 110 * sc), (x + g * .85, y), (x - g * .85, y)], (150, 70, 30))
+                p.rect(x - g * 1.05, y - 70 * sc, x + g * 1.05, y + 4, (176, 176, 182), r=6)
+                p.line([(x + g, y - 60 * sc), (x + g + 26 * sc, y - 48 * sc), (x + g + 22 * sc, y - 14 * sc), (x + g, y - 10 * sc)],
+                       (176, 176, 182), 8 * sc)
+                p.rect(x - g, y - 116 * sc, x + g, y - 106 * sc, (230, 230, 226, 160))
+        self.base = darken(p.done(), .55)
+        self.snow = Blizzard(n=200, seed=31, speed=.7)
+        rng = np.random.default_rng(41)
+        self.frost = []
+        for x0, y0, x1, y1 in self.WINS:
+            w, h = x1 - x0, y1 - y0
+            yy, xx = np.mgrid[0:h, 0:w]
+            edge = np.minimum.reduce([xx, yy, w - xx, h - yy]) / (min(w, h) / 2)
+            self.frost.append((x0, y0, edge, rng.random((h, w))))
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = self.base
+        for x0, y0, x1, y1 in self.WINS:
+            img = self.snow.draw(img, t, clip=(x0, y0, x1, y1))
+        grow = .35
+        if "frost_word" in pr:
+            grow = .1 + .5 * float(np.clip((t - ctx.word_time(pr["frost_word"])) / 3, 0, 1))
+        for x0, y0, edge, noise in self.frost:
+            mask = (noise * .9 + grow * 1.6 - edge * 1.2 > .45) * 200.0  # кристаллы, а не плавный градиент
+            fimg = Image.new("RGBA", (edge.shape[1], edge.shape[0]), (150, 170, 192, 0))
+            fimg.putalpha(Image.fromarray(mask.astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.5)))
+            img = over(img, fimg, (x0, y0))
+        if pr.get("steam"):
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(layer)
+            for k, (x, y, sc) in enumerate(self.glasses):
+                for j in range(3):
+                    u = (t * .5 + j / 3 + k * .13) % 1
+                    sx = x + 18 * math.sin(u * 6 + k) * sc
+                    sy = y - 120 * sc - 150 * u * sc
+                    d.ellipse((sx - 10 * sc, sy - 14 * sc, sx + 10 * sc, sy + 14 * sc), fill=(220, 220, 220, int(90 * (1 - u))))
+            img = Image.alpha_composite(img, layer.filter(ImageFilter.GaussianBlur(4)))
+        img = add_glow(img, t, 560, 1100, r=900, alpha=120)
+        return Image.alpha_composite(img, lighter_layer(t, 600, 1000))
+
+
+class MemoScene(Scene):
+    """Пожелтевшая памятка 1954 года под стаканом. Строки проявляются по словам, ниже рваный край."""
+
+    LINES = [
+        "ПАМЯТКА МАШИНИСТУ\nПЕРЕГОН 140–150 КМ. 1954",
+        "1. Не открывай дверь.",
+        "2. Они стучат три раза.",
+        "3. Не отзывайся, если\n   зовут по имени.",
+        "4. Если в кабине",
+    ]
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = Painter()
+        p.rect(0, 0, W, H, (58, 42, 32))
+        for y in range(0, H, 150):
+            p.line([(0, y), (W, y)], (44, 32, 24), 4)
+        p.poly([(770, 300), (950, 300), (930, 560), (790, 560)], (150, 70, 30))
+        p.rect(760, 420, 960, 580, (176, 176, 182), r=10)
+        p.line([(960, 440), (1020, 470), (1010, 550), (960, 560)], (176, 176, 182), 14)
+        self.desk = darken(p.done(), .55)
+        self.rows = []
+        for i, text in enumerate(self.LINES):
+            img = Image.new("RGBA", (740, 130), (0, 0, 0, 0))
+            d = ImageDraw.Draw(img)
+            f = font("mono", 40 if i == 0 else 38)
+            d.multiline_text((10, 6), text, font=f, fill=(40, 34, 30) if i else (20, 18, 16), spacing=8)
+            self.rows.append(img)
+        rng = np.random.default_rng(54)
+        self.tear = [(x, 1000 + int(rng.integers(-26, 26))) for x in range(0, 800, 40)] + [(800, 1000)]
+
+    def render(self, t, ctx):
+        pr = self.params
+        reveal = pr.get("reveal", [])
+        words = pr.get("reveal_words", [])
+        first = min(reveal) if reveal else len(self.LINES) - 1
+        paper = Image.new("RGBA", (800, 1100), (0, 0, 0, 0))
+        d = ImageDraw.Draw(paper)
+        d.polygon([(0, 0), (800, 0)] + self.tear[::-1], fill=(214, 196, 146, 255))
+        for y in range(160, 1000, 70):
+            d.line([(20, y), (780, y)], fill=(196, 178, 130), width=2)
+        y = 40
+        for i, row in enumerate(self.LINES):
+            shown = 1.0 if i < first or pr.get("torn") else 0.0
+            if i in reveal:
+                idx = reveal.index(i)
+                start = ctx.word_time(words[idx]) if idx < len(words) else 0
+                shown = float(np.clip((t - start + .2) / 1.0, 0, 1))
+            if i == 4:
+                shown = 1.0 if pr.get("torn") else 0.0
+            if shown > 0:
+                r = self.rows[i]
+                part = r.crop((0, 0, int(r.width * shown), r.height))
+                paper.alpha_composite(part, (30, y))
+            y += 170 if i == 0 else (150 if i == 3 else 110)
+        rot = paper.rotate(1.8, resample=Image.BICUBIC, expand=True)
+        img = self.desk.copy()
+        img.alpha_composite(rot, (120, 300))
+        return add_glow(img, t, 540, 800, r=900, alpha=70)
+
+
+class CorridorLighterScene(CorridorScene):
+    """Коридор с огоньком зажигалки из части 2. wet_steps — мокрые босые следы на полу.
+    flame: blue — газ кончается."""
+
+    def __init__(self, params):
+        super().__init__(dict({"lights": "off", "lighter": True}, **params))
+        self.blue_glow = glow(610, 980, 520, (110, 150, 255), 110)
+
+    def render(self, t, ctx):
+        pr = self.params
+        blue = pr.get("flame") == "blue" and ("flame_word" not in pr or t >= ctx.word_time(pr["flame_word"]))
+        img = self.off.copy()
+        if pr.get("wet_steps"):
+            d = ImageDraw.Draw(img)
+            for i in range(6):
+                if t < .6 * i:
+                    continue
+                u = i / 5
+                x = 400 + (45 if i % 2 else -45) * (1 - .4 * u) + 60 * u
+                y = 1000 - 130 * u
+                s = 1.1 - .5 * u
+                d.ellipse((x - 22 * s, y - 40 * s, x + 22 * s, y + 34 * s), fill=(8, 9, 12))
+                for k in range(5):
+                    d.ellipse((x - 22 * s + 10 * s * k, y - 58 * s, x - 14 * s + 10 * s * k, y - 48 * s), fill=(8, 9, 12))
+                d.ellipse((x - 12 * s, y - 30 * s, x + 2 * s, y - 12 * s), fill=(150, 120, 90))  # блик огня в воде
+        if blue:
+            g = self.blue_glow.copy()
+            g.putalpha(g.getchannel("A").point(lambda v: v * (.7 + .2 * math.sin(t * 31))))
+            img = Image.alpha_composite(img, g)
+        else:
+            img = add_glow(img, t, 610, 980)
+        return Image.alpha_composite(img, lighter_layer(t, blue=blue))
+
+
+class CabdoorScene(Scene):
+    """Торец вагона: дверь кабины с окошком. barrels — в окошке два ствола. out_word — зажигалка гаснет."""
+
+    WIN = (430, 470, 650, 650)
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = Painter()
+        p.rect(0, 0, W, H, (120, 112, 98))
+        p.rect(240, 300, 840, 1180, (70, 74, 80), r=8)
+        p.rect(270, 330, 810, 1170, (92, 98, 106), r=6)
+        x0, y0, x1, y1 = self.WIN
+        p.rect(x0 - 16, y0 - 16, x1 + 16, y1 + 16, (60, 64, 70), r=6)
+        p.rect(x0, y0, x1, y1, (24, 22, 20))
+        p.rect(700, 760, 760, 820, (60, 62, 66), r=8)
+        p.rect(300, 1050, 780, 1080, (80, 86, 94))
+        self.base = darken(p.done(), .5)
+        p = Painter()
+        p.rect(465, 535, 615, 585, (70, 72, 78), r=24)       # колодка двустволки
+        for cx in (505, 575):
+            p.ell(cx - 36, 524, cx + 36, 596, (96, 100, 108))
+            p.ell(cx - 26, 534, cx + 26, 586, (40, 42, 46))
+            p.ell(cx - 17, 543, cx + 17, 577, (0, 0, 0))
+        p.line([(540, 530), (540, 590)], (120, 124, 132), 6)  # планка между стволами
+        self.barrels = p.done()
+
+    def render(self, t, ctx):
+        pr = self.params
+        out = 0.0
+        if "out_word" in pr:
+            out = float(np.clip((t - ctx.word_time(pr["out_word"])) / .4, 0, 1))
+        img = self.base.copy()
+        x0, y0, x1, y1 = self.WIN
+        img = Image.alpha_composite(img, glow((x0 + x1) // 2, (y0 + y1) // 2, 160, (220, 150, 80), 60))
+        show = pr.get("barrels") or ("barrels_word" in pr and t >= ctx.word_time(pr["barrels_word"]))
+        if show:
+            img = Image.alpha_composite(img, self.barrels)
+        blue = pr.get("flame") == "blue"
+        img = add_glow(img, t, 600, 1000, blue=blue, r=700, alpha=130, k=1 - out)
+        if out < 1:
+            img = Image.alpha_composite(img, lighter_layer(t, 600, 960, blue=blue, k=1 - out))
+        if out > 0:
+            img = Image.blend(img.convert("RGB"), Image.new("RGB", (W, H), (4, 4, 7)), .92 * out).convert("RGBA")
+        return img
+
+
+class DarkScene(Scene):
+    """Почти полная темнота. breath — у самого уха; barrels_glint — блик на стволах."""
+
+    def render(self, t, ctx):
+        img = Image.new("RGBA", (W, H), (5, 5, 8, 255))
+        if self.params.get("breath"):
+            k = .5 + .5 * math.sin(t * 2.2)
+            img = Image.alpha_composite(img, glow(980, 760, 520, (40, 50, 80), int(40 * k)))
+        if self.params.get("barrels_glint"):
+            d = ImageDraw.Draw(img)
+            a = int(140 + 60 * math.sin(t * 3))
+            for cx in (505, 575):
+                d.arc((cx - 36, 524, cx + 36, 596), 200, 270, fill=(200, 200, 210, a), width=5)
+        return img
+
+
 class ChoiceScene(Scene):
     def __init__(self, params, thumbs):
         super().__init__(params)
@@ -678,11 +1228,16 @@ class ChoiceScene(Scene):
         d.text((x, 150), a, font=f, fill=(250, 250, 250))
         d.text((x + wa, 150), b, font=f, fill=(232, 52, 48))
         final = self.params.get("final")
-        on_b = final or ("b_word" in self.params and t >= ctx.word_time(self.params["b_word"]))
-        self.panel(img, 270, "А", "ОТКРЫТЬ ДВЕРЬ", "ЭТО ЖЕ ГОЛОС ПЕТРОВИЧА", self.thumbs["a"], final or not on_b)
-        self.panel(img, 690, "Б", "ИДТИ К ЛОКОМОТИВУ", "12 ВАГОНОВ В ТЕМНОТЕ", self.thumbs["b"], on_b)
+        pr = self.params
+        on_b = final or ("b_word" in pr and t >= ctx.word_time(pr["b_word"]))
+        a, b = pr.get("a", {}), pr.get("b", {})
+        self.panel(img, 270, "А", a.get("title", pr.get("a_title", "ОТКРЫТЬ ДВЕРЬ")),
+                   a.get("sub", pr.get("a_sub", "ЭТО ЖЕ ГОЛОС ПЕТРОВИЧА")), self.thumbs["a"], final or not on_b)
+        self.panel(img, 690, "Б", b.get("title", pr.get("b_title", "ИДТИ К ЛОКОМОТИВУ")),
+                   b.get("sub", pr.get("b_sub", "12 ВАГОНОВ В ТЕМНОТЕ")), self.thumbs["b"], on_b)
         if final:
-            d.text((W / 2, 1720), "ЧАСТЬ 2 — СКОРО", font=font("bold", 44), fill=(240, 200, 60), anchor="mm")
+            d.text((W / 2, 1720), pr.get("footer", pr.get("next", "ЧАСТЬ 2 — СКОРО")), font=font("bold", 44),
+                   fill=(240, 200, 60), anchor="mm")
         return img
 
 
@@ -900,7 +1455,11 @@ def label_img(text, k):
 
 SCENES = {"train": TrainScene, "corridor": CorridorScene, "tambour": TambourScene, "conductor": ConductorScene,
           "window": WindowScene, "journal": JournalScene, "footprints": FootprintsScene, "circle": CircleScene,
-          "speaker": SpeakerScene}
+          "speaker": SpeakerScene, "compartment": CompartmentScene, "petrovich": PetrovichScene,
+          "puddle": PuddleScene, "staffcar": StaffcarScene, "memo": MemoScene, "corridor_lighter": CorridorLighterScene,
+          "cabdoor": CabdoorScene, "dark": DarkScene}
+THUMB_PARAMS = {"cabdoor": {"barrels": True, "flame": "blue"}, "dark": {"barrels_glint": True}}
+COUNT_KNOCKS = True  # счётчик в HUD растёт от стуков (часть 1); в других частях — просто число из story.json
 
 
 def build_timeline(story):
@@ -914,15 +1473,20 @@ def build_timeline(story):
 
 def make_scenes(segs):
     scenes = {}
-    thumbs = None
+    thumbs, last = None, {}
     for seg in segs:
         name = seg.data["scene"]
         if name == "choice":
+            params = dict({k: v for k, v in last.items() if k in ("a", "b", "thumbs")}, **seg.data["params"])
+            last = params
             if thumbs is None:
                 ctx_stub = segs[0]
-                thumbs = {"a": TambourScene({}).render(0, ctx_stub),
-                          "b": CorridorScene({"lights": "off"}).render(0, ctx_stub)}
-            scenes[seg.id] = ChoiceScene(seg.data["params"], thumbs)
+                if "a" in params and "thumb" in params["a"]:
+                    spec = {k: [params[k]["thumb"], THUMB_PARAMS.get(params[k]["thumb"], {})] for k in ("a", "b")}
+                else:
+                    spec = params.get("thumbs", {"a": ["tambour", {}], "b": ["corridor", {"lights": "off"}]})
+                thumbs = {k: SCENES[sc](pp).render(1.0, ctx_stub) for k, (sc, pp) in spec.items()}
+            scenes[seg.id] = ChoiceScene(params, thumbs)
         else:
             scenes[seg.id] = SCENES[name](seg.data["params"])
     return scenes
@@ -949,7 +1513,7 @@ def compose(seg, scene, t, title, label, shade):
         img.alpha_composite(shade)
     hd = seg.data.get("hud")
     if hd:
-        knocks = sum(1 for e in seg.events if e["type"] == "knock" and t >= e["t"])
+        knocks = sum(1 for e in seg.events if e["type"] == "knock" and t >= e["t"]) if COUNT_KNOCKS else 0
         img.alpha_composite(hud(title, label, hd["place"], hd["time"], hd["count"] + knocks))
     for lb in seg.labels:
         if t >= lb["t"]:
@@ -981,6 +1545,64 @@ def render_video(story, segs, total, scenes, path, only=None):
 
 def snd_lock(_=None):
     return synth.metal_hit(.5, 620, .05)
+
+
+def snd_lighter_click(_=None):
+    """Чирк кремня: щелчок колёсика, скрежет, мягкий хлопок пламени."""
+    t = synth.t_axis(.5)
+    click = synth.band(synth.rng.standard_normal(len(t)), 2500, 9000) * np.exp(-t / .004)
+    scrape = synth.band(synth.rng.standard_normal(len(t)), 1500, 7000) * np.exp(-((t - .03) / .03) ** 2)
+    whoosh = synth.band(synth.rng.standard_normal(len(t)), 200, 1500) * np.exp(-((t - .12) / .07) ** 2) * .6
+    return synth.norm(click + scrape * .7 + whoosh)
+
+
+def snd_hiss(duration=1.6):
+    """Шипение воды на огне: шум с треском, быстро нарастает и гаснет."""
+    t = synth.t_axis(duration)
+    hiss = synth.band(synth.rng.standard_normal(len(t)), 2500, 9000)
+    crackle = np.zeros(len(t))
+    idx = synth.rng.choice(len(t), int(duration * 120), replace=False)
+    crackle[idx] = synth.rng.uniform(-1, 1, len(idx))
+    env = np.clip(t / .05, 0, 1) * np.exp(-t / (duration * .45))
+    return synth.norm((synth.norm(hiss) + synth.norm(synth.band(crackle, 1000, 8000)) * .4) * env)
+
+
+def snd_body_slide(_=None):
+    """Тело сползает со скамьи: шорох ткани и глухой удар об пол."""
+    t = synth.t_axis(1.4)
+    cloth = synth.band(synth.rng.standard_normal(len(t)), 200, 1600) * np.clip(t / .3, 0, 1) * (t < .8)
+    thud = np.sin(2 * np.pi * 70 * np.clip(t - .8, 0, None)) * np.exp(-np.clip(t - .8, 0, None) / .12) * (t >= .8)
+    return synth.norm(synth.norm(cloth) * .5 + thud)
+
+
+def snd_paper(_=None):
+    """Шорох бумажного листка."""
+    t = synth.t_axis(.7)
+    am = synth.smooth_random(.7, .03, 0, 1) ** 2
+    return synth.norm(synth.band(synth.rng.standard_normal(len(t)), 1200, 7000) * am * np.sin(np.pi * t / .7))
+
+
+def snd_wet_steps(duration=3.5):
+    """Мокрые босые шлепки, шаг каждые ~0.55 с."""
+    out = np.zeros(int(duration * SR))
+    for k, at in enumerate(np.arange(.1, duration - .2, .55)):
+        t = synth.t_axis(.25)
+        slap = synth.band(synth.rng.standard_normal(len(t)), 500, 3500) * np.exp(-t / .02)
+        splat = np.sin(2 * np.pi * 110 * t) * np.exp(-t / .04) * .5
+        s = int(at * SR)
+        seg = (synth.norm(slap) + splat) * (.7 + .3 * (k % 2))
+        out[s:s + len(seg)] += seg[: len(out) - s]
+    return synth.norm(out)
+
+
+def snd_gun_cock(_=None):
+    """Взвод курка двустволки: два металлических щелчка."""
+    out = np.zeros(int(.6 * SR))
+    for at, amp in ((0, 1.0), (.14, .8)):
+        hit = synth.metal_hit(.3, 1400, .025) * amp
+        s = int(at * SR)
+        out[s:s + len(hit)] += hit
+    return synth.norm(out)
 
 
 def snd_drone(duration):
@@ -1020,7 +1642,9 @@ def render_audio(segs, total, path, only=None):
     if drone_from is not None:
         place(snd_drone(length - drone_from) * np.clip(synth.t_axis(length - drone_from) / 3, 0, 1), drone_from, -30)
 
-    cues = {"brake_screech": synth.snd_brake, "power_down": synth.snd_power_down, "relay_click": synth.snd_relay,
+    cues = {"metal_creak": synth.snd_creak, "lighter_click": snd_lighter_click, "hiss": snd_hiss,
+            "body_slide": snd_body_slide, "paper": snd_paper, "wet_steps": snd_wet_steps, "gun_cock": snd_gun_cock,
+            "brake_screech": synth.snd_brake, "power_down": synth.snd_power_down, "relay_click": synth.snd_relay,
             "pa_static": synth.snd_pa_static, "bass_hit": synth.snd_bass_hit, "lock": snd_lock}
     for s in chosen:
         base = offset[s.id]
@@ -1053,9 +1677,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--preview", nargs=2, metavar=("ОТ", "ДО"), help="рендер только сегментов с ОТ по ДО")
     ap.add_argument("--stills", action="store_true", help="по одному кадру из каждого сегмента")
+    ap.add_argument("--part", default=".", help="папка части с story.json и voice/ (по умолчанию — часть 1)")
+    ap.add_argument("--story", help="путь к story-файлу части (голос берётся из voice/ рядом с ним)")
+    ap.add_argument("--out", help="имя выходного файла без .mp4")
     args = ap.parse_args()
 
-    story = json.loads((HERE / "story.json").read_text(encoding="utf-8"))
+    global VOICE, COUNT_KNOCKS
+    story_path = (HERE / args.story).resolve() if args.story else (HERE / args.part / "story.json").resolve()
+    VOICE = story_path.parent / "voice"
+    story = json.loads(story_path.read_text(encoding="utf-8"))
+    if args.out:
+        story["output"] = args.out
+    COUNT_KNOCKS = story.get("count_knocks", story.get("part", 1) == 1)
     segs, total = build_timeline(story)
     print(f"Сегментов: {len(segs)}, хронометраж {total:.1f} с"
           + ("" if any(s.voice for s in segs) else " (оценка по тексту, без голоса)"))
@@ -1063,16 +1696,17 @@ def main():
     OUT.mkdir(exist_ok=True)
 
     if args.stills:
-        (OUT / "stills").mkdir(exist_ok=True)
+        stills = OUT / f"stills_{story.get('output', 'train317_part1')}"
+        stills.mkdir(exist_ok=True)
         shade = bottom_shade()
         for seg in segs:
             t = min(seg.dur - .05, seg.word_starts[-1] + .2)
-            compose(seg, scenes[seg.id], t, story["title"], story["counter_label"], shade).save(OUT / "stills" / f"{seg.id}.jpg", quality=88)
-        print("кадры →", OUT / "stills")
+            compose(seg, scenes[seg.id], t, story["title"], story["counter_label"], shade).save(stills / f"{seg.id}.jpg", quality=88)
+        print("кадры →", stills)
         return
 
     only = None
-    name = "train317_part1"
+    name = story.get("output", "train317_part1")
     if args.preview:
         a, b = (int(x) for x in args.preview)
         only = {s.id for s in segs if a <= int(s.id) <= b}
