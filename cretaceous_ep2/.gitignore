@@ -1,0 +1,6 @@
+node_modules/
+out/
+checks/
+audio/voice_raw.wav
+public/voice.wav
+build/
