@@ -306,7 +306,7 @@ const S14: React.FC = () => {
     <Forest gy={1280} dark sun={false} />
     <Layer d={0.8} dyn draw={(g, t) => { g.translate(880, 1300 - rise * 520); g.scale(1.3, 1.3); g.rotate(-0.05 + Math.sin(t * 0.8) * 0.02); rexHead(g, jaw, 1); }} />
     <Layer d={0.85} draw={(g) => { fernRow(g, W, 1340, 330, OL, 77, 4); }} />
-    <Pup who="kotov" x={380} y={1320} sc={2.9} pose={(t) => ({ expr: t < 92.0 ? "fear" : t < 95.0 ? "resolve" : "fear", aR: [0.7, 1.5], aL: [0.6, 1.4], legs: false, blink: blinkAt(t, 5), look: [0.6, -0.2] })} />
+    <Pup who="kotov" x={380} y={1320} sc={2.9} pose={(t) => ({ expr: t < 92.0 ? "fear" : t < 95.0 ? "resolve" : "fear", aR: [0.35, 0.9], aL: [0.35, 0.9], legs: false, blink: blinkAt(t, 5), look: [0.6, -0.2] })} />
     <Pup who="bugaev" x={170} y={1330} sc={3.0} seed={3} pose={(t) => ({ expr: t < 94.5 ? "stern" : "whisper", aR: t > 94.4 ? [1.55, 0.2] : [0.2, 0.2], talk: talkAt(t, [[95.3, 96.8]]), legs: false, blink: blinkAt(t, 6), look: [0.5, 0] })} />
     <Layer d={1} dyn draw={(g, t) => { g.translate(500, 1460); g.scale(1.3, 1.3); btr(g, { gun: keys(t, [[93.0, 0], [93.6, -0.18]], back) }); }} />
     <FrontFerns />
@@ -315,14 +315,16 @@ const S14: React.FC = () => {
 // 15 · 97.3–101.0 — стоп-кадр: «А ты бы выстрелил?», бирка «ЧАСТЬ 2 →»
 const S15: React.FC = () => (<>
   <Forest gy={1200} dark sun={false} />
-  <Pup who="kotov" x={470} y={1800} sc={5.2} pose={(t) => ({ expr: t < 98.2 ? "resolve" : "stern", aR: [0.7, 1.5], aL: [0.6, 1.4], legs: false, look: [0, 0], blink: blinkAt(t, 1) })} />
+  <Pup who="kotov" x={470} y={1800} sc={5.2} pose={(t) => ({ expr: t < 98.2 ? "resolve" : "stern", aR: [0.35, 0.9], aL: [0.35, 0.9], legs: false, look: [0, 0], blink: blinkAt(t, 1) })} />
   <Layer d={1} draw={(g) => { g.translate(600, 1850); g.scale(1.9, 1.9); btr(g, { gun: -0.18 }); }} />
 </>);
 
 // ===================================================================== монтаж
+// Сцены написаны во «внутреннем» времени; склейка голоса сдвинула части: хук +1.23, GPS-абзац +1.13, остальное +1.32.
+export const shiftOf = (t: number) => (t < 25.55 ? 1.23 : t < 33.4 ? 1.13 : 1.32);
 type ShotDef = { t0: number; t1: number; el: React.ReactNode; cam?: [number, number, number, number][]; shake?: (t: number) => number; dim?: (t: number) => number; bg?: string };
 const SHOTS: ShotDef[] = [
-  { t0: 0, t1: 6.8, el: <S1 />, cam: [[0, 0, -40, 1.12], [5.4, 0, -20, 1.0], [5.8, 0, -60, 1.08], [6.8, 0, -60, 1.1]] },
+  { t0: -1.23, t1: 6.8, el: <S1 />, cam: [[-1.23, 0, -40, 1.12], [5.4, 0, -20, 1.0], [5.8, 0, -60, 1.08], [6.8, 0, -60, 1.1]] },
   { t0: 6.8, t1: 15.7, el: <S2 />, cam: [[6.8, 0, 0, 1.0], [10.1, 0, -20, 1.06], [10.2, 0, 0, 1.0], [15.7, 20, -20, 1.05]], dim: (t) => (t < 10.2 ? 0.15 : 0) },
   { t0: 15.7, t1: 25.6, el: <S3 />, cam: [[15.7, 0, 0, 1.0], [25.6, 0, -20, 1.04]] },
   { t0: 25.6, t1: 33.4, el: <S4 />, cam: [[25.6, 0, 0, 1.0], [30.4, 30, -30, 1.06], [30.45, 0, 0, 1.0], [33.4, 0, 0, 1.03]] },
@@ -340,7 +342,7 @@ const SHOTS: ShotDef[] = [
 ];
 
 // ===================================================================== бирка времени
-const TAGS: [number, string][] = [[0, ""], [10.2, "ДЕНЬ 1 — 05:40"], [15.7, "ДЕНЬ 1 — 06:52"], [33.4, "ДЕНЬ 1 — 07:15"], [65.0, "ДЕНЬ 1 — 11:20"], [77.7, "ДЕНЬ 1 — 11:31"], [84.8, "ДЕНЬ 1 — 11:34"], [97.3, "ЧАСТЬ 2 →"]];
+const TAGS: [number, string][] = ([[0, ""], [10.2, "ДЕНЬ 1 — 05:40"], [15.7, "ДЕНЬ 1 — 06:52"], [33.4, "ДЕНЬ 1 — 07:15"], [65.0, "ДЕНЬ 1 — 11:20"], [77.7, "ДЕНЬ 1 — 11:31"], [84.8, "ДЕНЬ 1 — 11:34"], [97.3, "ЧАСТЬ 2 →"]] as [number, string][]).map(([t, x]) => [t ? t + shiftOf(t) : 0, x]);
 const Tag: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   let txt = "", since = 0; for (const [s, x] of TAGS) if (t >= s) { txt = x; since = s; }
@@ -374,14 +376,16 @@ const Captions: React.FC = () => {
   </AbsoluteFill>);
 };
 
-export const TOTAL = Math.round(SHOTS[SHOTS.length - 1].t1 * FPS);
+export const TOTAL = Math.round((SHOTS[SHOTS.length - 1].t1 + 1.32) * FPS);
 export const Video: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: "#1a140c" }}>
-    {SHOTS.map((s, i) => (
-      <Sequence key={i} from={Math.round(s.t0 * FPS)} durationInFrames={Math.round((s.t1 - s.t0) * FPS)}>
-        <Shot t0={s.t0} cam={s.cam} shake={s.shake} dim={s.dim} bg={s.bg}>{s.el}</Shot>
-      </Sequence>
-    ))}
+    {SHOTS.map((s, i) => {
+      const a = i === 0 ? 0 : Math.round((s.t0 + shiftOf(s.t0)) * FPS);
+      const b = i === SHOTS.length - 1 ? TOTAL : Math.round((SHOTS[i + 1].t0 + shiftOf(SHOTS[i + 1].t0)) * FPS);
+      return (
+      <Sequence key={i} from={a} durationInFrames={b - a}>
+        <Shot t0={i === 0 ? s.t0 : s.t0 + (a / FPS - (s.t0 + shiftOf(s.t0)))} cam={s.cam} shake={s.shake} dim={s.dim} bg={s.bg}>{s.el}</Shot>
+      </Sequence>); })}
     <Tag />
     <Captions />
     <Audio src={staticFile("voice.mp3")} />

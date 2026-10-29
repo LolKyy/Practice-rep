@@ -2,6 +2,7 @@
 import React from "react";
 import { Audio, Sequence, interpolate, staticFile } from "remotion";
 const FPS = 30;
+const nt = (t: number) => t + (t < 25.55 ? 1.23 : t < 33.4 ? 1.13 : 1.32);   // старое время → время склеенного голоса
 const CUES: [number, string, number][] = [
   [0, "hum", 0.22], [5.6, "screech", 0.35], [8.7, "tear", 0.5], [9.0, "boom", 0.55], [10.3, "cicadas", 0.12], [12.2, "cicadas", 0.1],
   [19.3, "diesel", 0.3], [20.5, "crunch", 0.4], [21.8, "crunch", 0.35], [23.1, "crunch", 0.4], [24.2, "crunch", 0.3],
@@ -14,9 +15,9 @@ const CUES: [number, string, number][] = [
   [85.0, "thud", 0.9], [87.25, "thud", 0.95], [88.5, "thud", 1.0], [89.6, "breath", 0.45], [93.3, "click", 0.6], [98.9, "hit", 0.9],
 ];
 export const SFX: React.FC = () => (<>
-  {CUES.map(([t, n, v], i) => <Sequence key={i} from={Math.round(t * FPS)}><Audio src={staticFile(`sfx/${n}.wav`)} volume={v} /></Sequence>)}
-  <Sequence from={0} durationInFrames={Math.round(71.5 * FPS)}>
-    <Audio src={staticFile("music_a.wav")} volume={(f) => interpolate(f / FPS, [0, 1.5, 68.5, 71.5], [0, 0.12, 0.12, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} /></Sequence>
-  <Sequence from={Math.round(77.5 * FPS)}>
+  {CUES.map(([t, n, v], i) => <Sequence key={i} from={Math.round((t === 0 ? 0 : nt(t)) * FPS)}><Audio src={staticFile(`sfx/${n}.wav`)} volume={v} /></Sequence>)}
+  <Sequence from={0} durationInFrames={Math.round(nt(71.5) * FPS)}>
+    <Audio src={staticFile("music_a.wav")} volume={(f) => interpolate(f / FPS, [0, 1.5, nt(68.5), nt(71.5)], [0, 0.12, 0.12, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} /></Sequence>
+  <Sequence from={Math.round(nt(77.5) * FPS)}>
     <Audio src={staticFile("music_b.wav")} volume={(f) => interpolate(f / FPS, [0, 3, 21, 23.5], [0, 0.14, 0.14, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} /></Sequence>
 </>);
