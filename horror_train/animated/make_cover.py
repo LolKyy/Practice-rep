@@ -31,7 +31,12 @@ render.VOICE = story_path.parent / "voice"
 story = json.loads(story_path.read_text(encoding="utf-8"))
 segs, _ = render.build_timeline(story)
 seg = next(s for s in segs if s.id == args.seg)
-scene = render.SCENES[seg.data["scene"]](seg.data["params"])
+table = render.SCENES
+if story.get("part", 1) >= 4:
+    render.PART, render.HANDHELD = story["part"], True
+    from scenes4 import SCENES4
+    table = dict(table, **SCENES4)
+scene = table[seg.data["scene"]](seg.data["params"])
 img = scene.render(seg.word_time(args.word) + args.offset, seg).convert("RGBA")
 if args.zoom > 1:  # приблизить центр действия
     cw, ch = render.W / args.zoom, render.H / args.zoom
@@ -49,8 +54,17 @@ td.text((tag.width / 2, 46), args.part, font=tf, fill=(24, 24, 26), anchor="mm")
 tag = tag.rotate(2, resample=Image.BICUBIC, expand=True)
 img.alpha_composite(tag, (int((render.W - tag.width) / 2), 1150))
 
-f = render.font("bold", 112)
-d.text((render.W / 2, 1360), args.title, font=f, fill=(250, 250, 250), anchor="mm",
-       stroke_width=10, stroke_fill=(16, 16, 20))
+size = 112
+while d.textlength(args.title, font=render.font("bold", size)) > render.W - 80 and size > 92:
+    size -= 4
+if d.textlength(args.title, font=render.font("bold", size)) > render.W - 80:  # не влезает — в две строки
+    words = args.title.split()
+    half = min(range(1, len(words)), key=lambda i: max(len(" ".join(words[:i])), len(" ".join(words[i:]))))
+    text = " ".join(words[:half]) + "\n" + " ".join(words[half:])
+    size = 104
+else:
+    text = args.title
+d.multiline_text((render.W / 2, 1380), text, font=render.font("bold", size), fill=(250, 250, 250), anchor="mm",
+                 align="center", spacing=14, stroke_width=10, stroke_fill=(16, 16, 20))
 img.convert("RGB").save(render.HERE / args.out, quality=92)
 print("обложка →", render.HERE / args.out)
