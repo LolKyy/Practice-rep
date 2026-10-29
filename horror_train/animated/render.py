@@ -14,6 +14,7 @@
 
 import argparse
 import json
+import shutil
 import math
 import subprocess
 import sys
@@ -1288,6 +1289,39 @@ class Segment:
         self.pages = self.paginate()
         self.events = [dict(e, t=self.event_time(e)) for e in data.get("events", [])]
         self.labels = [dict(lb, t=self.event_time(lb)) for lb in data.get("labels", [])]
+        quotes, qi, inside = data.get("quotes") or [], -1, False
+        self.word_speaker = []
+        for w in self.words:  # реплики в «» — персонажам из quotes по порядку, остальное — рассказчик
+            if "«" in w:
+                qi, inside = qi + 1, True
+            self.word_speaker.append(quotes[qi] if inside and qi < len(quotes) else "narrator")
+            if "»" in w:
+                inside = False
+        self._env = None
+
+    def envelope(self):
+        """Громкость голоса по 10 мс, сглаженная на 40 мс, 0..1 — для липсинка."""
+        if self._env is None:
+            if self.voice:
+                pcm, rate = read_mono(self.voice)
+                hop = rate // 100
+                rms = np.sqrt(np.convolve(pcm ** 2, np.ones(hop) / hop, "same")[::hop])
+                rms = np.convolve(rms, np.ones(4) / 4, "same")
+                self._env = np.clip(rms / (np.percentile(rms, 95) + 1e-6), 0, 1)
+            else:
+                self._env = np.array([])
+        return self._env
+
+    def mouth(self, speaker, t):
+        """Насколько открыт рот у персонажа: громкость голоса, но только пока звучит его реплика."""
+        i = int(np.searchsorted(self.word_starts, t, side="right")) - 1
+        if i < 0 or self.word_speaker[i] != speaker or t > self.word_starts[-1] + 1.0:
+            return 0.0
+        env = self.envelope()
+        if not len(env):
+            return .5 + .5 * math.sin(t * 15)
+        k = int((t - LEAD) * 100)
+        return float(env[k]) if 0 <= k < len(env) else 0.0
 
     def paginate(self, limit=60):
         """Делит текст на экраны поровну; разрыв лучше всего после точки, хуже — посреди фразы."""
@@ -1459,6 +1493,8 @@ SCENES = {"train": TrainScene, "corridor": CorridorScene, "tambour": TambourScen
           "puddle": PuddleScene, "staffcar": StaffcarScene, "memo": MemoScene, "corridor_lighter": CorridorLighterScene,
           "cabdoor": CabdoorScene, "dark": DarkScene}
 THUMB_PARAMS = {"cabdoor": {"barrels": True, "flame": "blue"}, "dark": {"barrels_glint": True}}
+HANDHELD = False  # ручная камера и склейки-затемнения (часть 4+)
+PART = 1
 COUNT_KNOCKS = True  # счётчик в HUD растёт от стуков (часть 1); в других частях — просто число из story.json
 
 
@@ -1482,13 +1518,22 @@ def make_scenes(segs):
             if thumbs is None:
                 ctx_stub = segs[0]
                 if "a" in params and "thumb" in params["a"]:
-                    spec = {k: [params[k]["thumb"], THUMB_PARAMS.get(params[k]["thumb"], {})] for k in ("a", "b")}
+                    tp = dict(THUMB_PARAMS)
+                    if PART >= 4:
+                        from scenes4 import SCENES4, THUMBS4
+                        SCENES.update(SCENES4)
+                        tp.update(THUMBS4)
+                    spec = {k: [params[k]["thumb"], tp.get(params[k]["thumb"], {})] for k in ("a", "b")}
                 else:
                     spec = params.get("thumbs", {"a": ["tambour", {}], "b": ["corridor", {"lights": "off"}]})
                 thumbs = {k: SCENES[sc](pp).render(1.0, ctx_stub) for k, (sc, pp) in spec.items()}
             scenes[seg.id] = ChoiceScene(params, thumbs)
         else:
-            scenes[seg.id] = SCENES[name](seg.data["params"])
+            table = SCENES
+            if PART >= 4:
+                from scenes4 import SCENES4
+                table = dict(SCENES, **SCENES4)
+            scenes[seg.id] = table[name](seg.data["params"])
     return scenes
 
 
@@ -1502,8 +1547,29 @@ def compose(seg, scene, t, title, label, shade):
             if e["type"] == "knock" and 0 <= t - e["t"] < .28:
                 u = 1 - (t - e["t"]) / .28
                 dx, dy = 14 * u * math.sin(t * 90), 8 * u * math.cos(t * 70)
+        if HANDHELD:  # ручная камера: микротряска, наезды и толчки на словах
+            amp = 3 * seg.data.get("params", {}).get("cam_shake", 1.0)
+            dx += amp * (math.sin(t * 2.1 + seg.start) * .6 + math.sin(t * 3.7) * .4)
+            dy += amp * (math.sin(t * 1.7 + 1 + seg.start) * .6 + math.sin(t * 4.3) * .4)
+            if seg.data.get("params", {}).get("cam") == "out":
+                z = 1.06 - .05 * t / seg.dur
+            for e in seg.events:
+                u = t - e["t"]
+                if e["type"] == "punch" and u >= 0:
+                    d_ = e.get("dur", .3)
+                    k = 1.0 if d_ <= 0 else min(1, u / d_) ** .5
+                    z *= 1 + e.get("amount", .1) * k
+                elif e["type"] == "shake" and 0 <= u < e.get("dur", .5):
+                    a = e.get("amp", 20) * (1 - u / e.get("dur", .5))
+                    dx += a * math.sin(t * 83 + e["t"])
+                    dy += a * .6 * math.cos(t * 71 + e["t"])
         cw, ch = W / z, H / z
         cx, cy = W / 2 + dx, 700 + (H / 2 - 700) / z + dy
+        if HANDHELD:  # камера не выходит за край кадра
+            z = max(z, 1.012)
+            cw, ch = W / z, H / z
+            cx = min(max(cx, cw / 2), W - cw / 2)
+            cy = min(max(cy, ch / 2), H - ch / 2)
         img = img.crop((cx - cw / 2, cy - ch / 2, cx + cw / 2, cy + ch / 2)).resize((W, H), Image.BILINEAR)
         fl = seg.flash_level(t, hold=0)
         if fl > .05:
@@ -1512,6 +1578,10 @@ def compose(seg, scene, t, title, label, shade):
     if not is_choice:
         img.alpha_composite(shade)
     hd = seg.data.get("hud")
+    if hd and seg.data["scene"] == "flashback":  # во флешбэке только строка места и года
+        top = hud(title, label, hd["place"], hd["time"], 0).crop((0, 100, W, 200))
+        img.alpha_composite(top, (0, 100))
+        hd = None
     if hd:
         knocks = sum(1 for e in seg.events if e["type"] == "knock" and t >= e["t"]) if COUNT_KNOCKS else 0
         img.alpha_composite(hud(title, label, hd["place"], hd["time"], hd["count"] + knocks))
@@ -1525,17 +1595,81 @@ def compose(seg, scene, t, title, label, shade):
     return img.convert("RGB")
 
 
-def render_video(story, segs, total, scenes, path, only=None):
-    shade = bottom_shade()
-    chosen = [s for s in segs if only is None or s.id in only]
-    proc = subprocess.Popen(
+def transition(segs, i, frame_i, n_frames, frame):
+    """Склейки части 4+: затемнение 6–8 кадров при смене сцены, во флешбэк — плёночный прожиг, из него — через белое."""
+    if not HANDHELD:
+        return frame
+    seg = segs[i]
+    prev = segs[i - 1].data["scene"] if i > 0 else None
+    nxt = segs[i + 1].data["scene"] if i + 1 < len(segs) else None
+    name = seg.data["scene"]
+    k, color = 1.0, (0, 0, 0)
+    if prev is not None and prev != name and frame_i < 4:
+        k = frame_i / 4
+        if prev == "flashback":
+            color = (255, 255, 255)
+    if nxt is not None and nxt != name and n_frames - frame_i <= 4 and name != "flashback":
+        k = min(k, (n_frames - frame_i - 1) / 4)
+    if name == "flashback" and prev != "flashback" and frame_i < 12:  # прожиг плёнки
+        u = frame_i / 12
+        burn = glow(540 + 200 * math.sin(frame_i), 900, 300 + 1400 * (1 - u), (255, 200, 120), int(255 * (1 - u)))
+        return Image.alpha_composite(frame.convert("RGBA"), burn).convert("RGB")
+    if k < 1:
+        return Image.blend(Image.new("RGB", (W, H), color), frame, max(0.0, k))
+    return frame
+
+
+def _encoder(path):
+    return subprocess.Popen(
         ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
          "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "20",
          "-pix_fmt", "yuv420p", str(path)], stdin=subprocess.PIPE)
+
+
+def _render_segments(args):
+    story, segs, ids, part_path = args
+    scenes = make_scenes(segs)
+    shade = bottom_shade()
+    for i, seg in enumerate(segs):
+        if seg.id not in ids:
+            continue
+        proc = _encoder(part_path / f"{seg.id}.mp4")
+        n = int(round(seg.dur * FPS))
+        for f in range(n):
+            frame = compose(seg, scenes[seg.id], f / FPS, story["title"], story["counter_label"], shade)
+            proc.stdin.write(transition(segs, i, f, n, frame).tobytes())
+        proc.stdin.close()
+        proc.wait()
+        print(f"  сегмент {seg.id} готов", flush=True)
+
+
+def render_video(story, segs, total, scenes, path, only=None, jobs=1):
+    chosen = [s for s in segs if only is None or s.id in only]
+    if jobs > 1:  # сегменты параллельно по процессам, потом склейка без перекодирования
+        import multiprocessing as mp
+        part_path = path.parent / f"_parts_{path.stem}"
+        part_path.mkdir(exist_ok=True)
+        order = sorted(chosen, key=lambda s: -s.dur)
+        buckets, loads = [[] for _ in range(jobs)], [0.0] * jobs
+        for s_ in order:
+            j = loads.index(min(loads))
+            buckets[j].append(s_.id)
+            loads[j] += s_.dur
+        with mp.get_context("fork").Pool(jobs) as pool:
+            pool.map(_render_segments, [(story, segs, set(b), part_path) for b in buckets if b])
+        lst = part_path / "list.txt"
+        lst.write_text("".join(f"file '{part_path / (s_.id + '.mp4')}'\n" for s_ in chosen))
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(path)], check=True)
+        shutil.rmtree(part_path)
+        return sum(int(round(s_.dur * FPS)) for s_ in chosen) / FPS
+    shade = bottom_shade()
+    proc = _encoder(path)
     for seg in chosen:
-        for i in range(int(round(seg.dur * FPS))):
-            frame = compose(seg, scenes[seg.id], i / FPS, story["title"], story["counter_label"], shade)
-            proc.stdin.write(frame.tobytes())
+        i = segs.index(seg)
+        n = int(round(seg.dur * FPS))
+        for f in range(n):
+            frame = compose(seg, scenes[seg.id], f / FPS, story["title"], story["counter_label"], shade)
+            proc.stdin.write(transition(segs, i, f, n, frame).tobytes())
         print(f"  сегмент {seg.id} готов", flush=True)
     proc.stdin.close()
     if proc.wait():
@@ -1605,6 +1739,70 @@ def snd_gun_cock(_=None):
     return synth.norm(out)
 
 
+def snd_shotgun_blast(_=None):
+    """Выстрел двустволки в упор: треск, низкий удар, хвост в замкнутом тамбуре."""
+    t = synth.t_axis(2.2)
+    crack = synth.band(synth.rng.standard_normal(len(t)), 800, 9000) * np.exp(-t / .012)
+    boom = np.sin(2 * np.pi * (45 + 60 * np.exp(-t / .05)) * t) * np.exp(-t / .25)
+    tail = synth.band(synth.rng.standard_normal(len(t)), 150, 2500) * np.exp(-t / .5) * .35
+    return synth.norm(np.tanh(2.5 * (crack * 1.2 + boom + tail)))
+
+
+def snd_glass_break(_=None):
+    """Окошко разлетается: удар стекла и звон осколков."""
+    t = synth.t_axis(1.8)
+    hit = synth.band(synth.rng.standard_normal(len(t)), 2000, 10000) * np.exp(-t / .05)
+    out = hit
+    for k in range(18):
+        at = synth.rng.uniform(.05, 1.4)
+        f = synth.rng.uniform(2500, 7000)
+        tt = np.clip(t - at, 0, None)
+        out = out + np.sin(2 * np.pi * f * tt) * np.exp(-tt / .04) * (t >= at) * synth.rng.uniform(.1, .35)
+    return synth.norm(out)
+
+
+def snd_fire_whoosh(duration=3.0):
+    """Тварь вспыхивает: нарастающий рёв пламени с треском."""
+    t = synth.t_axis(duration)
+    roar = synth.band(synth.rng.standard_normal(len(t)), 80, 1200) * np.clip(t / .25, 0, 1) * np.exp(-t / (duration * .8))
+    crackle = np.zeros(len(t))
+    idx = synth.rng.choice(len(t), int(duration * 200), replace=False)
+    crackle[idx] = synth.rng.uniform(-1, 1, len(idx))
+    return synth.norm(synth.norm(roar) + synth.norm(synth.band(crackle, 1500, 9000)) * .5 * np.exp(-t / duration))
+
+
+def snd_scream_multi(duration=4.5):
+    """Крик всеми голосами сразу: мужской, детский и «Димин» — гласная «а» с дрожью, сдвиги высоты, хор."""
+    t = synth.t_axis(duration)
+    out = np.zeros(len(t))
+    for f0, amp in ((120, 1.0), (175, .8), (390, .7), (260, .5)):
+        vib = 1 + .04 * np.sin(2 * np.pi * 6.5 * t + f0) + .1 * np.sin(2 * np.pi * .7 * t)
+        bend = 1 + .25 * np.exp(-t / .6) - .15 * t / duration
+        ph = 2 * np.pi * np.cumsum(f0 * vib * bend) / SR
+        src = sum(np.sin(k * ph) / k for k in range(1, 18))
+        for fc, bw in ((800, 300), (1200, 300), (2500, 600)):  # форманты «а»
+            out += amp * synth.band(src, fc - bw, fc + bw) * .5
+    out += synth.band(synth.rng.standard_normal(len(t)), 1500, 6000) * .15
+    env = np.clip(t / .08, 0, 1) * np.clip((duration - t) / .6, 0, 1)
+    return synth.norm(np.tanh(2 * synth.norm(out)) * env)
+
+
+def snd_heater_hum(duration=6.0):
+    """Кабина: гул печки и вентилятора."""
+    t = synth.t_axis(duration)
+    hum = np.sin(2 * np.pi * 50 * t) * .4 + np.sin(2 * np.pi * 100 * t) * .3
+    fan = synth.band(synth.rng.standard_normal(len(t)), 200, 900) * .5
+    return synth.norm((hum + fan) * np.clip(t / .5, 0, 1) * np.clip((duration - t) / .5, 0, 1))
+
+
+def snd_breath_fast(duration=4.0):
+    """Учащённое дыхание: вдох-выдох каждые ~0.6 с."""
+    t = synth.t_axis(duration)
+    ph = (t / .6) % 1
+    env = np.where(ph < .45, np.sin(np.pi * ph / .45), .7 * np.sin(np.pi * (ph - .45) / .55)) ** 2
+    return synth.norm(synth.band(synth.rng.standard_normal(len(t)), 300, 2500) * env)
+
+
 def snd_drone(duration):
     t = synth.t_axis(duration)
     am = .6 + .4 * np.sin(2 * np.pi * .07 * t)
@@ -1632,7 +1830,7 @@ def render_audio(segs, total, path, only=None):
     wind_db = []
     for s in chosen:
         name = s.data["scene"]
-        level = -15 if name in ("train", "footprints", "circle") else -30 if name == "choice" else -23
+        level = -15 if name in ("train", "footprints", "circle") else -30 if name in ("choice", "flashback", "cab", "logbook", "memo_piece", "boot", "breaker") else -23
         wind_db += [(offset[s.id] + .05, level), (offset[s.id] + s.dur - .05, level)]
     times, gains = zip(*wind_db)
     level = db(np.interp(synth.t_axis(length), times, gains))
@@ -1642,7 +1840,9 @@ def render_audio(segs, total, path, only=None):
     if drone_from is not None:
         place(snd_drone(length - drone_from) * np.clip(synth.t_axis(length - drone_from) / 3, 0, 1), drone_from, -30)
 
-    cues = {"metal_creak": synth.snd_creak, "lighter_click": snd_lighter_click, "hiss": snd_hiss,
+    cues = {"shotgun_blast": snd_shotgun_blast, "glass_break": snd_glass_break, "fire_whoosh": snd_fire_whoosh,
+            "scream_multi": snd_scream_multi, "heater_hum": snd_heater_hum, "breath_fast": snd_breath_fast,
+            "knock_metal": lambda _=None: synth.snd_knock_metal(), "metal_creak": synth.snd_creak, "lighter_click": snd_lighter_click, "hiss": snd_hiss,
             "body_slide": snd_body_slide, "paper": snd_paper, "wet_steps": snd_wet_steps, "gun_cock": snd_gun_cock,
             "brake_screech": synth.snd_brake, "power_down": synth.snd_power_down, "relay_click": synth.snd_relay,
             "pa_static": synth.snd_pa_static, "bass_hit": synth.snd_bass_hit, "lock": snd_lock}
@@ -1680,6 +1880,7 @@ def main():
     ap.add_argument("--part", default=".", help="папка части с story.json и voice/ (по умолчанию — часть 1)")
     ap.add_argument("--story", help="путь к story-файлу части (голос берётся из voice/ рядом с ним)")
     ap.add_argument("--out", help="имя выходного файла без .mp4")
+    ap.add_argument("--jobs", type=int, default=1, help="рендерить сегменты параллельно в N процессах")
     args = ap.parse_args()
 
     global VOICE, COUNT_KNOCKS
@@ -1689,6 +1890,9 @@ def main():
     if args.out:
         story["output"] = args.out
     COUNT_KNOCKS = story.get("count_knocks", story.get("part", 1) == 1)
+    global HANDHELD, PART
+    PART = story.get("part", 1)
+    HANDHELD = PART >= 4
     segs, total = build_timeline(story)
     print(f"Сегментов: {len(segs)}, хронометраж {total:.1f} с"
           + ("" if any(s.voice for s in segs) else " (оценка по тексту, без голоса)"))
@@ -1712,7 +1916,7 @@ def main():
         only = {s.id for s in segs if a <= int(s.id) <= b}
         name = f"preview_{a:02d}-{b:02d}"
     video, audio = OUT / f"_{name}_video.mp4", OUT / f"_{name}_audio.wav"
-    render_video(story, segs, total, scenes, video, only)
+    render_video(story, segs, total, scenes, video, only, jobs=args.jobs)
     render_audio(segs, total, audio, only)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(video), "-i", str(audio), "-c:v", "copy",
                     "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", str(OUT / f"{name}.mp4")],
