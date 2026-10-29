@@ -282,21 +282,22 @@ const S15: React.FC = () => (<>
     cut(g, rrectP(820, 520, 220, 300, 14), "#2F3324", { seed: 3 }); radioScreen(g, 850, 560, 160, 100, t, 0.8);
   }} />
   <AbsoluteFill style={{ background: "radial-gradient(ellipse 50% 40% at 10% 35%, rgba(255,214,90,0.25), rgba(0,0,0,0) 70%), radial-gradient(ellipse 50% 40% at 90% 35%, rgba(61,220,132,0.22), rgba(0,0,0,0) 70%)" }} />
-  <Pup who="kotov" x={540} y={1950} sc={6.6} pose={(t) => ({ expr: t < 88.0 ? "fear" : "resolve", look: [Math.sin(t * 1.4) > 0 ? -0.8 : 0.8, 0], aR: [0.15, 0.3], aL: [0.15, 0.3], legs: false, blink: blinkAt(t, 3), tilt: Math.sin(t * 1.2) * 0.02 })} />
+  <Pup who="kotov" x={540} y={1950} sc={6.6} pose={(t) => ({ expr: t < 88.8 ? "fear" : "resolve", look: [Math.sin(t * 1.4) > 0 ? -0.8 : 0.8, 0], aR: [0.15, 0.3], aL: [0.15, 0.3], legs: false, blink: blinkAt(t, 3), tilt: Math.sin(t * 1.2) * 0.02 })} />
 </>);
 
 // ===================================================================== переходы (не повторяются подряд)
 type Tr = "cut" | "wipe" | "tear" | "fern" | "dark" | "flash";
 const Transition: React.FC<{ at: number; kind: Tr }> = ({ at, kind }) => {
-  const t = useCurrentFrame() / FPS; const k = (t - at) / 0.35;   // −1..1 вокруг склейки
+  const t = useCurrentFrame() / FPS; const HALF = kind === "dark" || kind === "flash" ? 0.3 : 0.45; const k0 = (t - at) / HALF;   // −1..1 вокруг склейки
+  const k = k0 < -1 || k0 > 1 ? k0 : eio((k0 + 1) / 2) * 2 - 1;   // плавный разгон и торможение
   if (kind === "cut" || k < -1 || k > 1) return null;
   if (kind === "dark" || kind === "flash") return <AbsoluteFill style={{ backgroundColor: kind === "dark" ? "#06070A" : "#FFF6DC", opacity: 1 - Math.abs(k) }} />;
   const x = interpolate(k, [-1, 1], [W + 200, -W - 1400]);
   if (kind === "wipe") return <AbsoluteFill><div style={{ position: "absolute", top: -100, left: x, width: W + 1200, height: H + 200, background: "#B98A5A", boxShadow: "0 0 40px rgba(20,12,4,0.6)", clipPath: "polygon(2% 0, 100% 0, 100% 100%, 0 100%, 3% 70%, 1% 40%)" }} /></AbsoluteFill>;
   if (kind === "tear") return <AbsoluteFill><div style={{ position: "absolute", left: 0, top: interpolate(k, [-1, 1], [H, -H * 1.6]), width: W, height: H * 1.6, background: "#F3EDE0", boxShadow: "0 0 30px rgba(20,12,4,0.6)",
     clipPath: "polygon(0 2%, 8% 0, 16% 3%, 25% 0.5%, 34% 2.5%, 45% 0, 55% 3%, 66% 1%, 77% 3%, 88% 0, 100% 2%, 100% 98%, 90% 100%, 78% 97%, 64% 99.5%, 50% 97%, 37% 100%, 22% 97.5%, 10% 99.5%, 0 97%)" }} /></AbsoluteFill>;
-  return <AbsoluteFill><div style={{ position: "absolute", left: x, top: -200, width: W + 1200, height: H + 400, filter: "blur(10px)",
-    background: `radial-gradient(ellipse 60% 70% at 50% 50%, ${PAL.oliveD} 60%, rgba(0,0,0,0) 61%)` }} /></AbsoluteFill>;
+  return <Layer d={1} frame={false} w={W + 1400} h={H + 400} x={x + (W + 1400) / 2} y={H / 2} shadow={0.5} blur={4}
+    draw={(g) => { g.fillStyle = PAL.oliveD; g.fillRect(250, 0, W + 900, H + 400); for (let i = 0; i < 9; i++) { fern(g, 260, 120 + i * 260, 360, Math.PI + 0.2, i % 2 ? PAL.olive : PAL.oliveD, 70 + i, { droop: 0.2 }); fern(g, W + 1140, 120 + i * 260, 360, -0.2, i % 2 ? PAL.olive : PAL.oliveD, 90 + i, { droop: 0.2 }); } }} />;
 };
 
 // ===================================================================== монтаж
@@ -316,12 +317,12 @@ const SHOTS: ShotDef[] = [
   { t0: 63.85, t1: 68.05, el: <S11 />, tr: "cut", cam: [[63.85, 0, 570, 1.45], [65.2, 0, 590, 1.5], [65.21, 0, 400, 1.0], [66.65, 0, -1400, 1.0], [66.7, 0, 0, 1.0], [68.05, 0, -60, 1.04]] },
   { t0: 68.05, t1: 74.15, el: <S12 />, tr: "tear", cam: [[68.05, 0, -60, 1.0], [68.35, 0, -60, 1.0], [68.6, 0, -40, 1.12], [69.95, 0, -40, 1.14], [69.96, 0, 0, 1.0], [72.0, 0, 20, 1.02], [72.01, 0, 120, 1.12], [74.15, 0, 120, 1.14]] },
   { t0: 74.15, t1: 80.15, el: <S13 />, tr: "dark", cam: [[74.15, 0, 0, 1.0], [77.0, 0, 0, 1.03], [77.01, 0, 0, 1.12], [79.35, 0, 0, 1.15], [79.6, 0, 0, 1.28], [80.15, 0, 0, 1.3]] },
-  { t0: 80.15, t1: 86.9, el: <S14 />, tr: "cut", dim: () => 0.15, cam: [[80.15, 0, 200, 1.0], [82.2, 0, 200, 1.03], [82.21, 373, 340, 1.6], [84.3, 373, 335, 1.76], [84.31, 240, 330, 1.45], [86.1, 240, 330, 1.5], [86.35, 250, 320, 1.7], [86.9, 250, 320, 1.72]] },
-  { t0: 86.9, t1: 90.6, el: <S15 />, tr: "wipe", cam: [[86.9, 0, -200, 1.03], [90.6, 0, -200, 1.0]], dim: (t) => (t > 88.7 ? 0.25 : 0.1) },
+  { t0: 80.15, t1: 87.7, el: <S14 />, tr: "cut", dim: () => 0.15, cam: [[80.15, 0, 200, 1.0], [82.2, 0, 200, 1.03], [82.21, 373, 340, 1.6], [84.3, 373, 335, 1.76], [84.31, 240, 330, 1.45], [86.3, 240, 330, 1.5], [86.6, 250, 320, 1.7], [87.7, 250, 320, 1.74]] },
+  { t0: 87.7, t1: 91.4, el: <S15 />, tr: "wipe", cam: [[87.7, 0, -200, 1.03], [91.4, 0, -200, 1.0]], dim: (t) => (t > 89.5 ? 0.25 : 0.1) },
 ];
 
 // ===================================================================== бирка времени
-const TAGS: [number, string][] = [[0, "ДЕНЬ 1 — 11:35"], [40.95, "ДЕНЬ 1 — 19:40"], [61.35, "НОЧЬ — 02:15"], [86.9, "ЧАСТЬ 3 →"]];
+const TAGS: [number, string][] = [[0, "ДЕНЬ 1 — 11:35"], [40.95, "ДЕНЬ 1 — 19:40"], [61.35, "НОЧЬ — 02:15"], [87.7, "ЧАСТЬ 3 →"]];
 const Tag: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   let txt = "", since = 0; for (const [s, x] of TAGS) if (t >= s) { txt = x; since = s; }
@@ -356,11 +357,13 @@ const Captions: React.FC = () => {
 };
 
 export const TOTAL = Math.round(SHOTS[SHOTS.length - 1].t1 * FPS);
+// ключи камеры ближе 0,06 с (жёсткая смена ракурса) → быстрый мягкий перелёт за 0,35 с
+const soften = (k?: [number, number, number, number][]) => k?.map((c, i) => (i + 1 < k.length && k[i + 1][0] - c[0] < 0.06 && (i === 0 || c[0] - 0.35 > k[i - 1][0] + 0.05) ? [c[0] - 0.35, ...c.slice(1)] as [number, number, number, number] : c));
 export const Video: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: "#1a140c" }}>
     {SHOTS.map((s, i) => (
       <Sequence key={i} from={Math.round(s.t0 * FPS)} durationInFrames={Math.round((s.t1 - s.t0) * FPS)}>
-        <Shot t0={s.t0} cam={s.cam} shake={s.shake} dim={s.dim} bg={s.bg}>{s.el}</Shot>
+        <Shot t0={s.t0} cam={soften(s.cam)} shake={s.shake} dim={s.dim} bg={s.bg}>{s.el}</Shot>
       </Sequence>
     ))}
     {SHOTS.slice(1).map((s, i) => <Transition key={i} at={s.t0} kind={s.tr ?? "cut"} />)}
