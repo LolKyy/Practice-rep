@@ -189,7 +189,7 @@ def flat_mimic(t, P, w=700, h=1500):
     """Оно — тот же высокий тонкий силуэт без лица, что в частях 1–3. Руки до колен, пальцы длинные.
     left_raise / tilt — копия позы Димы с задержкой. Мокрые блики, с пальцев капает."""
     p = R.Painter(size=(w, h))
-    x, feet, hh = w / 2, h + 200, h + 200
+    x, feet, hh = (w / 2, h - 10, h * .72) if P.get("full") else (w / 2, h + 200, h + 200)
     k = hh / 1000
     c = (8, 8, 12)
     tilt = P.get("tilt", 0.0)
@@ -198,13 +198,16 @@ def flat_mimic(t, P, w=700, h=1500):
     p.rect(x - 8 * k, feet - hh + 60 * k, x + 8 * k, feet - hh + 125 * k, c)
     p.ell(x - 60 * k, feet - hh + 110 * k, x + 60 * k, feet - hh + 170 * k, c)
     p.poly([(x - 56 * k, feet - hh + 135 * k), (x + 56 * k, feet - hh + 135 * k), (x + 32 * k, feet - hh + 640 * k), (x - 32 * k, feet - hh + 640 * k)], c)
+    for sgn in (-1, 1):                                                              # ноги
+        p.line([(x + sgn * 16 * k, feet - hh + 630 * k), (x + sgn * 20 * k, feet)], c, 22 * k)
     lr = P.get("left_raise", 0.0)
     tips = []
-    for sgn, raise_ in ((-1, lr), (1, 0.0)):
+    for sgn, raise_ in ((-1, lr), (1, P.get("right_raise", 0.0))):
+        spread = P.get("spread", 0.0)                       # руки вскинуты вверх и в стороны
         sx, sy = x + sgn * 54 * k, feet - hh + 145 * k
-        ex, ey = x + sgn * 70 * k, sy + (340 - 260 * raise_) * k
-        hx2, hy2 = x + sgn * (66 + 30 * raise_) * k, sy + (680 - 760 * raise_) * k
-        p.line([(sx, sy), (ex, ey), (hx2, hy2)], c, 14 * k)
+        ex, ey = x + sgn * (70 + 120 * spread) * k, sy + (340 - 260 * raise_ - 120 * spread) * k
+        hx2, hy2 = x + sgn * (66 + 30 * raise_ + 260 * spread) * k, sy + (680 - 760 * raise_ - 220 * spread) * k
+        p.line([(sx, sy), (ex, ey), (hx2, hy2)], c, 18 * k)
         for i in range(4):
             fx = hx2 - 9 * k + i * 6 * k
             fy2 = hy2 + (60 if raise_ < .5 else -70) * k
@@ -499,9 +502,10 @@ class Shot(CabdoorBehind):
     def mimic_frame(self, t, ctx, k_fire):
         pr = self.params
         arch = rig.react(t, wt(ctx, pr["ignite_word"]) if "ignite_word" in pr else -5, .5)
-        m = flat_mimic(t, {"left_raise": .3 + .7 * min(1, max(0, arch)), "tilt": -12 * min(1, max(0, arch))}, 900, 1500)
+        a_ = min(1, max(0, arch))
+        m = flat_mimic(t, {"left_raise": .3 + .7 * a_, "right_raise": a_, "spread": a_, "tilt": -12 * a_, "full": True}, 820, 900)
         if k_fire > 0:
-            m = rig.burning(m, t, k_fire)
+            m = rig.burning(m, t, k_fire, thick=9)
         if pr.get("scream"):  # дробится на куски, которые дёргаются несинхронно
             rng = np.random.default_rng(int(t * 30))
             out = Image.new("RGBA", m.size, (0, 0, 0, 0))
@@ -522,7 +526,7 @@ class Shot(CabdoorBehind):
             tw = wt(ctx, pr["ignite_word"]) if "ignite_word" in pr else None
             k_fire = rig.ease((t - tw) / .6) if tw is not None else 1.0
         m = self.mimic_frame(t, ctx, k_fire)
-        put(img, m, 90, 80)
+        put(img, m, 130, 300)
         if k_fire > 0:  # оранжевый свет заливает всё — впервые в серии ярко
             img = Image.alpha_composite(img, R.glow(540, 700, 1300, (255, 150, 60), int(150 * k_fire * rig.flicker(t, 7))))
             img = sparks(img, t - (t % .45), t, 540, 900, n=30, seed=int(t / .45))

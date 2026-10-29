@@ -494,14 +494,14 @@ def mimic(t, P, w=1000, h=1500):
     return Image.alpha_composite(img, layer)
 
 
-def burning(layer, t, k):
+def burning(layer, t, k, thick=31):
     """Силуэт горит: оранжево-белое пламя по контуру, языки вверх, тело тлеет изнутри.
     k — 0..1, как далеко огонь пробежал снизу вверх."""
     a = layer.getchannel("A")
     w, h = layer.size
     A = np.array(a).astype(float) / 255
-    outer = np.array(a.filter(ImageFilter.MaxFilter(31))).astype(float) / 255 - A
-    inner = A - np.array(a.filter(ImageFilter.MinFilter(17))).astype(float) / 255
+    outer = np.array(a.filter(ImageFilter.MaxFilter(thick))).astype(float) / 255 - A
+    inner = A - np.array(a.filter(ImageFilter.MinFilter(max(3, thick // 2 | 1)))).astype(float) / 255
     yy = np.arange(h)[:, None] / h
     front = np.clip((yy - (1 - k * 1.15)) / .08, 0, 1)
     rng = np.random.default_rng(int(t * 24))
@@ -509,12 +509,12 @@ def burning(layer, t, k):
     n = np.array(Image.fromarray((n * 255).astype(np.uint8)).resize((w, h), Image.BICUBIC)) / 255
     fl = np.clip((outer * 1.4 + inner) * front * (.45 + n), 0, 1)
     tongues = np.zeros_like(fl)
-    for i, sh in enumerate((18, 40, 70, 110, 150)):
+    for i, sh in enumerate(int(v * thick / 31) + 2 for v in (18, 40, 70, 110, 150)):
         tongues[:-sh] = np.maximum(tongues[:-sh], fl[sh:] * (.95 - i * .16) * (n[sh:] > .3 + i * .1))
     fl = np.maximum(fl, tongues)
     big = np.array(Image.fromarray((rng.random((h // 60 + 1, w // 60 + 1)) * 255).astype(np.uint8))
                    .resize((w, h), Image.BICUBIC)) / 255
-    ember = A * front * np.clip(big - .45, 0, 1) * 1.4   # редкие тлеющие пятна, тело остаётся чёрным
+    ember = A * front * np.clip(big - .6, 0, 1) * .8     # редкие тлеющие пятна, тело остаётся чёрным
     rgb = np.zeros((h, w, 4), np.uint8)
     rgb[..., 0] = 255
     rgb[..., 1] = (120 + 120 * fl).astype(np.uint8)
@@ -525,5 +525,5 @@ def burning(layer, t, k):
     body[..., 0] += ember * 120
     body[..., 1] += ember * 34
     body = Image.fromarray(np.clip(body, 0, 255).astype(np.uint8), "RGBA")
-    glow = flames.filter(ImageFilter.GaussianBlur(40))
+    glow = flames.filter(ImageFilter.GaussianBlur(thick * 1.3))
     return Image.alpha_composite(Image.alpha_composite(Image.alpha_composite(glow, body), flames), flames.filter(ImageFilter.GaussianBlur(6)))
