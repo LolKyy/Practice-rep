@@ -186,42 +186,68 @@ def flat_dima(t, P, w=600, h=900):
 
 
 def flat_mimic(t, P, w=700, h=1500):
-    """Оно — тот же высокий тонкий силуэт без лица, что в частях 1–3. Руки до колен, пальцы длинные.
-    left_raise / tilt — копия позы Димы с задержкой. Мокрые блики, с пальцев капает."""
+    """Оно — массивный чёрный силуэт без лица: сутулые широкие плечи, руки до колен, длинные пальцы.
+    Голова уходит за верх кадра (если не full). left_raise / tilt — копия позы Димы с задержкой.
+    Мокрые блики скользят вниз, с пальцев капает."""
     p = R.Painter(size=(w, h))
-    x, feet, hh = (w / 2, h - 10, h * .72) if P.get("full") else (w / 2, h + 200, h + 200)
+    full = P.get("full")
+    if full:
+        hh, feet = h * .95, h - 6
+    else:
+        hh, feet = h * 1.05, h * 1.05
     k = hh / 1000
-    c = (8, 8, 12)
+    x = w / 2
+    top = feet - hh
+    c, c2 = (7, 7, 10), (14, 15, 20)
     tilt = P.get("tilt", 0.0)
-    hx = x + tilt * 3 * k
-    p.ell(hx - 20 * k, feet - hh, hx + 20 * k, feet - hh + 72 * k, c)
-    p.rect(x - 8 * k, feet - hh + 60 * k, x + 8 * k, feet - hh + 125 * k, c)
-    p.ell(x - 60 * k, feet - hh + 110 * k, x + 60 * k, feet - hh + 170 * k, c)
-    p.poly([(x - 56 * k, feet - hh + 135 * k), (x + 56 * k, feet - hh + 135 * k), (x + 32 * k, feet - hh + 640 * k), (x - 32 * k, feet - hh + 640 * k)], c)
+    hx = x + tilt * 3.2 * k
+    # голова — вытянутая, чуть набок, без лица
+    p.ell(hx - 52 * k, top + 0 * k, hx + 52 * k, top + 150 * k, c)
+    # шея и сутулый горб
+    p.poly([(hx - 40 * k, top + 110 * k), (hx + 40 * k, top + 110 * k), (x + 70 * k, top + 190 * k), (x - 70 * k, top + 190 * k)], c)
+    p.ell(x - 175 * k, top + 150 * k, x + 175 * k, top + 290 * k, c)                 # плечи
+    # тело: широкое, книзу сужается, рваный подол
+    body = [(x - 175 * k, top + 220 * k), (x + 175 * k, top + 220 * k), (x + 140 * k, top + 520 * k),
+            (x + 110 * k, top + 760 * k)]
+    rng = np.random.default_rng(3)
+    for i in range(9):
+        bx = x + 110 * k - i * 220 * k / 8
+        body.append((bx, top + (760 + (40 if i % 2 else 0) + rng.uniform(-10, 10)) * k))
+    body += [(x - 140 * k, top + 520 * k)]
+    p.poly(body, c)
+    p.poly([(x + 20 * k, top + 230 * k), (x + 170 * k, top + 230 * k), (x + 135 * k, top + 520 * k), (x + 100 * k, top + 750 * k), (x + 30 * k, top + 750 * k)], c2)
     for sgn in (-1, 1):                                                              # ноги
-        p.line([(x + sgn * 16 * k, feet - hh + 630 * k), (x + sgn * 20 * k, feet)], c, 22 * k)
-    lr = P.get("left_raise", 0.0)
+        p.poly([(x + sgn * 30 * k, top + 740 * k), (x + sgn * 80 * k, top + 740 * k), (x + sgn * 62 * k, feet), (x + sgn * 38 * k, feet)], c)
+    lr, rr, spread = P.get("left_raise", 0.0), P.get("right_raise", 0.0), P.get("spread", 0.0)
     tips = []
-    for sgn, raise_ in ((-1, lr), (1, P.get("right_raise", 0.0))):
-        spread = P.get("spread", 0.0)                       # руки вскинуты вверх и в стороны
-        sx, sy = x + sgn * 54 * k, feet - hh + 145 * k
-        ex, ey = x + sgn * (70 + 120 * spread) * k, sy + (340 - 260 * raise_ - 120 * spread) * k
-        hx2, hy2 = x + sgn * (66 + 30 * raise_ + 260 * spread) * k, sy + (680 - 760 * raise_ - 220 * spread) * k
-        p.line([(sx, sy), (ex, ey), (hx2, hy2)], c, 18 * k)
-        for i in range(4):
-            fx = hx2 - 9 * k + i * 6 * k
-            fy2 = hy2 + (60 if raise_ < .5 else -70) * k
-            p.line([(fx, hy2), (fx + (i - 1.5) * 3 * k, fy2)], c, 4 * k)
-            tips.append((fx, fy2))
+    for sgn, raise_ in ((-1, lr), (1, rr)):
+        sx, sy = x + sgn * 150 * k, top + 235 * k
+        ex = x + sgn * (195 + 130 * spread + 40 * raise_) * k
+        ey = sy + (330 - 300 * raise_ - 200 * spread) * k
+        wx = x + sgn * (175 + 60 * raise_ + 300 * spread) * k
+        wy = sy + (700 - 900 * raise_ - 420 * spread) * k
+        p.line([(sx, sy), (ex, ey)], c, 70 * k)
+        p.line([(ex, ey), (wx, wy)], c, 52 * k)
+        p.ell(wx - 34 * k, wy - 34 * k, wx + 34 * k, wy + 34 * k, c)
+        up = raise_ > .5 or spread > .5
+        for i in range(5):
+            ang = (i - 2) * .22 + (math.pi if up else 0)
+            L = (190 if i in (1, 2, 3) else 140) * k
+            fx2, fy2 = wx + math.sin(ang) * L * .35, wy + math.cos(ang) * L
+            mx, my = wx + math.sin(ang) * L * .2, wy + math.cos(ang) * L * .5
+            p.line([(wx, wy), (mx, my), (fx2, fy2)], c, 13 * k)
+            tips.append((fx2, fy2))
     img = p.done()
     d = ImageDraw.Draw(img)
-    for j in range(3):
-        u = (t * .25 + j / 3) % 1
-        y = feet - hh + 150 * k + u * 450 * k
-        d.line([(x - 50 * k + u * 20 * k, y), (x - 46 * k + u * 20 * k, y + 50 * k)], fill=(58, 74, 90, 170), width=4)
-    for i, (fx, fy) in enumerate(tips[:4]):
+    for j in range(5):                                                               # мокрые блики сползают вниз
+        u = (t * .22 + j / 5) % 1
+        bx = x + (-130 + j * 62) * k
+        y = top + 240 * k + u * 480 * k
+        d.line([(bx, y), (bx + 4 * k, y + 70 * k)], fill=(58, 74, 90, int(190 * math.sin(math.pi * u))), width=max(2, int(6 * k)))
+    for i, (fx, fy) in enumerate(tips):
         u = (t * 1.1 + i * .23) % 1
-        d.ellipse((fx - 4, fy + 90 * u, fx + 4, fy + 90 * u + 10), fill=(10, 10, 14, int(255 * (1 - u))))
+        r = 5 * k
+        d.ellipse((fx - r, fy + 120 * k * u, fx + r, fy + 120 * k * u + 2.4 * r), fill=(10, 10, 14, int(255 * (1 - u))))
     return img
 
 
@@ -427,6 +453,9 @@ class CabdoorBehind(R.Scene):
         self.barrels = R.darken(p.done(), .55)
         self.inside = Image.new("RGBA", (W, H), (6, 7, 12, 255))
         self.inside = Image.alpha_composite(self.inside, R.glow(540, 1200, 900, (20, 30, 60), 120))
+        # холодный свет из окна в конце коридора за спиной — на нём читается чёрный силуэт
+        self.inside = Image.alpha_composite(self.inside, R.glow(540, 560, 760, (70, 96, 140), 235))
+        self.inside = Image.alpha_composite(self.inside, R.glow(540, 520, 380, (110, 135, 175), 120))
 
     def drop(self, t, ctx):
         tw = wt(ctx, self.params["drop_word"]) if "drop_word" in self.params else None
@@ -454,14 +483,14 @@ class CabdoorBehind(R.Scene):
         mlr, mtilt = self.dima_raise(t - .3)         # мимик повторяет с задержкой 0.3 с
         light = (1 - fall) * .8 * rig.flicker(t, 2)
         # оно за спиной: выше на голову, голова уходит за верх рамки
-        m = flat_mimic(t, {"left_raise": mlr, "tilt": mtilt}, 1000, 2000)
+        m = flat_mimic(t, {"left_raise": mlr, "tilt": mtilt}, 800, 1500)
         a = m.getchannel("A")
         edge = Image.fromarray(np.clip(np.array(a.filter(ImageFilter.MaxFilter(7))).astype(int) - np.array(a), 0, 255).astype(np.uint8))
         rim = Image.new("RGBA", m.size, BLUE_FLAME + (0,))
         rim.putalpha(edge.point(lambda v: v * (.25 + .6 * light)))           # холодный блик огонька по мокрому контуру
         lit = Image.alpha_composite(m, rim)
-        vis = (rig.ease((t - t_rev) / 1.2) if t_rev is not None else 1.0) * (.5 + .5 * (1 - fall))
-        put(img, alpha(lit, vis), 40, -40 + lift * 160)
+        vis = rig.ease((t - t_rev) / 1.2) if t_rev is not None else 1.0
+        put(img, alpha(lit, vis), 140, 130 + lift * 160)
         if show_dima and fall < 1:
             P = dima_pose(t, ctx, scared=True, light=.4 + .6 * light, frost=1.0, look=(0, 0), left_raise=lr, tilt=tilt,
                           wide=pr.get("drop_word") is None)
@@ -969,21 +998,39 @@ class Boot(R.Scene):
         self.floor = Image.alpha_composite(R.darken(p.done(), .8), R.glow(540, 500, 1000, (255, 210, 140), 90))
 
     def sole(self, img, t, grow):
+        """Подошва кирзача к камере: широкий носок, узкий подъём, отдельный каблук, протектор ёлочкой.
+        Чёрное пятно — неровная клякса на носке, мокро блестит. Рисуется на слой и поднимается выше субтитров."""
+        base, img = img, Image.new("RGBA", img.size, (0, 0, 0, 0))
         d = ImageDraw.Draw(img)
-        cx, cy = 540, 800
-        sole = [(cx + 230 * math.cos(a) * (1 - .25 * max(0, math.sin(a))) * (.8 if math.sin(a) > .2 else 1.0),
-                 cy + 470 * math.sin(a)) for a in np.linspace(0, 2 * math.pi, 60)]
-        d.polygon(sole, fill=(96, 84, 70))                                            # рант
-        d.polygon([(cx + (x - cx) * .9, cy + (y - cy) * .94) for x, y in sole], fill=(44, 40, 36))
-        for i in range(12):                                                           # протектор
-            y = cy - 400 + i * 52
-            if abs(y - (cy + 230)) > 30:
-                d.line([(cx - 170, y), (cx + 170, y + 8)], fill=(62, 56, 50), width=9)
-        d.rectangle((cx - 190, cy + 220, cx + 190, cy + 236), fill=(24, 22, 20))          # край каблука
-        r = 60 * grow
-        d.ellipse((cx - r, cy - 120 - r * .9, cx + r, cy - 120 + r * .9), fill=(4, 4, 6))
-        hx = cx - r * .5 + r * ((t * .5) % 1)
-        d.ellipse((hx - 14, cy - 150, hx + 14, cy - 136), fill=(120, 140, 170))  # блик бежит по пятну
+        for hx in (300, 780):                                                         # руки держат сапог
+            d.ellipse((hx - 80, 820, hx + 80, 1000), fill=(190, 140, 106))
+        welt, rubber, tread = (110, 92, 70), (40, 37, 34), (66, 60, 54)
+        d.ellipse((320, 330, 760, 960), fill=welt)                                    # носок
+        d.polygon([(380, 760), (700, 760), (660, 1080), (420, 1080)], fill=welt)     # подъём
+        d.rounded_rectangle((370, 1040, 710, 1380), radius=70, fill=welt)            # каблук
+        d.ellipse((345, 355, 735, 935), fill=rubber)
+        d.polygon([(400, 780), (680, 780), (645, 1050), (435, 1050)], fill=(52, 48, 44))
+        d.rounded_rectangle((395, 1110, 685, 1355), radius=55, fill=rubber)
+        for i in range(9):                                                            # ёлочка на носке
+            y = 430 + i * 52
+            half = 170 * math.sqrt(max(0.0, 1 - ((y - 645) / 290) ** 2))
+            d.line([(540 - half, y + 26), (540, y), (540 + half, y + 26)], fill=tread, width=10)
+        for i in range(4):                                                            # ёлочка на каблуке
+            y = 1150 + i * 52
+            d.line([(420, y + 22), (540, y), (660, y + 22)], fill=tread, width=10)
+        rng = np.random.default_rng(17)
+        cx, cy, r = 575, 560, 62 * grow
+        blob = [(cx + r * (1 + .25 * rng.uniform(-1, 1)) * math.cos(a), cy + r * .85 * (1 + .25 * rng.uniform(-1, 1)) * math.sin(a))
+                for a in np.linspace(0, 2 * math.pi, 14, endpoint=False)]
+        layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ImageDraw.Draw(layer).polygon(blob, fill=(3, 3, 5, 255))
+        img.alpha_composite(layer.filter(ImageFilter.GaussianBlur(2)))
+        d = ImageDraw.Draw(img)
+        hx = cx - r * .6 + r * 1.2 * ((t * .5) % 1)
+        d.ellipse((hx - 16, cy - r * .45, hx + 16, cy - r * .45 + 10), fill=(130, 150, 180))  # блик бежит по пятну
+        s = .82
+        small = img.resize((int(W * s), int(H * s)), Image.LANCZOS)
+        put(base, small, 540 - W * s / 2, 760 - 760 * s - 30)
 
     def render(self, t, ctx):
         pr = self.params
@@ -1013,13 +1060,23 @@ class Boot(R.Scene):
                 ImageDraw.Draw(layer).ellipse((540 - r, 700 - r - 100 * u, 540 + r, 700 + r - 100 * u), fill=(230, 232, 236, int(110 * (1 - u))))
                 img = Image.alpha_composite(img, layer.filter(ImageFilter.GaussianBlur(16)))
             return img
-        if t < tw - .15:  # стягивает сапог рывками
+        if t < tw - .15:  # стягивает кирзач рывками: вид сбоку, нога в портянке выходит из голенища
             u = (t - ctx.dur * .3) / max(.3, tw - .15 - ctx.dur * .3)
-            jerk = rig.ease(u) * 260 + 25 * math.sin(u * 18)
+            jerk = rig.ease(u) * 200 + 18 * math.sin(u * 18)
             d = ImageDraw.Draw(img)
-            d.polygon([(380, 400 - jerk), (600, 400 - jerk), (620, 1000 - jerk), (900, 1050 - jerk), (900, 1200 - jerk), (360, 1200 - jerk)], fill=(30, 26, 22))
-            d.rounded_rectangle((300, 520 - jerk, 520, 700 - jerk), radius=60, fill=(190, 140, 106))
-            d.rounded_rectangle((560, 600 - jerk, 760, 780 - jerk), radius=60, fill=(176, 128, 96))
+            khaki = (74, 80, 64)
+            d.polygon([(250, 0), (520, 0), (560, 380), (330, 420)], fill=khaki)                 # штанина
+            d.rounded_rectangle((350, 300, 560, 380 + jerk), radius=40, fill=(214, 204, 174))   # портянка
+            y = 340 + jerk
+            boot = (26, 24, 22)
+            d.rounded_rectangle((340, y, 570, y + 620), radius=24, fill=boot)                  # голенище
+            d.polygon([(340, y + 560), (570, y + 520), (860, y + 600), (900, y + 700), (340, y + 720)], fill=boot)  # стопа
+            d.ellipse((780, y + 590, 920, y + 720), fill=boot)                                 # носок
+            d.rectangle((340, y + 710, 900, y + 740), fill=(70, 60, 50))                        # подошва
+            d.rectangle((340, y + 700, 470, y + 770), fill=(44, 40, 36))                        # каблук
+            d.line([(360, y + 40), (360, y + 520)], fill=(70, 70, 76), width=8)                 # блик на кирзе
+            d.rounded_rectangle((280, y + 60, 430, y + 200), radius=60, fill=(190, 140, 106))  # левая рука на голенище
+            d.rounded_rectangle((760, y + 560, 920, y + 690), radius=60, fill=(176, 128, 96))  # правая на носке
             return img
         self.sole(img, t, 1.0)
         k = rig.clip01((t - tw + .15) / .2)
@@ -1032,39 +1089,53 @@ class Boot(R.Scene):
 
 
 class Breaker(R.Scene):
+    """Рубильник «ОТОПЛЕНИЕ СОСТАВА» — весь выше субтитров: нож опущен вниз (ВЫКЛ), гнездо «ВКЛ» пустое."""
+
     def __init__(self, params):
         super().__init__(params)
         p = R.Painter()
         p.rect(0, 0, W, H, (84, 92, 80))
-        p.rect(240, 400, 840, 500, (60, 64, 56), r=10)
-        p.rect(300, 560, 780, 1340, (46, 48, 44), r=16)
-        for y in (640, 1240):
-            p.rect(400, y - 30, 680, y + 30, (180, 120, 60), r=8)
-        p.rect(510, 640, 570, 1180, (150, 156, 164), r=20)   # ручка вниз — ВЫКЛ
-        p.rect(460, 1150, 620, 1220, (30, 30, 30), r=18)
+        p.rect(220, 340, 860, 430, (60, 64, 56), r=10)        # табличка
+        p.rect(290, 460, 790, 1190, (46, 48, 44), r=16)       # корпус
+        p.rect(410, 540, 670, 620, (180, 120, 60), r=8)       # верхние контакты
+        p.rect(495, 560, 585, 605, (20, 20, 22), r=6)         # пустое гнездо — нож не вставлен
+        p.ell(485, 690, 595, 800, (110, 114, 120))            # ось
+        p.rect(510, 745, 570, 1010, (150, 156, 164), r=20)    # нож опущен вниз
+        p.rect(445, 990, 635, 1070, (150, 40, 34), r=22)      # красная рукоять внизу
+        p.ell(690, 1100, 730, 1140, (220, 40, 30))            # красная лампа
         self.panel = Image.alpha_composite(p.done(), R.glow(300, 200, 1000, (255, 210, 140), 90))
         d = ImageDraw.Draw(self.panel)
-        d.text((540, 450), "ОТОПЛЕНИЕ СОСТАВА", font=R.font("bold", 40), fill=(220, 214, 190), anchor="mm")
-        d.text((540, 600), "ВКЛ", font=R.font("bold", 36), fill=(200, 196, 180), anchor="mm")
-        d.text((540, 1400), "ВЫКЛ", font=R.font("bold", 36), fill=(200, 196, 180), anchor="mm")
+        d.text((540, 385), "ОТОПЛЕНИЕ СОСТАВА", font=R.font("bold", 42), fill=(220, 214, 190), anchor="mm")
+        d.text((540, 505), "ВКЛ", font=R.font("bold", 34), fill=(105, 105, 100), anchor="mm")
+        d.text((540, 1120), "ВЫКЛ", font=R.font("bold", 50), fill=(240, 70, 56), anchor="mm")
+        self.panel = Image.alpha_composite(self.panel, R.glow(710, 1120, 150, (255, 60, 40), 120))
+
+    def fit(self, img, s=.84, cy=340):
+        """Ужать рубильник к табличке, чтобы «ВЫКЛ» и рукоять не уходили под субтитры."""
+        bg = Image.new("RGBA", (W, H), (84, 92, 80, 255))
+        bg = Image.alpha_composite(bg, R.glow(300, 200, 1000, (255, 210, 140), 90))
+        small = img.resize((int(W * s), int(H * s)), Image.LANCZOS)
+        put(bg, small, 540 - W * s / 2, cy - cy * s)
+        return bg
 
     def wire(self, img, t):
         d = ImageDraw.Draw(img)
-        for i in range(9):
-            y = 840 + i * 34
-            d.arc((470, y - 30, 610, y + 30), 0, 360, fill=(170, 172, 176), width=7)
-        d.line([(610, 840), (700, 780), (690, 760), (720, 740)], fill=(170, 172, 176), width=7)
-        d.line([(470, 1140), (400, 1200), (420, 1220)], fill=(170, 172, 176), width=7)
-        hy = 840 + 300 * ((t * .35) % 1)  # тёплый блик скользит по проволоке
+        for i in range(7):                                    # проволока мотает нож к корпусу
+            y = 800 + i * 28
+            d.arc((472, y - 24, 608, y + 24), 0, 360, fill=(170, 172, 176), width=7)
+        d.line([(472, 800), (330, 750), (310, 778)], fill=(170, 172, 176), width=7)
+        d.line([(608, 968), (740, 1000), (760, 976)], fill=(170, 172, 176), width=7)
+        hy = 800 + 170 * ((t * .35) % 1)  # тёплый блик скользит по проволоке
         d.ellipse((520, hy - 8, 560, hy + 8), fill=(255, 230, 170))
 
     def face(self, t, ctx, z=1.0):
         """Дима стоит у пульта спиной к нам, тёплая лампа мигает, камера медленно наезжает."""
         img = self.panel.copy()
         self.wire(img, t)
+        img = self.fit(img)
         img = Image.alpha_composite(img, R.glow(540, 300, 900, (255, 200, 120), int(70 * rig.flicker(t, 6))))
-        put(img, dima_back_sprite(1.3, c=(36, 34, 38), k=.9), -170, 760)
-        return zoom(img, z, 540, 860)
+        put(img, dima_back_sprite(1.3, c=(36, 34, 38), k=.9), -170, 860)
+        return zoom(img, z, 540, 1000)
 
     def render(self, t, ctx):
         pr = self.params
@@ -1073,9 +1144,10 @@ class Breaker(R.Scene):
         img = self.panel.copy()
         if pr.get("wire") or "zoom_word" in pr:
             self.wire(img, t)
+        img = self.fit(img)
         if "zoom_word" in pr:
             z = 1 + .15 * rig.ease((t - (wt(ctx, pr["zoom_word"]) or 0)) / .3)
-            img = zoom(img, z, 540, 960)
+            img = zoom(img, z, 540, 1100)
         if "reveal_word" in pr:  # глаза Димы, зрачки сужаются — и резкая панорама на пульт
             tw = wt(ctx, pr["reveal_word"]) or 1.0
             if t < tw + .25:  # сначала Дима со спины в тёмной кабине — резкая панорама на пульт
