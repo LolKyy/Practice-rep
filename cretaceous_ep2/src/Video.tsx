@@ -1,6 +1,6 @@
 // «Что, если…?» · Меловой период · Часть 2 «Не стреляй». Шоты по script/voice.srt.
 import React from "react";
-import { AbsoluteFill, Audio, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { getInputProps, AbsoluteFill, Audio, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import "./fonts";
 import subs from "./subs.json";
 import { SFX } from "./sfx";
@@ -374,6 +374,8 @@ const Captions: React.FC = () => {
   </AbsoluteFill>);
 };
 
+// clean — без субтитров и бирок (для нарезки «Ранее» в следующих частях)
+const CLEAN = !!(getInputProps() as any).clean;
 export const TOTAL = Math.round(SHOTS[SHOTS.length - 1].t1 * FPS);
 export const Video: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: "#1a140c" }}>
@@ -383,8 +385,8 @@ export const Video: React.FC = () => (
       </Sequence>
     ))}
     {SHOTS.slice(1).map((s, i) => <Transition key={i} at={s.t0} kind={s.tr ?? "cut"} />)}
-    <Tag />
-    <Captions />
+    {CLEAN ? null : <Tag />}
+    {CLEAN ? null : <Captions />}
     <Audio src={staticFile("voice.mp3")} />
     <SFX />
   </AbsoluteFill>

@@ -1,6 +1,6 @@
 // «Что, если…?» · Меловой период · Часть 1 «Провал». Шоты по таймингам голоса (script/voice.srt).
 import React from "react";
-import { AbsoluteFill, Audio, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { getInputProps, AbsoluteFill, Audio, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import "./fonts";
 import subs from "./subs.json";
 import { SFX } from "./sfx";
@@ -376,6 +376,8 @@ const Captions: React.FC = () => {
   </AbsoluteFill>);
 };
 
+// clean — без субтитров и бирок (для нарезки «Ранее» в следующих частях)
+const CLEAN = !!(getInputProps() as any).clean;
 export const TOTAL = Math.round((SHOTS[SHOTS.length - 1].t1 + 1.32) * FPS);
 export const Video: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: "#1a140c" }}>
@@ -386,8 +388,8 @@ export const Video: React.FC = () => (
       <Sequence key={i} from={a} durationInFrames={b - a}>
         <Shot t0={i === 0 ? s.t0 : s.t0 + (a / FPS - (s.t0 + shiftOf(s.t0)))} cam={s.cam} shake={s.shake} dim={s.dim} bg={s.bg}>{s.el}</Shot>
       </Sequence>); })}
-    <Tag />
-    <Captions />
+    {CLEAN ? null : <Tag />}
+    {CLEAN ? null : <Captions />}
     <Audio src={staticFile("voice.mp3")} />
     <SFX />
   </AbsoluteFill>
