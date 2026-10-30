@@ -78,6 +78,8 @@ def flat_savelyev(t, P, w=600, h=900):
         p.rect(x - 50 * k, gy + 4 * k, x + 260 * k, gy + 18 * k, (44, 46, 50))
         p.rect(x - 50 * k, gy + 18 * k, x + 260 * k, gy + 30 * k, (56, 58, 62))
         hands = [(x - 140 * k, gy + 14 * k), (x + 90 * k, gy + 12 * k)]
+    elif gun == "none":
+        hands = [(x - 120 * k, 790 * k), (x + 110 * k, 790 * k)]
     else:
         up = P.get("gun_up_k", 1.0)
         gy = 600 * k - up * 60 * k
@@ -676,6 +678,10 @@ class Cab(R.Scene):
         if "shells_word" in pr:
             return self.console_close(t, ctx)
         img = self.base(t).copy()
+        if view == "epilogue":  # год спустя: Дима у пульта, со спины
+            bob = 4 * math.sin(2 * math.pi * t / 3.5)
+            put(img, dima_back_sprite(1.3, c=(40, 46, 60), k=.85), 140, 560 + bob)
+            return zoom(img, 1 + .05 * rig.ease(t / ctx.dur), 540, 960)
         if pr.get("icon"):
             img = self.icon(img, t)
         speaking = "savelyev" if ctx.mouth("savelyev", t) > .05 else "dima" if ctx.mouth("dima", t) > .05 else None
@@ -721,8 +727,12 @@ class Cab(R.Scene):
         doze = 0.0
         if t_creak is not None:
             doze = 1 - rig.react(t, t_creak, .5)
+        gun, gk = ("up" if pr.get("gun_up") else pr.get("gun", "knees")), rig.ease(t / 1.2)
+        if "gun_down_word" in pr:  # ружьё опускается
+            gk = 1 - rig.ease((t - (wt(ctx, pr["gun_down_word"]) or 0)) / .7)
+            gun = "up" if gk > .05 else "none"
         S = sav_pose(t, ctx, look=look, turn=turn, rub=rub, squeeze=1.0 if t_away is not None and t >= t_away else 0.0,
-                     gun="up" if pr.get("gun_up") else "knees", gun_up_k=rig.ease(t / 1.2), doze=doze,
+                     gun=gun, gun_up_k=gk if gun == "up" and "gun_down_word" in pr else rig.ease(t / 1.2), doze=doze,
                      tilt=10 * rig.ease((t - 1.5) / 3) if pr.get("gun_up") else 0.0)
         if eyes_open:
             S.update(blink=0.0, look=(0.0, 0.0), wide=True, turn=0.0)
@@ -928,6 +938,10 @@ class MemoPiece(R.Scene):
         lines = [self.LINE4] + ([self.LINE5] if reveal is not None or joined else [])
         if reveal is None and joined and "reveal" not in pr:
             lines = [self.LINE4]
+        if "line4" in pr:  # чернила просвечивают у лампы — проступает пункт 4
+            lines = [pr["line4"]]
+            tw = wt(ctx, pr.get("unstrike_word", ""), 0) or 0
+            strike = 1 - rig.ease((t - tw) / 1.6)
         piece = self.paper(lines, torn_bottom=False, reveal=reveal, strike=strike)
         memo = self.paper(self.TOP, torn_bottom=True)
         if joined:
@@ -988,9 +1002,19 @@ class Boot(R.Scene):
     def render(self, t, ctx):
         pr = self.params
         img = self.floor.copy()
-        if pr.get("spot_grow") or pr.get("sole"):
+        if pr.get("spot_grow") or pr.get("sole") or pr.get("spot_shrink"):
             grow = 1 + .15 * rig.ease(t / ctx.dur) if pr.get("spot_grow") else 1.0
+            if pr.get("spot_shrink"):
+                grow = 1 - .55 * rig.ease((t - 0.4) / (ctx.dur - .4))
             self.sole(img, t, grow)
+            if pr.get("spot_shrink"):  # дымится
+                layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                d = ImageDraw.Draw(layer)
+                for j in range(10):
+                    v = (t * .7 + j / 10) % 1
+                    x = 540 + 40 * math.sin(j * 2.1 + v * 4)
+                    d.ellipse((x - 26 - 50 * v, 680 - 380 * v - 26, x + 26 + 50 * v, 680 - 380 * v + 26), fill=(210, 212, 216, int(110 * (1 - v))))
+                img = Image.alpha_composite(img, layer.filter(ImageFilter.GaussianBlur(12)))
             if pr.get("spot_grow"):  # пальцы в портянке поджимаются
                 d = ImageDraw.Draw(img)
                 curl = .5 + .5 * math.sin(t * 2.5)
@@ -1066,8 +1090,43 @@ class Breaker(R.Scene):
         put(img, dima_back_sprite(1.3, c=(36, 34, 38), k=.9), -170, 760)
         return zoom(img, z, 540, 860)
 
+    def wire_off(self, img, t, u):
+        """Витки проволоки разлетаются и падают."""
+        d = ImageDraw.Draw(img)
+        for i in range(9):
+            y = 840 + i * 34 + 600 * u * u
+            dx = (i - 4) * 60 * u
+            d.arc((470 + dx, y - 30, 610 + dx, y + 30), 0, 360, fill=(170, 172, 176, int(255 * (1 - u))), width=7)
+
+    def flip(self, img, t, u):
+        """Рычаг уходит вверх — ВКЛ, загорается зелёная лампа."""
+        d = ImageDraw.Draw(img)
+        d.rectangle((455, 630, 625, 1230), fill=(46, 48, 44))
+        for y in (640, 1240):
+            d.rounded_rectangle((400, y - 30, 680, y + 30), radius=8, fill=(180, 120, 60))
+        top = 1180 - 540 * u
+        d.rounded_rectangle((510, min(top, 640), 570, max(top, 640) + 1), radius=20, fill=(150, 156, 164))
+        d.rounded_rectangle((460, top - 70 if u > .5 else top - 30, 620, top if u > .5 else top + 40), radius=18, fill=(30, 30, 30))
+        if u >= 1:
+            img.alpha_composite(R.glow(760, 600, 240, (80, 230, 110), int(180 * rig.flicker(t, 3) ** 2)))
+            d.ellipse((740, 580, 780, 620), fill=(120, 255, 140))
+
     def render(self, t, ctx):
         pr = self.params
+        if "wire_off_word" in pr or "flip_word" in pr:
+            img = self.panel.copy()
+            tw = wt(ctx, pr.get("wire_off_word", ""), None)
+            if tw is not None:
+                u = rig.clip01((t - tw) / .6)
+                if u <= 0:
+                    self.wire(img, t)
+                elif u < 1:
+                    self.wire_off(img, t, u)
+            if "flip_word" in pr:
+                u = rig.ease((t - (wt(ctx, pr["flip_word"]) or 0)) / .18)
+                if u > 0:
+                    self.flip(img, t, u)
+            return img
         if pr.get("face"):
             return self.face(t, ctx, 1.0 + .3 * rig.ease(t / ctx.dur))
         img = self.panel.copy()
@@ -1137,11 +1196,11 @@ class Logbook(R.Scene):
         d = ImageDraw.Draw(img)
         d.rectangle((880, 300, 920, 420), fill=(226, 214, 180))                       # свеча
         d.ellipse((888, 250 - 6 * fl, 912, 300), fill=(255, 190, 80))
-        entries = [("02:40", "Отпр. Норм."), ("03:16", "143 км. Остановка.")]
+        entries = [tuple(e) for e in pr["entries"]] if "entries" in pr else [("02:40", "Отпр. Норм."), ("03:16", "143 км. Остановка.")]
         tw = wt(ctx, pr.get("entry_word", ""), 0) or 0
-        reveal = rig.clip01((t - tw - .2) / 1.6) if "entry_word" in pr and pr.get("entry_word") == "запись" else 1.0
+        reveal = rig.clip01((t - tw - .2) / 1.6) if "entry_word" in pr and pr.get("entry_word") in ("запись", "почерком") else 1.0
         wob = 1.0 if pr.get("entry_word") == "минуту" else 0.0
-        left = self.page("14.01.99", [], t=t)
+        left = self.page(pr.get("date", "14.01.99"), [], t=t)
         right = self.page("", entries, reveal=reveal, wobble=wob, t=t)
         if pr.get("flip"):
             times = [wt(ctx, w) for w in pr.get("years_words", [])]
@@ -1158,7 +1217,7 @@ class Logbook(R.Scene):
             ph = ((t - t_start) % .25) / .25 if t > t_start and (idx == 0 or any(x and 0 < x - t < .25 for x in times)) else None
         else:
             ph = None
-        open_k = rig.ease(t / .6) if pr.get("entry_word") == "запись" else 1.0
+        open_k = rig.ease(t / .6) if pr.get("entry_word") in ("запись", "почерком") else 1.0
         put(img, left.resize((max(1, int(440 * open_k)), 900)), 100 + 440 * (1 - open_k), 380)
         put(img, right, 540, 380)
         if ph is not None:  # перелистываемая страница
@@ -1170,6 +1229,171 @@ class Logbook(R.Scene):
         return img
 
 
-SCENES4 = {"dark": Dark4, "cabdoor": Cabdoor4, "cabdoor_behind": CabdoorBehind, "shot": Shot, "cab": Cab,
+# ------------------------------------------------------------------ часть 5
+
+
+class Train5(R.TrainScene):
+    """Поезд снаружи. lights: wave — вагоны загораются один за другим со слова wave_word; dawn — рассвет, буран стих."""
+
+    def __init__(self, params):
+        super().__init__(dict({"lights": "on"}, **params))
+        if params.get("dawn"):
+            self.snow = R.Blizzard(n=60, seed=7, speed=.25)
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = super().render(t, ctx)
+        if pr.get("wave_word") is not None or pr.get("dark"):
+            t0 = wt(ctx, pr.get("wave_word", ""), 1e9) if pr.get("wave_word") else 1e9
+            d = ImageDraw.Draw(img)
+            for box in self.windows:  # ещё не загоревшиеся окна — тёмные
+                car = int((box[0] + 150) // (self.CAR + self.GAP))
+                if t < t0 + car * .35:
+                    d.rounded_rectangle(box, radius=6, fill=(30, 38, 48))
+        if pr.get("dawn"):  # рассвет: светлее, тёплый розоватый тон
+            warm = Image.new("RGBA", (W, H), (236, 196, 176, 255))
+            img = Image.blend(ImageEnhance.Brightness(img.convert("RGB")).enhance(1.35).convert("RGBA"), warm, .28)
+        return img
+
+
+def tall_layer(figs, size=(W, H), c=(10, 10, 14)):
+    p = R.Painter(size=size)
+    for x, feet, h in figs:
+        R.figure_tall(p, x, feet, h, c)
+    return p.done()
+
+
+class Horde(R.Scene):
+    """Освещённый поезд в буране, вокруг — десятки высоких фигур до горизонта. retreat_word — отступают от тёплых окон."""
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = R.Painter()
+        R.sky_and_steppe(p, 830, lit=False)
+        for x0 in range(-60, W + 60, 300):
+            p.rect(x0, 858, x0 + 288, 946, (44, 72, 60), r=4)
+            p.rect(x0, 848, x0 + 288, 862, (180, 192, 206), r=6)
+            p.rect(x0, 924, x0 + 288, 928, (178, 150, 66))
+            for i in range(5):
+                p.rect(x0 + 30 + i * 50, 878, x0 + 58 + i * 50, 902, (240, 200, 110), r=3)
+            p.rect(x0, 946, x0 + 288, 958, (24, 26, 30))
+        self.bg = Image.alpha_composite(p.done(), R.glow(540, 960, 900, (240, 190, 100), 90))
+        rng = np.random.default_rng(143)
+        figs = []
+        for i in range(34):  # от горизонта до переднего плана
+            depth = rng.uniform(0, 1) ** 1.5
+            x = rng.uniform(-40, W + 40)
+            feet = 846 + depth * 520
+            if 820 < feet < 990 and 0 < x < W:
+                feet = 846
+            figs.append((x, feet, 120 + depth * 420))
+        self.figs = tall_layer(sorted(figs, key=lambda f: f[1]))
+        self.snow = R.Blizzard(seed=21)
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = self.bg.copy()
+        show = rig.ease((t - (wt(ctx, pr.get("see_word", ""), -1) or -1)) / .8) if pr.get("see_word") else 1.0
+        tr = wt(ctx, pr["retreat_word"]) if "retreat_word" in pr else None
+        back = rig.ease((t - tr) / 3.0) if tr is not None else 0.0
+        figs = self.figs
+        if back > 0:  # отходят от поезда: разлетаются от центра и тают в метели
+            z = 1 + .35 * back
+            figs = figs.resize((int(W * z), int(H * z)), Image.BICUBIC).crop((int(W * (z - 1) / 2), int(900 * (z - 1)),
+                                                                              int(W * (z - 1) / 2) + W, int(900 * (z - 1)) + H))
+        img = Image.alpha_composite(img, alpha(figs, show * (1 - .7 * back)))
+        return self.snow.draw(img, t)
+
+
+class Exit(R.Scene):
+    """Савельев открывает дверь кабины и уходит в буран; оборачивается: «Не открывай»."""
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = R.Painter()
+        p.rect(0, 0, W, H, (40, 44, 40))
+        p.rect(240, 300, 840, 1300, (60, 64, 60), r=8)
+        p.rect(270, 330, 810, 1280, (0, 0, 0, 0))            # проём двери — прозрачный
+        self.frame = R.darken(p.done(), .55)
+        self.snow = R.Blizzard(n=500, seed=61)
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+        door = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(door)
+        dd.rectangle((270, 330, 810, 1280), fill=(44, 54, 70))
+        dd.rectangle((270, 1050, 810, 1280), fill=(150, 162, 178))
+        img = Image.alpha_composite(img, door)
+        t_step = wt(ctx, pr.get("step_word", ""), 0) or 0
+        t_turn = wt(ctx, pr.get("turn_word", ""), 1e9) or 1e9
+        away = rig.ease((t - t_step) / 2.5)
+        turn = rig.react(t, t_turn, .4) if t >= t_turn - .1 else 0.0
+        S = sav_pose(t, ctx, gun="none", turn=.8 * max(0, min(1, turn)), light=.5, look=(0, 0), wide=True)
+        sc = 1 - .55 * away
+        sav, _ = flat_savelyev(t, S, int(520 * sc), int(780 * sc))
+        put(img, sav, 540 - 260 * sc, 1000 - 520 * sc - 60 * away)
+        img = self.snow.draw(img, t, clip=(270, 330, 810, 1280))
+        img = Image.alpha_composite(img, self.frame)
+        return Image.alpha_composite(img, R.glow(540, 200, 700, (216, 176, 96), 80))
+
+
+class Ring(R.Scene):
+    """Фигуры смыкаются вокруг Савельева. На секунду их девять — потом снова восемь."""
+
+    START = [(120, 1180, 470), (300, 980, 330), (560, 940, 300), (800, 990, 340), (980, 1200, 480),
+             (220, 1340, 520), (870, 1360, 540), (540, 1420, 560)]
+
+    def __init__(self, params):
+        super().__init__(params)
+        p = R.Painter()
+        R.sky_and_steppe(p, 830, lit=False)
+        self.bg = Image.alpha_composite(p.done(), R.glow(-100, 900, 800, (240, 190, 100), 110))
+        self.snow = R.Blizzard(seed=71)
+
+    def render(self, t, ctx):
+        pr = self.params
+        img = self.bg.copy()
+        close = rig.ease(t / (ctx.dur * .7))
+        cx, cfeet = 540, 1120
+        figs = [(x + (cx - x) * .55 * close, f + (cfeet - f) * .55 * close, h * (1 - .1 * close)) for x, f, h in self.START]
+        t9 = wt(ctx, pr.get("nine_word", ""), 1e9) or 1e9
+        t8 = wt(ctx, pr.get("eight_word", ""), 1e9) or 1e9
+        sav_k = 1.0 if t < t9 else max(0.0, 1 - (t - t9) / .5)
+        if t9 <= t < t8:  # девятый — высокий, на месте Савельева
+            figs.append((cx, cfeet, 430 * rig.ease((t - t9) / .5)))
+        if sav_k > 0:
+            S = sav_pose(t, ctx, gun="none", turn=0, light=.45)
+            sav, _ = flat_savelyev(t, S, 220, 330)
+            put(img, alpha(sav, sav_k), cx - 110, cfeet - 330)
+        img = Image.alpha_composite(img, tall_layer(sorted(figs, key=lambda f: f[1])))
+        return self.snow.draw(img, t)
+
+
+class Compartment5(R.CompartmentScene):
+    """Утро: пассажиры спят в рассветном свете, на полу — просто вода."""
+
+    def render(self, t, ctx):
+        img = super().render(t, ctx)
+        img = Image.blend(ImageEnhance.Brightness(img.convert("RGB")).enhance(1.5).convert("RGBA"),
+                          Image.new("RGBA", (W, H), (236, 200, 176, 255)), .22)
+        d = ImageDraw.Draw(img)
+        d.ellipse((380, 1010, 760, 1080), fill=(150, 176, 200, 160))   # прозрачная лужа
+        d.ellipse((470, 1025, 560, 1040), fill=(230, 240, 250, 160))
+        return img
+
+
+class EndCard(R.Scene):
+    def render(self, t, ctx):
+        img = Image.new("RGBA", (W, H), (6, 6, 9, 255))
+        k = rig.ease((t - .3) / 1.0)
+        d = ImageDraw.Draw(img)
+        d.text((W / 2, 760), "КОНЕЦ", font=R.font("bold", 120), fill=(240, 240, 240, int(255 * k)), anchor="mm")
+        d.text((W / 2, 880), "«НЕ ОТКРЫВАЙ ДВЕРЬ»", font=R.font("bold", 44), fill=(240, 200, 60, int(255 * k)), anchor="mm")
+        return img
+
+
+SCENES4 = {"train": Train5, "horde": Horde, "exit": Exit, "ring": Ring, "compartment": Compartment5, "endcard": EndCard,
+           "dark": Dark4, "cabdoor": Cabdoor4, "cabdoor_behind": CabdoorBehind, "shot": Shot, "cab": Cab,
            "flashback": Flashback, "memo_piece": MemoPiece, "boot": Boot, "breaker": Breaker, "logbook": Logbook}
 THUMBS4 = {"breaker": {"wire": True}, "boot": {"sole": True}}

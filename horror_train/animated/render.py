@@ -1578,7 +1578,7 @@ def compose(seg, scene, t, title, label, shade):
     if not is_choice:
         img.alpha_composite(shade)
     hd = seg.data.get("hud")
-    if hd and seg.data["scene"] == "flashback":  # во флешбэке только строка места и года
+    if hd and (seg.data["scene"] == "flashback" or hd.get("minimal")):  # только строка места и времени
         top = hud(title, label, hd["place"], hd["time"], 0).crop((0, 100, W, 200))
         img.alpha_composite(top, (0, 100))
         hd = None

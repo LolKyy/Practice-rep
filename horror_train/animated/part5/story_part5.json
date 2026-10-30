@@ -1,0 +1,667 @@
+{
+ "title": "НЕ ОТКРЫВАЙ ДВЕРЬ",
+ "counter_label": "ЗАЖИГАТЕЛЬНЫХ",
+ "part": 5,
+ "output": "train317_part5",
+ "segments": [
+  {
+   "id": "01",
+   "scene": "train",
+   "params": {
+    "moving": false
+   },
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "Ранее. Поезд встал в буране на сто сорок третьем километре.",
+   "red": [
+    "километре"
+   ]
+  },
+  {
+   "id": "02",
+   "scene": "footprints",
+   "params": {},
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "Петрович вышел… и не вернулся.",
+   "red": [
+    "вернулся"
+   ],
+   "events": [
+    {
+     "type": "flash",
+     "word": "вышел"
+    }
+   ]
+  },
+  {
+   "id": "03",
+   "scene": "cabdoor_behind",
+   "params": {
+    "mimic_pose": true,
+    "flame": "blue"
+   },
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "Тварь копирует голоса.",
+   "red": [
+    "голоса"
+   ]
+  },
+  {
+   "id": "04",
+   "scene": "shot",
+   "params": {
+    "burning": true
+   },
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "Машинист Савельев спас Диму выстрелом.",
+   "red": [
+    "выстрелом"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "fire_whoosh",
+     "at": 0.0,
+     "dur": 2.5,
+     "gain": -14
+    }
+   ]
+  },
+  {
+   "id": "05",
+   "scene": "breaker",
+   "params": {
+    "wire": true
+   },
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "Но рубильник отопления замотан проволокой.",
+   "red": [
+    "проволокой"
+   ]
+  },
+  {
+   "id": "06",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "eyes_open": true,
+    "gun_up": true
+   },
+   "hud": {
+    "place": "РАНЕЕ",
+    "time": "04:35",
+    "count": 3,
+    "minimal": true
+   },
+   "text": "А двустволка смотрит Диме в спину.",
+   "red": [
+    "спину"
+   ]
+  },
+  {
+   "id": "07",
+   "scene": "breaker",
+   "params": {
+    "wire": true,
+    "cam_shake": 2.0
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:36",
+    "count": 3
+   },
+   "text": "Вы выбрали ток.",
+   "red": [
+    "ток"
+   ]
+  },
+  {
+   "id": "08",
+   "scene": "breaker",
+   "params": {
+    "wire_off_word": "сорвал"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:36",
+    "count": 3
+   },
+   "text": "Дима сорвал проволоку. И ждал выстрела.",
+   "red": [
+    "выстрела"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "lock",
+     "word": "сорвал",
+     "gain": -8
+    },
+    {
+     "type": "shake",
+     "word": "сорвал",
+     "amp": 10,
+     "dur": 0.4
+    }
+   ]
+  },
+  {
+   "id": "09",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "eyes_open": true,
+    "gun_down_word": "давай"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:36",
+    "count": 3
+   },
+   "text": "Савельев не выстрелил. Только тихо сказал: «Давай… Вруби».",
+   "red": [
+    "вруби"
+   ],
+   "quotes": [
+    "savelyev"
+   ]
+  },
+  {
+   "id": "10",
+   "scene": "breaker",
+   "params": {
+    "flip_word": "щелчок"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:36",
+    "count": 3
+   },
+   "text": "Щелчок. Под полом загудело отопление.",
+   "red": [
+    "отопление"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "relay_click",
+     "word": "щелчок",
+     "gain": -4
+    },
+    {
+     "type": "punch",
+     "word": "щелчок",
+     "amount": 0.06,
+     "dur": 0.2
+    },
+    {
+     "type": "sfx",
+     "cue": "heater_hum",
+     "word": "загудело",
+     "dur": 4.0,
+     "gain": -16
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "scene": "train",
+   "params": {
+    "moving": false,
+    "wave_word": "вагон"
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "04:37",
+    "count": 3
+   },
+   "text": "И по всему составу, вагон за вагоном… загорелся свет.",
+   "red": [
+    "свет"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "relay_click",
+     "word": "вагон",
+     "gain": -12
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "scene": "train",
+   "params": {
+    "moving": false
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "04:37",
+    "count": 3
+   },
+   "text": "Двенадцать жёлтых окон в буране.",
+   "red": [
+    "окон"
+   ]
+  },
+  {
+   "id": "13",
+   "scene": "horde",
+   "params": {
+    "see_word": "увидел"
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "04:37",
+    "count": 3
+   },
+   "text": "И в этом свете Дима увидел их. Не восемь. Десятки. Они стояли вокруг поезда до самого горизонта.",
+   "red": [
+    "десятки"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "bass_hit",
+     "word": "десятки",
+     "gain": -6
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "scene": "horde",
+   "params": {
+    "retreat_word": "отступали"
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "04:38",
+    "count": 3
+   },
+   "text": "И отступали. От тёплых стёкол.",
+   "red": [
+    "отступали"
+   ]
+  },
+  {
+   "id": "15",
+   "scene": "puddle",
+   "params": {
+    "recoil_word": "шипела"
+   },
+   "hud": {
+    "place": "ВАГОН 7",
+    "time": "04:38",
+    "count": 3
+   },
+   "text": "Чёрная вода шипела на ступеньках… и уходила в снег.",
+   "red": [
+    "снег"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "hiss",
+     "word": "шипела",
+     "dur": 2.2,
+     "gain": -10
+    }
+   ]
+  },
+  {
+   "id": "16",
+   "scene": "boot",
+   "params": {
+    "spot_shrink": true
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:38",
+    "count": 3
+   },
+   "text": "Пятно на подошве задымилось. И стало меньше.",
+   "red": [
+    "меньше"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "hiss",
+     "word": "задымилось",
+     "dur": 1.6,
+     "gain": -18
+    }
+   ]
+  },
+  {
+   "id": "17",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "gun": "none"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:39",
+    "count": 3
+   },
+   "text": "Савельев положил ружьё на пульт. Достал свой клочок памятки… и поднёс к лампе.",
+   "red": [
+    "лампе"
+   ]
+  },
+  {
+   "id": "18",
+   "scene": "memo_piece",
+   "params": {
+    "joined": true,
+    "line4": "4. Не верь машинисту.",
+    "unstrike_word": "проступил"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:39",
+    "count": 3
+   },
+   "text": "Под чернилами проступил четвёртый пункт. «Не верь машинисту».",
+   "red": [
+    "машинисту"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "bass_hit",
+     "word": "машинисту",
+     "gain": -10
+    }
+   ],
+   "labels": [
+    {
+     "text": "ПУНКТ 4",
+     "word": "четвёртый",
+     "x": 540,
+     "y": 1030
+    }
+   ],
+   "quotes": [
+    "narrator"
+   ]
+  },
+  {
+   "id": "19",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "gun": "none"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:39",
+    "count": 3
+   },
+   "text": "«Отец писал. Пятьдесят четвёртый. Он не открыл.",
+   "red": [
+    "открыл"
+   ],
+   "quotes": [
+    "savelyev"
+   ]
+  },
+  {
+   "id": "20",
+   "scene": "flashback",
+   "params": {
+    "shot": "boy"
+   },
+   "hud": {
+    "place": "ПЕРЕГОН 143",
+    "time": "1954",
+    "count": 3
+   },
+   "text": "А я открыл. Мне было девять… я замёрз».",
+   "red": [
+    "замёрз"
+   ]
+  },
+  {
+   "id": "21",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "gun": "none",
+    "look_away_word": "останавливаю"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:40",
+    "count": 3
+   },
+   "text": "«С тех пор я останавливаю здесь поезда. И гашу тепло».",
+   "red": [
+    "тепло"
+   ],
+   "quotes": [
+    "savelyev"
+   ]
+  },
+  {
+   "id": "22",
+   "scene": "cab",
+   "params": {
+    "view": "driver",
+    "gun": "none"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:40",
+    "count": 3
+   },
+   "text": "«А ты им ни разу не открыл. Хватит».",
+   "red": [
+    "хватит"
+   ],
+   "quotes": [
+    "savelyev"
+   ]
+  },
+  {
+   "id": "23",
+   "scene": "exit",
+   "params": {
+    "step_word": "шагнул",
+    "turn_word": "обернулся"
+   },
+   "hud": {
+    "place": "КАБИНА",
+    "time": "04:40",
+    "count": 3
+   },
+   "text": "Он открыл дверь кабины… и шагнул в буран. Обернулся. «Не открывай».",
+   "red": [
+    "открывай"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "metal_creak",
+     "word": "открыл",
+     "gain": -10
+    }
+   ],
+   "quotes": [
+    "savelyev"
+   ]
+  },
+  {
+   "id": "24",
+   "scene": "ring",
+   "params": {
+    "nine_word": "девять",
+    "eight_word": "восемь"
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "04:41",
+    "count": 3
+   },
+   "text": "Фигуры сомкнулись вокруг него. На секунду их стало девять. Потом снова восемь.",
+   "red": [
+    "девять",
+    "восемь"
+   ],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "bass_hit",
+     "word": "девять",
+     "gain": -6
+    }
+   ],
+   "labels": [
+    {
+     "text": "9",
+     "word": "девять",
+     "x": 540,
+     "y": 430
+    },
+    {
+     "text": "8",
+     "word": "восемь",
+     "x": 540,
+     "y": 430
+    }
+   ]
+  },
+  {
+   "id": "25",
+   "scene": "train",
+   "params": {
+    "moving": true,
+    "dawn": true
+   },
+   "hud": {
+    "place": "СТЕПЬ",
+    "time": "07:48",
+    "count": 3
+   },
+   "text": "Семь сорок восемь. Буран стих. Поезд тронулся сам.",
+   "red": [
+    "сам"
+   ]
+  },
+  {
+   "id": "26",
+   "scene": "compartment",
+   "params": {
+    "mode": "sleeping"
+   },
+   "hud": {
+    "place": "ВАГОН 7",
+    "time": "07:52",
+    "count": 3
+   },
+   "text": "Пассажиры проснулись и ничего не помнили. В лужах на полу… была просто вода.",
+   "red": [
+    "вода"
+   ]
+  },
+  {
+   "id": "27",
+   "scene": "cab",
+   "params": {
+    "view": "epilogue"
+   },
+   "hud": {
+    "place": "ГОД СПУСТЯ",
+    "time": "03:16",
+    "count": 0,
+    "minimal": true
+   },
+   "text": "Через год Дима устроился помощником машиниста. На этот участок.",
+   "red": [
+    "участок"
+   ]
+  },
+  {
+   "id": "28",
+   "scene": "logbook",
+   "params": {
+    "entry_word": "почерком",
+    "date": "14.01.00",
+    "entries": [
+     [
+      "03:16",
+      "143 км. Остановка."
+     ]
+    ]
+   },
+   "hud": {
+    "place": "ГОД СПУСТЯ",
+    "time": "03:16",
+    "count": 0,
+    "minimal": true
+   },
+   "text": "В журнале кабины его почерком: «Три шестнадцать. Сто сорок третий. Остановка».",
+   "red": [
+    "остановка"
+   ],
+   "quotes": [
+    "narrator"
+   ]
+  },
+  {
+   "id": "29",
+   "scene": "endcard",
+   "params": {},
+   "hud": null,
+   "text": "Конец.",
+   "red": [],
+   "events": [
+    {
+     "type": "sfx",
+     "cue": "knock_metal",
+     "at": 1.4,
+     "gain": -8
+    },
+    {
+     "type": "sfx",
+     "cue": "knock_metal",
+     "at": 2.2,
+     "gain": -8
+    },
+    {
+     "type": "sfx",
+     "cue": "knock_metal",
+     "at": 3.0,
+     "gain": -8
+    }
+   ],
+   "pause": 3.0
+  }
+ ]
+}
