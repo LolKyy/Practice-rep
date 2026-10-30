@@ -1289,7 +1289,9 @@ class Segment:
         self.pages = self.paginate()
         self.events = [dict(e, t=self.event_time(e)) for e in data.get("events", [])]
         self.labels = [dict(lb, t=self.event_time(lb)) for lb in data.get("labels", [])]
-        quotes, qi, inside = data.get("quotes") or [], -1, False
+        quotes = data.get("quotes") or []
+        qi = inside = 0 if data.get("quote_open") else -1  # сегмент начинается внутри реплики
+        inside = qi == 0
         self.word_speaker = []
         for w in self.words:  # реплики в «» — персонажам из quotes по порядку, остальное — рассказчик
             if "«" in w:
