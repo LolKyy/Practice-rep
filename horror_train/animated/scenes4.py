@@ -1133,6 +1133,10 @@ class Breaker(R.Scene):
         d.text((540, 505), "ВКЛ", font=R.font("bold", 34), fill=(105, 105, 100), anchor="mm")
         d.text((540, 1120), "ВЫКЛ", font=R.font("bold", 50), fill=(240, 70, 56), anchor="mm")
         self.panel = Image.alpha_composite(self.panel, R.glow(710, 1120, 150, (255, 60, 40), 120))
+        p = R.Painter()                                        # тот же корпус без ножа — фон для переключения
+        p.rect(0, 0, W, H, (84, 92, 80))
+        p.rect(290, 460, 790, 1190, (46, 48, 44), r=16)
+        self.empty = Image.alpha_composite(p.done(), R.glow(300, 200, 1000, (255, 210, 140), 90))
 
     def fit(self, img, s=.84, cy=340):
         """Ужать рубильник к табличке, чтобы «ВЫКЛ» и рукоять не уходили под субтитры."""
@@ -1162,25 +1166,32 @@ class Breaker(R.Scene):
         return zoom(img, z, 540, 1000)
 
     def wire_off(self, img, t, u):
-        """Витки проволоки разлетаются и падают."""
+        """Витки проволоки слетают с ножа и падают."""
         d = ImageDraw.Draw(img)
-        for i in range(9):
-            y = 840 + i * 34 + 600 * u * u
-            dx = (i - 4) * 60 * u
-            d.arc((470 + dx, y - 30, 610 + dx, y + 30), 0, 360, fill=(170, 172, 176, int(255 * (1 - u))), width=7)
+        for i in range(7):
+            y = 800 + i * 28 + 500 * u * u
+            dx = (i - 3) * 70 * u
+            d.arc((472 + dx, y - 24, 608 + dx, y + 24), 0, 360, fill=(170, 172, 176, int(255 * (1 - u))), width=7)
 
     def flip(self, img, t, u):
-        """Рычаг уходит вверх — ВКЛ, загорается зелёная лампа."""
+        """Нож рубильника уходит вверх в гнездо «ВКЛ», красная лампа гаснет, загорается зелёная."""
         d = ImageDraw.Draw(img)
-        d.rectangle((455, 630, 625, 1230), fill=(46, 48, 44))
-        for y in (640, 1240):
-            d.rounded_rectangle((400, y - 30, 680, y + 30), radius=8, fill=(180, 120, 60))
-        top = 1180 - 540 * u
-        d.rounded_rectangle((510, min(top, 640), 570, max(top, 640) + 1), radius=20, fill=(150, 156, 164))
-        d.rounded_rectangle((460, top - 70 if u > .5 else top - 30, 620, top if u > .5 else top + 40), radius=18, fill=(30, 30, 30))
+        img.paste(self.empty.crop((430, 625, 650, 1085)), (430, 625))         # стираем опущенный нож
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((410, 540, 670, 620), radius=8, fill=(180, 120, 60))
+        ang = math.radians(90 - 180 * u)                                        # 90° — вниз, −90° — вверх
+        cx, cy, ln = 540, 745, 265 - 85 * u
+        ex, ey = cx + ln * math.cos(ang), cy + ln * math.sin(ang)
+        d.line([(cx, cy), (ex, ey)], fill=(150, 156, 164), width=60)
+        d.ellipse((485, 690, 595, 800), fill=(110, 114, 120))                   # ось
+        gx, gy = cx + (ln - 30) * math.cos(ang), cy + (ln - 30) * math.sin(ang)
+        d.rounded_rectangle((gx - 95, gy - 40, gx + 95, gy + 40), radius=22, fill=(150, 40, 34))
         if u >= 1:
-            img.alpha_composite(R.glow(760, 600, 240, (80, 230, 110), int(180 * rig.flicker(t, 3) ** 2)))
-            d.ellipse((740, 580, 780, 620), fill=(120, 255, 140))
+            d.ellipse((690, 1100, 730, 1140), fill=(60, 30, 28))               # красная гаснет
+            d.text((540, 1120), "ВЫКЛ", font=R.font("bold", 50), fill=(90, 60, 56), anchor="mm")
+            d.text((540, 505), "ВКЛ", font=R.font("bold", 34), fill=(130, 240, 150), anchor="mm")
+            d.ellipse((690, 480, 730, 520), fill=(120, 255, 140))
+            img.alpha_composite(R.glow(710, 500, 220, (80, 230, 110), int(190 * rig.flicker(t, 3) ** 2)))
 
     def render(self, t, ctx):
         pr = self.params
@@ -1197,7 +1208,7 @@ class Breaker(R.Scene):
                 u = rig.ease((t - (wt(ctx, pr["flip_word"]) or 0)) / .18)
                 if u > 0:
                     self.flip(img, t, u)
-            return img
+            return self.fit(img)
         if pr.get("face"):
             return self.face(t, ctx, 1.0 + .3 * rig.ease(t / ctx.dur))
         img = self.panel.copy()
