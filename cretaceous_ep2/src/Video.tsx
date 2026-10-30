@@ -175,7 +175,7 @@ const S8: React.FC = () => {
       if (t > 51.6) { g.save(); g.translate(2480, 1150); g.scale(-1.1, 1.1); bear(g, t); g.restore(); } }} />
   </>);
 };
-// 9 · 54.35–61.35 — канистры «ВОДА — 4 ДНЯ» → СКВОЗЬ СЛОЙ → СВЕРХУ карта, пунктир к реке
+// 9 · 54.35–61.35 — канистры «ВОДА — 4 ДНЯ» → СКВОЗЬ СЛОЙ → СВЕРХУ блокнот Котова: карандашная схема, пунктир к реке
 const S9: React.FC = () => {
   const sec = useSec();
   const lvl = keys(sec, [[54.6, 0.62], [56.2, 0.5]]);
@@ -183,15 +183,33 @@ const S9: React.FC = () => {
   const route = keys(sec, [[57.6, 0], [60.6, 1]], eio);
   return (<>
     <Layer d={0.5} shadow={0} draw={(g) => { g.fillStyle = "#5E4A34"; g.fillRect(-300, -300, W + 600, H + 600); }} />
+    {/* карта — карандашный набросок Котова в блокноте (настоящих карт мелового периода нет) */}
     <Layer d={1} rot={-0.02} draw={(g) => {
-      cut(g, rectP(60, 220, 960, 1440), "#D8B47E", { seed: 7, edge: 2 });
-      const r = rng(15); for (let i = 0; i < 24; i++) { const x = 100 + r() * 880, y = 260 + r() * 1360; for (let k = 0; k < 4; k++) cut(g, ellP(x + (r() - 0.5) * 80, y + (r() - 0.5) * 60, 45 + r() * 30, 40 + r() * 25, 20), k % 2 ? PAL.olive : "#7C8A44", { seed: i * 9 + k, edge: 0.5, thick: false }); }
-      strokeP(g, [[60, 520], [260, 580], [420, 520], [560, 600], [760, 570], [1020, 680]], "#4B86C8", 22); tape(g, 980, 240, 140, 0.4);
+      cut(g, rectP(80, 200, 920, 1480), PAL.paper, { seed: 7, edge: 2 });
+      clipTo(g, rectP(80, 200, 920, 1480), () => { for (let y = 320; y < 1680; y += 46) strokeP(g, [[80, y], [1000, y]], "rgba(70,110,170,0.3)", 2); strokeP(g, [[170, 200], [170, 1680]], "rgba(200,60,50,0.55)", 2.5); });
+      for (let x = 120; x < 990; x += 46) { fillP(g, ellP(x, 232, 10, 10, 12), "#3B3428"); strokeP(g, ellP(x, 220, 11, 17, 14, Math.PI, Math.PI * 2), "#8A8478", 3); }
+      const pen = (pts: [number, number][], w = 3, a = 0.75) => { strokeP(g, pts, `rgba(55,50,45,${a})`, w); strokeP(g, pts.map(([x, y], i) => [x + 1.5 + (i % 2), y - 1.2] as [number, number]), `rgba(55,50,45,${a * 0.45})`, w * 0.7); };
+      const r = rng(15);
+      // деревья: карандашные «облачка» и ёлочки
+      for (let i = 0; i < 26; i++) { const x = 230 + r() * 720, y = 330 + r() * 1260; if (Math.abs(y - (560 + (x - 200) * 0.06)) < 70 || (Math.abs(x - 560) < 90 && y > 600 && y < 1360) || (x > 470 && y > 1250 && y < 1490) || (x > 720 && y > 420 && y < 540)) continue;
+        if (i % 3) { const pts: [number, number][] = []; for (let k = 0; k <= 14; k++) { const a = (k / 14) * Math.PI * 2; const rr = 26 + Math.sin(k * 2.7 + i) * 6; pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr * 0.8]); } pen(pts, 2.4, 0.6); }
+        else pen([[x - 18, y + 20], [x, y - 26], [x + 18, y + 20], [x - 18, y + 20]], 2.4, 0.6); }
+      // река: двойная волнистая линия + синий карандаш
+      const river = (dy: number) => Array.from({ length: 30 }, (_, i) => [180 + i * 28, 540 + dy + Math.sin(i * 0.7) * 22 + i * 1.6] as [number, number]);
+      for (let i = 0; i < 30; i++) strokeP(g, [[180 + i * 28, 548 + Math.sin(i * 0.7) * 22 + i * 1.6], [196 + i * 28, 572 + Math.sin(i * 0.7) * 22 + i * 1.6]], "rgba(75,134,200,0.55)", 5);
+      pen(river(0), 3); pen(river(36), 3);
+      text(g, "РЕКА?", 830, 490, 34, "rgba(55,50,45,0.85)", "JetBrains Mono", 700);
+      // БТР — квадратик с колёсами; подписи
+      pen([[500, 1290], [580, 1290], [590, 1310], [580, 1330], [500, 1330], [500, 1290]], 3);
+      for (const x of [512, 536, 560]) pen(Array.from({ length: 9 }, (_, k) => [x + Math.cos(k * 0.8) * 8, 1338 + Math.sin(k * 0.8) * 8] as [number, number]), 2);
+      text(g, "БТР", 640, 1312, 32, "rgba(55,50,45,0.85)", "JetBrains Mono", 700, "left");
+      text(g, "≈ 1 ЧАС ПО ЛЕСУ", 640, 1450, 28, "rgba(55,50,45,0.7)", "JetBrains Mono", 700, "left");
+      pen([[900, 380], [900, 300]], 3); pen([[884, 322], [900, 300], [916, 322]], 3); text(g, "С", 900, 270, 30, "rgba(55,50,45,0.85)", "JetBrains Mono", 700);
+      tape(g, 960, 230, 140, 0.4); tape(g, 130, 1660, 140, 0.5);
     }} />
     <Layer d={1.02} rot={-0.02} dyn draw={(g, t) => {
-      fillP(g, ellP(540, 1300, 16, 16, 16), PAL.ink); text(g, "БТР", 590, 1300, 26, PAL.ink, "Montserrat", 900, "left");
-      const pts: [number, number][] = [[540, 1300], [500, 1150], [600, 980], [520, 820], [580, 640]]; const n = route * (pts.length - 1);
-      for (let i = 0; i < Math.floor(n + 1) && i < pts.length - 1; i++) { const k = Math.min(1, n - i); const [a, b] = [pts[i], pts[i + 1]]; const e: [number, number] = [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; const L = Math.hypot(e[0] - a[0], e[1] - a[1]); for (let s = 0; s < L; s += 34) { const u = s / (L || 1), u2 = Math.min(1, (s + 18) / (L || 1)); strokeP(g, [[a[0] + (e[0] - a[0]) * u, a[1] + (e[1] - a[1]) * u], [a[0] + (e[0] - a[0]) * u2, a[1] + (e[1] - a[1]) * u2]], PAL.scarf, 8); } }
+      const pts: [number, number][] = [[540, 1280], [500, 1150], [600, 980], [520, 820], [580, 640]]; const n = route * (pts.length - 1);
+      for (let i = 0; i < Math.floor(n + 1) && i < pts.length - 1; i++) { const k = Math.min(1, n - i); const [a, b] = [pts[i], pts[i + 1]]; const e: [number, number] = [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; const L = Math.hypot(e[0] - a[0], e[1] - a[1]); for (let s = 0; s < L; s += 34) { const u = s / (L || 1), u2 = Math.min(1, (s + 18) / (L || 1)); strokeP(g, [[a[0] + (e[0] - a[0]) * u, a[1] + (e[1] - a[1]) * u], [a[0] + (e[0] - a[0]) * u2, a[1] + (e[1] - a[1]) * u2]], "rgba(200,53,43,0.85)", 5); } }
       if (route > 0.95) { g.save(); g.translate(700, 600); g.rotate(-0.06); cut(g, rectP(-110, -34, 220, 68), PAL.edge, { seed: 4 }); text(g, "ПЕШКОМ", 0, 2, 36, PAL.ink); g.restore(); }
     }} />
     {away < 1 ? <Layer d={1.3} dyn draw={(g, t) => { g.translate(-away * 1400, 0); g.fillStyle = "#4A3A28"; g.fillRect(-200, -200, W + 400, H + 400); for (let i = 0; i < 4; i++) { g.save(); g.translate(180 + i * 240, 1350); g.scale(1.05, 1.05); jerrycan(g, lvl, t, i + 1); g.restore(); } }} /> : null}
