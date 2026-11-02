@@ -11,7 +11,7 @@ export const Endcard: React.FC<{ part: number }> = ({ part }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const tagY = interpolate(t, [0, 0.4], [-260, 0], { extrapolateRight: "clamp" }); const sw = Math.sin(t * 2.2) * 0.04 * Math.exp(-t * 0.6);
   const eye = t < 0.3 ? 0 : (Math.floor(t * 10) % 31 === 0 ? 0.1 : 1) * Math.min(1, (t - 0.3) * 4);
-  const s1 = pop(f, 0.47, fps), s2 = pop(f, 2.3, fps), s3 = pop(f, 2.45, fps);
+  const s1 = pop(f, 0.47, fps), s2 = pop(f, 2.85, fps), s3 = pop(f, 3.7, fps);
   const strip = (bg: string, color: string, size: number, rot: number, s: number, pad = "14px 50px"): React.CSSProperties => ({ display: "inline-block", whiteSpace: "nowrap", background: bg, color, fontFamily: "Montserrat", fontWeight: 900, fontSize: size, padding: pad,
     clipPath: torn, transform: `rotate(${rot}deg) scale(${interpolate(s, [0, 1], [0.5, 1])})`, opacity: Math.min(1, s * 2), filter: "drop-shadow(8px 12px 0 rgba(0,0,0,0.3))" });
   return (<AbsoluteFill style={{ background: "radial-gradient(ellipse 70% 55% at 50% 45%, #34421F 0%, #222B16 60%, #161C0E 100%)" }}>
