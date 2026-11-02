@@ -12,7 +12,7 @@ import { btr, ground } from "./props";
 import { NIGHT, nightSky, nightTrees, nightFerns, fog, btrNight, radioScreen } from "./props2";
 import { raptor, photo1986 } from "./props3";
 import { rock } from "./props4";
-import { voron, VoronPose, palisade, gates, gaz71, stove, crosses, garden, journal, fingerHand } from "./props5";
+import { voron, VoronPose, palisade, gates, gaz71, stove, crosses, garden, journal, fingerHand, palm } from "./props5";
 
 // ===================================================================== общие куски
 const Pup: React.FC<{ who: Who; x: number; y: number; sc?: number; d?: number; pose: (t: number) => Pose; flip?: boolean; seed?: number; extra?: (g: G, t: number) => void }> =
@@ -37,11 +37,12 @@ const NightBG: React.FC<{ gy?: number; moon?: [number, number, number] | null; d
   <Layer d={0.9} dyn shadow={0} draw={(g, t) => fog(g, W, gy - 60, t, 0.16)} />
 </>);
 // лагерь ночью: тёплый свет печки, всё вокруг синее
-const CampBG: React.FC<{ gy?: number }> = ({ gy = 1360 }) => (<>
+const CampBG: React.FC<{ gy?: number; noGround?: boolean }> = ({ gy = 1360, noGround = false }) => (<>
   <Layer d={0.2} dyn w={1600} h={2600} shadow={0} draw={(g, t) => { g.translate(-262, -340); nightSky(g, 1600, 2600, t, [1100, 600, 80]); }} />
   <Layer d={0.3} draw={(g) => { g.translate(300, gy - 120); g.scale(1.6, 1.6); rock(g, 0); g.globalCompositeOperation = "source-atop"; g.fillStyle = "rgba(10,14,30,0.6)"; g.fillRect(-400, -700, 800, 800); }} />
+  <Layer d={0.4} w={2400} shadow={0.25} draw={(g) => { g.translate(-660, 0); const r = rng(8); for (let i = 0; i < 9; i++) palm(g, 120 + i * 270 + r() * 80, gy - 60, 620 + r() * 360, i + 3); nightFerns(g, 2400, gy - 300, 300, 5, 10); }} />
   <Layer d={0.5} w={2400} shadow={0.3} draw={(g) => { g.translate(-660, 0); palisade(g, 0, 2400, gy - 40, 420, 3, true); }} />
-  <Layer d={0.85} shadow={0.25} draw={(g) => ground(g, W, gy, H - gy + 300, "#2E2A20", 6)} />
+  {noGround ? null : <Layer d={0.85} shadow={0.25} draw={(g) => ground(g, W, gy, H - gy + 300, "#2E2A20", 6)} />}
 </>);
 const kotovGlasses = (col: string, a: number) => (g: G) => { if (a <= 0) return; for (const s of [-1, 1]) { g.save(); g.globalAlpha = a; fillP(g, ellP(s * 10.3, -154, 8.4, 8.4, 20), col); g.restore(); } };
 
@@ -136,9 +137,21 @@ const S8: React.FC = () => {
 };
 // 9 · 52.0–60.2 — обзор лагеря: вросший ГАЗ-71 с ветряком, огород, частокол → НАЕЗД на 6 крестов
 const S9: React.FC = () => (<>
-  <CampBG gy={1420} />
-  <Layer d={0.75} w={2000} dyn draw={(g, t) => { g.translate(-460, 0); g.save(); g.translate(1400, 1420); g.scale(1.0, 1.0); crosses(g, 6); g.restore(); g.save(); g.translate(760, 1450); g.scale(1.4, 1.4); gaz71(g, t * 2.2, 0.8); g.restore(); g.save(); g.translate(1160, 1460); garden(g, 300); g.restore(); }} />
-  <Layer d={0.9} dyn draw={(g, t) => { g.translate(140, 1560); g.scale(0.8, 0.8); stove(g, t); }} />
+  <CampBG gy={1420} noGround />
+  <Layer d={0.85} w={2400} dyn shadow={0.3} draw={(g, t) => { g.translate(-660, 0); const gy = 1420;
+    ground(g, 2400, gy, H - gy + 300, "#2E2A20", 6);
+    // стоптанная тропинка и камни двора
+    fillP(g, [[200, gy + 60], [2200, gy + 40], [2200, gy + 110], [200, gy + 140]], "#3A3426", 0.8); const r = rng(12); for (let i = 0; i < 20; i++) cut(g, ellP(150 + r() * 2100, gy + 30 + r() * 300, 10 + r() * 14, 6 + r() * 8, 10), "#4A443A", { seed: i, edge: 0.4 });
+    g.save(); g.translate(2000, gy + 6); g.scale(1.0, 1.0); crosses(g, 6); g.restore();
+    g.save(); g.translate(980, gy + 40); g.scale(1.35, 1.35); gaz71(g, t * 2.2, 0.8); g.restore();
+    g.save(); g.translate(1660, gy + 50); garden(g, 280); g.restore();
+    g.save(); g.translate(1480, gy + 130); g.scale(0.85, 0.85); stove(g, t); g.restore();
+    // передний план двора: поленница, бочка-водосборник с брезентом, ведро, колода с топором
+    g.save(); g.translate(640, gy + 330); for (let row = 0; row < 3; row++) for (let i = 0; i < 6 - row; i++) { const x = i * 58 + row * 29, y = -row * 50; cut(g, ellP(x, y, 30, 26, 18), "#6E5232", { seed: row * 9 + i, edge: 0.6 }); strokeP(g, ellP(x, y, 16, 13, 14), "rgba(40,26,12,0.5)", 2, true); } g.restore();
+    g.save(); g.translate(1180, gy + 300); cut(g, rrectP(-60, -150, 120, 150, 10), "#3E4A3A", { seed: 141 }); for (const y of [-120, -40]) strokeP(g, [[-60, y], [60, y]], "#2A2A20", 5); cut(g, [[-130, -300], [130, -290], [70, -160], [-70, -160]], "#5A6A50", { seed: 142, edge: 0.8 }); strokeP(g, [[0, -165], [0, -150]], "#5A6A50", 6); g.restore();
+    g.save(); g.translate(1360, gy + 320); cut(g, [[-40, -70], [40, -70], [32, 0], [-32, 0]], "#6A6E72", { seed: 143 }); strokeP(g, ellP(0, -70, 40, 50, 16, Math.PI, Math.PI * 2), "#3A3A36", 3); g.restore();
+    g.save(); g.translate(1900, gy + 340); cut(g, rrectP(-70, -90, 140, 90, 20), "#5A4630", { seed: 144 }); strokeP(g, ellP(0, -90, 70, 16, 20), "#3A2C1E", 3, true); g.save(); g.translate(10, -110); g.rotate(0.5); cut(g, rrectP(-6, -120, 12, 130, 4), "#7A5A38", { seed: 145 }); cut(g, [[-6, -120], [-50, -110], [-50, -80], [-6, -90]], "#8E949E", { seed: 146, edge: 0.6 }); g.restore(); g.restore(); }} />
+  <Layer d={1.45} w={2800} blur={7} draw={(g) => { g.translate(-860, 0); for (let i = 0; i < 5; i++) fernBush(g, 200 + i * 600, 2060, 520, [NIGHT.sil, "#1E2618"], 70 + i, 0.8); }} />
 </>);
 // 10 · 60.2–71.0 — СВЕРХУ на тетрадь: страницы листаются, кружки загораются, повторяющийся пульсирует
 const S10: React.FC = () => (<>
@@ -198,7 +211,7 @@ const SHOTS: ShotDef[] = [
   { t0: 34.2, t1: 36.5, el: <S6 />, cam: [[34.2, -200, 0, 1.15], [36.5, 200, 0, 1.15]] },
   { t0: 36.5, t1: 47.9, el: <S7 />, tr: "white", cam: [[36.5, 0, 0, 1.0], [44.5, 0, -40, 1.08], [45.0, 0, 0, 1.0], [47.9, 0, -30, 1.05]] },
   { t0: 47.9, t1: 52.0, el: <S8 />, cam: [[47.9, 0, 0, 1.0], [50.6, 0, -20, 1.03], [50.9, 0, -60, 1.12], [52.0, 0, -60, 1.13]] },
-  { t0: 52.0, t1: 60.2, el: <S9 />, cam: [[52.0, -150, 0, 1.0], [56.0, 150, 0, 1.0], [58.2, 420, 160, 1.25], [60.2, 440, 170, 1.3]] },
+  { t0: 52.0, t1: 60.2, el: <S9 />, cam: [[52.0, -60, 380, 1.25], [56.5, 430, 380, 1.25], [58.4, 860, 380, 1.32], [60.2, 880, 380, 1.35]] },
   { t0: 60.2, t1: 71.0, el: <S10 />, cam: [[60.2, 0, 0, 1.0], [68.6, 0, 120, 1.08], [71.0, 0, 260, 1.25]] },
   { t0: 71.0, t1: 85.6, el: <S11 />, cam: [[71.0, 0, 0, 1.0], [76.0, 0, 0, 1.03], [77.2, -230, -120, 1.3], [79.6, -230, -120, 1.32], [81.0, 220, 0, 1.3], [84.4, 220, -40, 1.36], [85.6, 0, -200, 1.15]] },
   { t0: 85.6, t1: 91.9, el: <S12 />, cam: [[85.6, 0, 0, 1.1], [89.15, 0, 0, 1.0], [89.2, 0, 0, 1.0], [91.9, 0, -30, 1.06]] },
