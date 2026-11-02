@@ -22,7 +22,7 @@ const w = sherpa.readWave(wav); const SR = w.sampleRate, S = w.samples;
 const win = Math.round(SR * 0.02), quiet = [];
 for (let i = 0; i + win < S.length; i += win) { let e = 0; for (let k = 0; k < win; k++) e += S[i + k] * S[i + k]; quiet.push(Math.sqrt(e / win) < 0.008); }
 const cuts = [0]; let run = 0;
-for (let j = 0; j < quiet.length; j++) { run = quiet[j] ? run + 1 : 0; const t = j * 0.02; if (run === 12 && t - cuts[cuts.length - 1] > 6) cuts.push(t - 0.12); else if (t - cuts[cuts.length - 1] > 20 && run > 3) cuts.push(t); }
+for (let j = 0; j < quiet.length; j++) { run = quiet[j] ? run + 1 : 0; const t = j * 0.02; if (run === 12 && t - cuts[cuts.length - 1] > 6) cuts.push(t - 0.12); else if ((t - cuts[cuts.length - 1] > 12 && run > 2) || t - cuts[cuts.length - 1] > 15) cuts.push(t); }
 cuts.push(S.length / SR);
 const words = [];
 for (let c = 0; c + 1 < cuts.length; c++) {
