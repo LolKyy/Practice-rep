@@ -10,11 +10,12 @@ const OUT = path.join(path.dirname(new URL(import.meta.url).pathname), "..", "st
 fs.mkdirSync(OUT, { recursive: true });
 
 const W = 1080, H = 1920;
-const O = "#231C35", RED = "#FF3B3B", YEL = "#FFE14D", SKIN = "#FFD9B8", SHIRT = "#FF5A3C", HAIR = "#5A3A2A";
-const SW = 6;
+let O = "#231C35", RED = "#FF3B3B", YEL = "#FFE14D", SKIN = "#FFD9B8", SHIRT = "#FF5A3C", HAIR = "#5A3A2A";
+let SW = 6;
+let SUB = { font: "Oswald", weight: 700, size: 118, box: false };
 
 // ---------- фон ----------
-function bg(color, light) {
+function bgRays(color, light) {
   const cx = 540, cy = 860, R = 2400, n = 28;
   let rays = "";
   for (let i = 0; i < n; i += 2) {
@@ -26,10 +27,13 @@ function bg(color, light) {
   <rect y="1160" width="${W}" height="${H - 1160}" fill="${O}" opacity=".10"/>
   <line x1="0" y1="1160" x2="${W}" y2="1160" stroke="${O}" stroke-width="${SW}" opacity=".35"/>`;
 }
-const defs = `<defs>
+let bg = bgRays;
+const defs = () => `<defs>
   <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="6" fill="${O}"/></pattern>
   <radialGradient id="vg" cx="50%" cy="45%" r="75%"><stop offset="55%" stop-color="black"/><stop offset="100%" stop-color="white"/></radialGradient>
   <mask id="vig"><rect width="${W}" height="${H}" fill="url(#vg)"/></mask>
+  <filter id="wob"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter>
+  <pattern id="ht" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="11" cy="11" r="7" fill="#FF4FA3"/></pattern>
   <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
 </defs>`;
 
@@ -207,11 +211,17 @@ function achievement(text) {
     <text x="-310" y="34" font-family="Rubik" font-weight="900" font-size="44" fill="${O}">${text}</text></g>`;
 }
 // субтитры: lines = [[{t, red?, dim?}]]
-function subs(lines, size = 118) {
+function subs(lines, size = SUB.size) {
   const y0 = 1340 - ((lines.length - 1) * size) / 2;
-  return lines.map((ws, i) => `<text x="520" y="${y0 + i * size * 1.02}" text-anchor="middle" font-family="Oswald" font-weight="700" font-size="${size}"
-      stroke="${O}" stroke-width="18" stroke-linejoin="round" paint-order="stroke" letter-spacing="1">${ws.map((w) =>
-      `<tspan fill="${w.red ? RED : "#fff"}" fill-opacity="${w.dim ? 0.5 : 1}">${w.t}</tspan>`).join(" ")}</text>`).join("");
+  return lines.map((ws, i) => {
+    const y = y0 + i * size * 1.05;
+    const txt = ws.map((w) => w.t).join(" ");
+    const box = SUB.box ? `<rect x="${520 - txt.length * size * 0.37 - 30}" y="${y - size * 0.86}" width="${txt.length * size * 0.74 + 60}" height="${size * 1.08}" fill="${YEL}" stroke="${O}" stroke-width="${SW}" transform="rotate(${i % 2 ? 1.5 : -1.5} 520 ${y})"/>` : "";
+    const fillW = SUB.box ? O : "#fff";
+    return box + `<text x="520" y="${y}" text-anchor="middle" font-family="${SUB.font}" font-weight="${SUB.weight}" font-size="${size}"
+      ${SUB.box ? "" : `stroke="${O}" stroke-width="18" stroke-linejoin="round" paint-order="stroke"`} letter-spacing="1">${ws.map((w) =>
+      `<tspan fill="${w.red ? RED : fillW}" fill-opacity="${w.dim ? 0.5 : 1}">${w.t}</tspan>`).join(" ")}</text>`;
+  }).join("");
 }
 function sticker(x, y, rot, text, size = 54) {
   const w = text.length * size * 0.42 + 50;
@@ -274,25 +284,80 @@ function safeOverlay() {
   </g>`;
 }
 
-const frames = {
-  "01_hook_day00": frameHook(),
-  "02_lasers_day15": frameLasers(),
-  "03_twist_flour": frameTwist(),
-  "04_hook_safezones": frameHook() + safeOverlay(),
-};
+// ---------- альтернативные стили ----------
+function bgComic(color) {
+  let lines = "";
+  for (let i = 0; i < 90; i++) {
+    const a = (i / 90) * Math.PI * 2, r1 = 420 + (i * 37 % 120);
+    lines += `<line x1="${540 + r1 * Math.cos(a)}" y1="${860 + r1 * Math.sin(a)}" x2="${540 + 1800 * Math.cos(a)}" y2="${860 + 1800 * Math.sin(a)}" stroke="#111" stroke-width="${2 + (i % 3)}" opacity=".35"/>`;
+  }
+  return `<rect width="${W}" height="${H}" fill="#FFF1D0"/>
+    <rect width="${W}" height="${H}" fill="url(#ht)" opacity=".35" mask="url(#vig)"/>${lines}
+    <rect y="1160" width="${W}" height="${H - 1160}" fill="${color}" opacity=".25"/>
+    <line x1="0" y1="1160" x2="${W}" y2="1160" stroke="#111" stroke-width="8"/>`;
+}
+const comicFrame = `<rect x="18" y="18" width="${W - 36}" height="${H - 36}" fill="none" stroke="#111" stroke-width="14"/>`;
+function bgMarker() {
+  let g = "";
+  for (let x = 0; x <= W; x += 45) g += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#8DB6E8" stroke-width="2" opacity=".55"/>`;
+  for (let y = 0; y <= H; y += 45) g += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#8DB6E8" stroke-width="2" opacity=".55"/>`;
+  return `<rect width="${W}" height="${H}" fill="#FBF8EF"/>${g}<line x1="96" y1="0" x2="96" y2="${H}" stroke="#F07A7A" stroke-width="4"/>
+    <path d="M60 1165 Q300 1150 540 1162 T1040 1158" stroke="#2B2B2B" stroke-width="5" fill="none"/>`;
+}
+function bgRoom(kind) {
+  const wall = kind === "lasers" ? "#E7DBFF" : "#FFE6D6";
+  let stripes = "";
+  for (let x = 0; x < W; x += 70) stripes += `<rect x="${x}" y="0" width="30" height="1160" fill="#fff" opacity=".28"/>`;
+  return `<rect width="${W}" height="${H}" fill="${wall}"/>${stripes}
+    <rect x="600" y="560" width="300" height="330" rx="10" fill="#9FD8F5"/><circle cx="820" cy="640" r="40" fill="#FFF3A6"/>
+    <rect x="600" y="560" width="300" height="330" rx="10" fill="none" stroke="#fff" stroke-width="18"/><line x1="750" y1="560" x2="750" y2="890" stroke="#fff" stroke-width="14"/>
+    <rect x="580" y="885" width="340" height="24" rx="8" fill="#D9C2B0"/>
+    <rect x="60" y="760" width="170" height="120" rx="12" fill="#F7C9A8"/><rect x="80" y="700" width="40" height="60" rx="6" fill="#7BC59A"/>
+    <rect y="1160" width="${W}" height="${H - 1160}" fill="#E8B88E"/>
+    ${Array.from({ length: 8 }, (_, i) => `<line x1="0" y1="${1230 + i * 90}" x2="${W}" y2="${1230 + i * 90}" stroke="#D5A276" stroke-width="4"/>`).join("")}
+    <rect y="1150" width="${W}" height="18" fill="#D5A276"/>`;
+}
 
-const fontsCss = "https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Rubik:wght@800;900&family=Caveat:wght@700&display=block";
+const themes = {
+  A_juicy: { set() {}, wrap: (b) => b },
+  B_comic: {
+    set() { O = "#111"; SW = 9; SKIN = "#FFD2B0"; SHIRT = "#FF2E63"; YEL = "#FFE500"; RED = "#E8112D"; SUB = { font: "Rubik", weight: 900, size: 100, box: true };
+      bg = (c) => bgComic(c); },
+    wrap: (b) => b + comicFrame,
+  },
+  C_marker: {
+    set() { O = "#2B2B2B"; SW = 5; SKIN = "#FFE7D4"; SHIRT = "#FF8C72"; YEL = "#FFE98A"; RED = "#E8433A"; HAIR = "#6B4A38"; SUB = { font: "Caveat", weight: 700, size: 150, box: false };
+      bg = () => bgMarker(); },
+    wrap: (b) => `<g filter="url(#wob)">${b}</g>`,
+  },
+  D_cozy: {
+    set() { O = "#6A4A5E"; SW = 3; SKIN = "#FFD3B5"; SHIRT = "#F2665A"; YEL = "#FFD45C"; RED = "#FF4A4A"; HAIR = "#4E3427"; SUB = { font: "Montserrat", weight: 800, size: 96, box: false };
+      bg = (c) => bgRoom(c === "#A98BFF" ? "lasers" : "hook"); },
+    wrap: (b) => b,
+  },
+};
+const base = { O, RED, YEL, SKIN, SHIRT, HAIR, SW, SUB };
+
+const fontsCss = "https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Rubik:wght@800;900&family=Caveat:wght@700&family=Montserrat:wght@800&display=block";
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
-for (const [name, body] of Object.entries(frames)) {
-  await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${fontsCss}">
-    <style>html,body{margin:0;background:#000}svg{display:block}</style></head>
-    <body><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${defs}${body}</svg></body></html>`, { waitUntil: "networkidle" });
-  await page.evaluate(async () => {
-    await Promise.all(["700 40px Oswald", "900 40px Rubik", "800 40px Rubik", "700 40px Caveat"].map((f) => document.fonts.load(f, "АБВ")));
-    await document.fonts.ready;
-  });
-  await page.screenshot({ path: path.join(OUT, `${name}.png`) });
-  console.log("saved", name);
+const only = process.argv[2];
+for (const [tname, th] of Object.entries(themes)) {
+  if (only && !tname.startsWith(only)) continue;
+  ({ O, RED, YEL, SKIN, SHIRT, HAIR, SW, SUB } = base); bg = bgRays; th.set();
+  const frames = tname === "A_juicy"
+    ? { "01_hook_day00": frameHook(), "02_lasers_day15": frameLasers(), "03_twist_flour": frameTwist(), "04_hook_safezones": frameHook() + safeOverlay() }
+    : { [`${tname}_hook`]: th.wrap(frameHook()), [`${tname}_lasers`]: th.wrap(frameLasers()) };
+  for (const [name, body] of Object.entries(frames)) {
+    await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${fontsCss}">
+      <style>html,body{margin:0;background:#000}svg{display:block}</style></head>
+      <body><svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${defs()}${body}</svg></body></html>`, { waitUntil: "networkidle" });
+    await page.evaluate(async () => {
+      await Promise.all(["700 40px Oswald", "900 40px Rubik", "800 40px Rubik", "700 40px Caveat", "800 40px Montserrat"].map((f) => document.fonts.load(f, "АБВ")));
+      await document.fonts.ready;
+    });
+    await page.screenshot({ path: path.join(OUT, `${name}.png`) });
+    console.log("saved", name);
+  }
 }
 await browser.close();
