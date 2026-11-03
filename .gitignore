@@ -360,4 +360,5 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsdprotein30/audio_test/
+FodyWeavers.xsd
+protein30/audio_test/
