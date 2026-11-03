@@ -2,8 +2,8 @@
 # Сведение: голос главный (-16 LUFS), эффекты на ~14 дБ тише, итог -14 LUFS / TP -1.5. Склейка с видео.
 #   tools/mix.sh <video_raw.mp4> <out.mp4> [voice.mp3]
 set -euo pipefail
+VID="$(realpath "$1")"; OUTF="$(realpath -m "$2")"; VOICE="$(realpath "${3:-$(dirname "$0")/../audio/voice_x1.15.mp3}")"
 cd "$(dirname "$0")/.."
-VID="$(realpath "$1")"; OUTF="$(realpath -m "$2")"; VOICE="${3:-audio/voice_x1.15.mp3}"
 ffmpeg -v error -y -i "$VOICE" -af "loudnorm=I=-16:TP=-2:LRA=9" -ar 44100 -ac 2 out/voice_n.wav
 ffmpeg -v error -y -i out/sfx.wav -af "loudnorm=I=-30:TP=-9:LRA=20" -ar 44100 -ac 2 out/sfx_n.wav
 ffmpeg -v error -y -i out/voice_n.wav -i out/sfx_n.wav -filter_complex "[0][1]amix=inputs=2:duration=longest:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9" -ar 44100 out/mix.wav
