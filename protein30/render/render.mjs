@@ -36,7 +36,16 @@ const TOTAL = await page.evaluate(() => window.TOTAL);
 fs.writeFileSync(path.join(OUT, "sfx.json"), JSON.stringify(await page.evaluate(() => window.SFX), null, 1));
 fs.writeFileSync(path.join(OUT, "shots.json"), JSON.stringify(await page.evaluate(() => window.START)));
 
-if (mode === "stills") {
+if (mode === "cover") {
+  await page.addScriptTag({ content: fs.readFileSync(path.join(ROOT, "render/cover.js"), "utf8") });
+  for (const [safe, name] of [[false, "cover.png"], [true, "cover_safezones.png"]]) {
+    await page.evaluate((s) => window.renderCover(s), safe);
+    await page.screenshot({ path: path.join(OUT, name) });
+    console.log("cover", name);
+  }
+  const jpg = path.join(OUT, "cover.jpg");
+  await new Promise((r) => spawn("ffmpeg", ["-v", "error", "-y", "-i", path.join(OUT, "cover.png"), "-q:v", "2", jpg]).on("close", r));
+} else if (mode === "stills") {
   const times = (args[1] || "1").split(",").map(Number);
   for (const t of times) {
     await page.evaluate((t) => window.renderFrame(t), t);
