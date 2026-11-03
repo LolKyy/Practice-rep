@@ -364,3 +364,4 @@ FodyWeavers.xsd
 protein30/audio_test/
 protein30/audio/*.wav
 protein30/audio/*.mp3
+protein30/out/
