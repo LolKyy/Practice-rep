@@ -189,7 +189,7 @@ function jar(x, y, w, h) {
 
 // ---------- HUD ----------
 function dayCard(num, extra = "") {
-  return `<g transform="translate(540,335) rotate(-2)">
+  return `<!--HUD--><g transform="translate(540,335) rotate(-2)">
     <rect x="-260" y="-72" width="520" height="144" rx="20" fill="#fff" stroke="${O}" stroke-width="${SW + 2}"/>
     <text x="10" y="34" text-anchor="end" font-family="Rubik" font-weight="900" font-size="78" fill="${O}">ДЕНЬ</text>
     <text x="40" y="40" text-anchor="start" font-family="Rubik" font-weight="900" font-size="104" fill="${RED}">${num}</text>
@@ -318,6 +318,12 @@ function bgRoom(kind) {
     <rect y="1150" width="${W}" height="18" fill="#D5A276"/>`;
 }
 
+function bgMix(color) {
+  // тетрадь + пятно «маркером» цвета дня за героем
+  const blob = `<path d="M170 620 C260 470 560 500 760 540 C960 580 1010 760 960 930 C910 1100 700 1150 480 1140 C250 1130 90 1060 100 880 C110 760 120 700 170 620 Z" fill="${color}" opacity=".7"/>
+    <path d="M150 700 C300 560 700 560 900 640" stroke="${color}" stroke-width="40" stroke-linecap="round" opacity=".45" fill="none"/>`;
+  return bgMarker() + blob;
+}
 const themes = {
   A_juicy: { set() {}, wrap: (b) => b },
   B_comic: {
@@ -329,6 +335,11 @@ const themes = {
     set() { O = "#2B2B2B"; SW = 5; SKIN = "#FFE7D4"; SHIRT = "#FF8C72"; YEL = "#FFE98A"; RED = "#E8433A"; HAIR = "#6B4A38"; SUB = { font: "Caveat", weight: 700, size: 150, box: false };
       bg = () => bgMarker(); },
     wrap: (b) => `<g filter="url(#wob)">${b}</g>`,
+  },
+  E_mix: {
+    set() { bg = (c) => bgMix(c); },
+    wrap: (b) => { const i = b.indexOf("<!--HUD-->"); return `<g filter="url(#wob)">${b.slice(0, i)}</g>${b.slice(i)}`; },
+    all: true,
   },
   D_cozy: {
     set() { O = "#6A4A5E"; SW = 3; SKIN = "#FFD3B5"; SHIRT = "#F2665A"; YEL = "#FFD45C"; RED = "#FF4A4A"; HAIR = "#4E3427"; SUB = { font: "Montserrat", weight: 800, size: 96, box: false };
@@ -347,7 +358,7 @@ for (const [tname, th] of Object.entries(themes)) {
   ({ O, RED, YEL, SKIN, SHIRT, HAIR, SW, SUB } = base); bg = bgRays; th.set();
   const frames = tname === "A_juicy"
     ? { "01_hook_day00": frameHook(), "02_lasers_day15": frameLasers(), "03_twist_flour": frameTwist(), "04_hook_safezones": frameHook() + safeOverlay() }
-    : { [`${tname}_hook`]: th.wrap(frameHook()), [`${tname}_lasers`]: th.wrap(frameLasers()) };
+    : { [`${tname}_hook`]: th.wrap(frameHook()), [`${tname}_lasers`]: th.wrap(frameLasers()), ...(th.all ? { [`${tname}_twist`]: th.wrap(frameTwist()) } : {}) };
   for (const [name, body] of Object.entries(frames)) {
     await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${fontsCss}">
       <style>html,body{margin:0;background:#000}svg{display:block}</style></head>
