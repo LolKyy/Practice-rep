@@ -116,16 +116,17 @@ function hero({ x, y, s = 1, build = "skinny", pose = "idle", halo = false, ribs
     const lw = Math.sin(walk * 9) * 14;
     g += noodle(`M-38 -180 L${-44 + lw} -45`) + noodle(`M38 -180 L${44 - lw} -45`) + G(`translate(${lw},0)`, sneaker(-50)) + G(`translate(${-lw},0)`, sneaker(50));
     // левая рука
-    if (pose === "wave" || pose === "flex") g += noodle("M-160 -318 C-210 -360 -220 -420 -205 -470") + hand(-205, -476);
+    // правая рука героя — слева на экране (он стоит к нам лицом)
+    if (build === "armR") g += `<ellipse cx="-235" cy="-330" rx="100" ry="80" transform="rotate(25 -235 -330)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
+        <ellipse cx="-315" cy="-215" rx="78" ry="105" transform="rotate(-18 -315 -215)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
+        ${C(-330, -105, 66, SKIN)}<path d="M-300 -130 q-30 18 -60 0" stroke="${O}" stroke-width="5" fill="none"/>
+        <path d="M-200 -360 q-20 -30 -50 -18" stroke="${O}" stroke-width="5" fill="none" opacity=".5"/>`;
+    else if (pose === "wave" || pose === "flex") g += noodle("M-160 -318 C-210 -360 -220 -420 -205 -470") + hand(-205, -476);
     else if (pose === "think") g += noodle("M-160 -318 C-150 -380 -110 -420 -80 -470") + hand(-78, -476);
     else g += noodle("M-160 -318 C-180 -280 -178 -255 -165 -225") + hand(-165, -222);
     // правая рука
-    if (build === "armR") {
-      g += `<ellipse cx="235" cy="-330" rx="100" ry="80" transform="rotate(-25 235 -330)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
-        <ellipse cx="315" cy="-215" rx="78" ry="105" transform="rotate(18 315 -215)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
-        ${C(330, -105, 66, SKIN)}<path d="M300 -130 q30 18 60 0" stroke="${O}" stroke-width="5" fill="none"/>
-        <path d="M200 -360 q20 -30 50 -18" stroke="${O}" stroke-width="5" fill="none" opacity=".5"/>`;
-    } else if (pose === "reach") g += noodle("M160 -318 C200 -300 225 -300 255 -310") + hand(262, -312);
+    if (build === "armR") g += noodle("M160 -318 C180 -280 178 -255 165 -225") + hand(165, -222);
+    else if (pose === "reach") g += noodle("M160 -318 C200 -300 225 -300 255 -310") + hand(262, -312);
     else if (pose === "shaker") g += noodle("M160 -318 C200 -330 205 -380 190 -420") +
       `<g transform="translate(190,-470) rotate(12)"><rect x="-38" y="-80" width="76" height="130" rx="14" fill="#E8F7FF" fill-opacity=".9" stroke="${O}" stroke-width="${SW}"/>
        <rect x="-38" y="-10" width="76" height="60" rx="10" fill="#C99A6B"/><rect x="-44" y="-100" width="88" height="28" rx="8" fill="${RED}" stroke="${O}" stroke-width="${SW}"/></g>` + hand(190, -425);

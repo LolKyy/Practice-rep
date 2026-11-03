@@ -213,18 +213,18 @@ SHOTS[5] = (t) => {
   const tPr = wt(5, "правой", 1), tL = wt(5, "левой");
   let s = "";
   if (t < tL) {
-    s += hero({ x: 330, y: 1150, s: 0.78, build: "armR", brows: "proud", mouth: "grin", cowlick: "up" }).svg;
+    s += hero({ x: 400, y: 1150, s: 0.78, build: "armR", brows: "proud", mouth: "grin", cowlick: "up" }).svg;
     const ppl = [["#5B8DEF", "none", "#3B2A20"], ["#3FB27F", "cap", "#000"], ["#E8607A", "scarf", "#000"]];
     ppl.forEach(([b, hat, hair], i) => { s += person({ x: 700 + i * 130, y: 1150 - i * 10, s: 0.8 - i * 0.06, body: b, hat, hair, holding: "jar", faceType: "happy" }); });
     for (let i = 0; i < 3; i++) s += sfxPop(t, tPr + 0.35 + i * 0.45, 640 + i * 90, 700 - i * 40, -8 + i * 8, "ЧПОК", 70, "#fff", 0.6);
   } else {
     const j = Math.sin(t * 60) * 6;
-    s += `<g transform="translate(${540 + j},860) rotate(${-8 + j})">
+    s += `<g transform="translate(${540 + j},940) rotate(${-8 + j})">
       <path d="M-90 -260 L-70 -330 L70 -330 L90 -260 L110 220 Q0 260 -110 220 Z" fill="${RED}" stroke="${O}" stroke-width="${SW}" stroke-linejoin="round"/>
       ${R(-50, -400, 100, 80, "#fff", 14)}${R(-80, -60, 160, 120, "#fff", 10)}${T(0, 15, "КЕТЧУП", 36)}</g>`;
-    s += noodle(`M-40 1020 C140 1000 330 980 ${455 + j} 920`, 22) + C(470 + j, 915, 34, SKIN);
-    s += sfxPop(t, tL + 0.6, 790, 640, 10, "ЫЫЫ!", 90, "#fff", 1.6);
-    s += `<path d="M700 760 q-14 26 0 36 q14 -10 0 -36 Z" fill="#9FE3FF" stroke="${O}" stroke-width="4"/>`;
+    s += noodle(`M1120 1090 C940 1070 750 1050 ${625 + j} 990`, 22) + C(610 + j, 985, 34, SKIN);
+    s += sfxPop(t, tL + 0.6, 300, 640, -10, "ЫЫЫ!", 90, "#fff", 1.6);
+    s += `<path d="M380 760 q-14 26 0 36 q14 -10 0 -36 Z" fill="#9FE3FF" stroke="${O}" stroke-width="4"/>`;
   }
   return s;
 };
