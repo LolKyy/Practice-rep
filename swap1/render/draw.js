@@ -206,6 +206,9 @@ function mom({ x, y, s = 1, pose = "jar", scared = false, jarSticker = 1 }) {
       ${at(10, -2, jarSticker, `<g transform="translate(10,-2) rotate(-8)"><rect x="-75" y="-34" width="150" height="66" fill="#FFF6D8" stroke="${O}" stroke-width="4"/>
         <rect x="-30" y="-46" width="60" height="22" fill="#fff" opacity=".7" transform="rotate(6)"/>${T(0, 18, "МУКА", 54, RED, "Caveat", 700)}</g>`)}
     </g>${C(-95, -290, 22, SKIN)}${C(95, -290, 22, SKIN)}`;
+  } else if (pose === "salute") {
+    arms = noodle("M-115 -405 C-150 -350 -140 -300 -110 -270") + noodle("M115 -405 C175 -470 150 -570 95 -615") +
+      `${C(-110, -266, 22, SKIN)}<g transform="translate(88,-622) rotate(-35)"><rect x="-34" y="-12" width="68" height="24" rx="12" fill="${SKIN}" stroke="${O}" stroke-width="5"/></g>`;
   } else { // половник
     arms = noodle("M-115 -405 C-150 -350 -140 -300 -100 -290") + noodle("M115 -405 C170 -420 190 -470 175 -520") +
       `<path d="M175 -520 L175 -700" stroke="#9AA3B5" stroke-width="16" stroke-linecap="round"/><path d="M175 -520 L175 -700" stroke="${O}" stroke-width="4" stroke-linecap="round" opacity=".5"/>
