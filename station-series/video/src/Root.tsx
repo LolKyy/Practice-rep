@@ -6,6 +6,7 @@ import { Showcase, SHOWCASE_DEFAULTS, calculateShowcaseMetadata } from "./episod
 import { EndCard } from "./components/EndCard";
 import { EvidenceCard } from "./components/EvidenceCard";
 import { StyleA, StyleB, StyleC } from "./styles/StyleSamples";
+import { StyleD, StyleE, StyleF } from "./styles/DarkStyles";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
 const EndCardNextPreview: React.FC = () => (
@@ -44,6 +45,9 @@ export const RemotionRoot: React.FC = () => {
         <Composition id="Style-A-Soft" component={StyleA} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Style-B-Noir" component={StyleB} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Style-C-Retro" component={StyleC} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Style-D-Industrial" component={StyleD} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Style-E-Cryo" component={StyleE} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Style-F-Prison" component={StyleF} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
       </Folder>
     </>
   );
