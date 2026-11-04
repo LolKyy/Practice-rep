@@ -7,6 +7,7 @@ import { EndCard } from "./components/EndCard";
 import { EvidenceCard } from "./components/EvidenceCard";
 import { StyleA, StyleB, StyleC } from "./styles/StyleSamples";
 import { StyleD, StyleE, StyleF } from "./styles/DarkStyles";
+import { HaronInk, HaronCine, HaronSil } from "./styles/HaronStyles";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
 const EndCardNextPreview: React.FC = () => (
@@ -47,6 +48,9 @@ export const RemotionRoot: React.FC = () => {
         <Composition id="Style-C-Retro" component={StyleC} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Style-D-Industrial" component={StyleD} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Style-E-Cryo" component={StyleE} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Haron-1-Ink" component={HaronInk} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Haron-2-Cine" component={HaronCine} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Haron-3-Silhouette" component={HaronSil} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Style-F-Prison" component={StyleF} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
       </Folder>
     </>
