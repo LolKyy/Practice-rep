@@ -22,3 +22,4 @@ assets/fonts/src/
 # временное
 tools/.bench/
 *.log
+episodes/*/casting/
