@@ -2,7 +2,7 @@
 """Обработка голосов (ffmpeg).
 
   .venv/bin/python tools/voicefx.py radio  in.mp3 out.mp3   # Хорунжий: наушник/рация, щелчки в начале и конце
-  .venv/bin/python tools/voicefx.py earth  in.mp3 out.mp3   # Председатель: запись с Земли, помехи и провалы сигнала
+  .venv/bin/python tools/voicefx.py earth  in.mp3 out.mp3 [--gaps 1.2,3.4]  # Председатель: запись с Земли, помехи, провалы (в точках --gaps)
   .venv/bin/python tools/voicefx.py system in.mp3 out.mp3   # Система станции: механический, чуть «металла»
   .venv/bin/python tools/voicefx.py clean  in.mp3 out.mp3   # без эффекта, только нормализация формата
 
@@ -27,9 +27,15 @@ def run(args):
 
 
 def main():
-    if len(sys.argv) != 4:
+    argv = sys.argv[1:]
+    gaps_arg = None
+    if "--gaps" in argv:
+        i = argv.index("--gaps")
+        gaps_arg = [float(x) for x in argv[i + 1].split(",") if x]
+        argv = argv[:i] + argv[i + 2 :]
+    if len(argv) != 3:
         sys.exit(__doc__)
-    preset, src, dst = sys.argv[1:]
+    preset, src, dst = argv
     d = dur(src)
     tail = ["-ac", "2", "-ar", "44100", "-b:a", "192k", dst]
     if preset == "clean":
@@ -48,8 +54,11 @@ def main():
     elif preset == "earth":
         # 2–3 коротких провала сигнала в случайных местах (детерминированно от длины)
         rnd = random.Random(int(d * 1000))
-        gaps = sorted(rnd.uniform(0.6, max(0.7, d - 0.4)) for _ in range(3 if d > 3 else 2))
-        enable = "+".join(f"between(t,{g:.2f},{g + rnd.uniform(0.05, 0.11):.2f})" for g in gaps)
+        if gaps_arg is not None:  # центры пауз между словами → короткий провал вокруг них
+            gaps = [g - 0.04 for g in gaps_arg]
+        else:
+            gaps = sorted(rnd.uniform(0.6, max(0.7, d - 0.4)) for _ in range(3 if d > 3 else 2))
+        enable = "+".join(f"between(t,{g:.2f},{g + rnd.uniform(0.07, 0.1):.2f})" for g in gaps) or "0"
         fc = (
             "[0:a]aresample=44100,highpass=f=280,lowpass=f=3600,"
             "acrusher=bits=10:mix=0.3:samples=2:mode=log,tremolo=f=7:d=0.12,"

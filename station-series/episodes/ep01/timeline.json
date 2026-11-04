@@ -1,0 +1,311 @@
+{
+ "duration": 138.289,
+ "scenes": [
+  {
+   "id": "hook",
+   "start": 0.0,
+   "end": 6.307
+  },
+  {
+   "id": "who",
+   "start": 6.307,
+   "end": 14.49
+  },
+  {
+   "id": "styx",
+   "start": 14.49,
+   "end": 20.588
+  },
+  {
+   "id": "haron",
+   "start": 20.588,
+   "end": 34.113
+  },
+  {
+   "id": "neograd",
+   "start": 34.113,
+   "end": 46.255
+  },
+  {
+   "id": "fall",
+   "start": 46.255,
+   "end": 56.584
+  },
+  {
+   "id": "hold",
+   "start": 56.584,
+   "end": 75.327
+  },
+  {
+   "id": "approach",
+   "start": 75.327,
+   "end": 89.122
+  },
+  {
+   "id": "dock",
+   "start": 89.122,
+   "end": 97.076
+  },
+  {
+   "id": "statue",
+   "start": 97.076,
+   "end": 105.068
+  },
+  {
+   "id": "scanner",
+   "start": 105.068,
+   "end": 120.717
+  },
+  {
+   "id": "empty",
+   "start": 120.717,
+   "end": 125.251
+  },
+  {
+   "id": "cliff",
+   "start": 125.251,
+   "end": 129.069
+  },
+  {
+   "id": "question",
+   "start": 129.069,
+   "end": 138.289
+  }
+ ],
+ "lines": [
+  {
+   "id": "01",
+   "scene": "hook",
+   "role": "narr",
+   "start": 0.56,
+   "end": 6.307,
+   "file": "episodes/ep01/voice/fx/01_narr.mp3",
+   "text": "Ты сидишь в ящике с тушёнкой. А на тебя смотрят пушки самой надёжной тюрьмы Солнечной системы."
+  },
+  {
+   "id": "02",
+   "scene": "who",
+   "role": "narr",
+   "start": 6.627,
+   "end": 14.49,
+   "file": "episodes/ep01/voice/fx/02_narr.mp3",
+   "text": "Ты — Глеб Северин. Бывший агент. Осуждён за госизмену. Тридцать лет криосна. Ночь ареста ты не помнишь."
+  },
+  {
+   "id": "03",
+   "scene": "styx",
+   "role": "khor",
+   "start": 15.93,
+   "end": 17.236,
+   "file": "episodes/ep01/voice/fx/03_khor.mp3",
+   "text": "Северин, подъём."
+  },
+  {
+   "id": "04",
+   "scene": "styx",
+   "role": "gleb",
+   "start": 17.636,
+   "end": 20.588,
+   "file": "episodes/ep01/voice/fx/04_gleb.mp3",
+   "text": "Полковник Хорунжий… Давно не слышал."
+  },
+  {
+   "id": "05",
+   "scene": "haron",
+   "role": "narr",
+   "start": 21.228,
+   "end": 26.06,
+   "file": "episodes/ep01/voice/fx/05_narr.mp3",
+   "text": "«Харон-семь». Частная тюрьма на орбите Марса. Туда тебя и везли."
+  },
+  {
+   "id": "06",
+   "scene": "haron",
+   "role": "khor",
+   "start": 26.38,
+   "end": 34.113,
+   "file": "episodes/ep01/voice/fx/06_khor.mp3",
+   "text": "Три часа назад заключённые захватили станцию. Последнее сообщение — ультиматум. Потом тишина."
+  },
+  {
+   "id": "07",
+   "scene": "neograd",
+   "role": "narr",
+   "start": 34.753,
+   "end": 38.697,
+   "file": "episodes/ep01/voice/fx/07_narr.mp3",
+   "text": "Связь с Землёй — четырнадцать минут. Приказы приходят записью."
+  },
+  {
+   "id": "08",
+   "scene": "neograd",
+   "role": "pred",
+   "start": 39.097,
+   "end": 46.255,
+   "file": "episodes/ep01/voice/fx/08_pred.mp3",
+   "text": "На станции моя дочь. Она прилетела с комиссией. Верни её живой — и получишь помилование."
+  },
+  {
+   "id": "09",
+   "scene": "fall",
+   "role": "khor",
+   "start": 46.815,
+   "end": 56.584,
+   "file": "episodes/ep01/voice/fx/09_khor.mp3",
+   "text": "И ещё. В перестрелке разбили двигатели и генераторы. Станция падает. Двенадцать часов — и она рухнет на колонию."
+  },
+  {
+   "id": "10",
+   "scene": "hold",
+   "role": "gleb",
+   "start": 57.224,
+   "end": 58.191,
+   "file": "episodes/ep01/voice/fx/10_gleb.mp3",
+   "text": "А спецназ?"
+  },
+  {
+   "id": "11",
+   "scene": "hold",
+   "role": "khor",
+   "start": 58.431,
+   "end": 67.339,
+   "file": "episodes/ep01/voice/fx/11_khor.mp3",
+   "text": "Флот в четырёх месяцах пути. Турели станции сбивают любой корабль. Пропускают только плановый контейнер с пайками."
+  },
+  {
+   "id": "12",
+   "scene": "hold",
+   "role": "gleb",
+   "start": 67.739,
+   "end": 69.306,
+   "file": "episodes/ep01/voice/fx/12_gleb.mp3",
+   "text": "Сюда влезет человек?"
+  },
+  {
+   "id": "13",
+   "scene": "hold",
+   "role": "khor",
+   "start": 69.546,
+   "end": 72.707,
+   "file": "episodes/ep01/voice/fx/13_khor.mp3",
+   "text": "Ровно один. Я проверял."
+  },
+  {
+   "id": "14",
+   "scene": "hold",
+   "role": "narr",
+   "start": 73.107,
+   "end": 75.327,
+   "file": "episodes/ep01/voice/fx/14_narr.mp3",
+   "text": "Ты умеешь воевать. И тебя не жалко."
+  },
+  {
+   "id": "15",
+   "scene": "approach",
+   "role": "sys",
+   "start": 77.247,
+   "end": 82.89,
+   "file": "episodes/ep01/voice/fx/15_sys.mp3",
+   "text": "Скан. Груз — паёк. Четыреста килограмм. Допущен."
+  },
+  {
+   "id": "16",
+   "scene": "approach",
+   "role": "gleb",
+   "start": 83.61,
+   "end": 89.122,
+   "file": "episodes/ep01/voice/fx/16_gleb.mp3",
+   "text": "Тридцать лет сна… или двенадцать часов в банке с тушёнкой. Отличный выбор."
+  },
+  {
+   "id": "17",
+   "scene": "dock",
+   "role": "narr",
+   "start": 90.722,
+   "end": 93.647,
+   "file": "episodes/ep01/voice/fx/17_narr.mp3",
+   "text": "Внутри минус двенадцать. Отопление мертво."
+  },
+  {
+   "id": "18",
+   "scene": "dock",
+   "role": "khor",
+   "start": 93.967,
+   "end": 97.076,
+   "file": "episodes/ep01/voice/fx/18_khor.mp3",
+   "text": "Я вижу тебя по камерам. Иди прямо."
+  },
+  {
+   "id": "19",
+   "scene": "statue",
+   "role": "narr",
+   "start": 97.796,
+   "end": 102.785,
+   "file": "episodes/ep01/voice/fx/19_narr.mp3",
+   "text": "Посреди коридора — охранник комиссии. Не двигается. Весь в инее."
+  },
+  {
+   "id": "20",
+   "scene": "statue",
+   "role": "gleb",
+   "start": 103.265,
+   "end": 105.068,
+   "file": "episodes/ep01/voice/fx/20_gleb.mp3",
+   "text": "Эй… Ты живой?"
+  },
+  {
+   "id": "21",
+   "scene": "scanner",
+   "role": "khor",
+   "start": 105.868,
+   "end": 110.387,
+   "file": "episodes/ep01/voice/fx/21_khor.mp3",
+   "text": "Не трать время. У охранников на поясе должен быть сканер."
+  },
+  {
+   "id": "22",
+   "scene": "scanner",
+   "role": "gleb",
+   "start": 111.827,
+   "end": 112.846,
+   "file": "episodes/ep01/voice/fx/22_gleb.mp3",
+   "text": "Извини, приятель."
+  },
+  {
+   "id": "23",
+   "scene": "scanner",
+   "role": "khor",
+   "start": 113.246,
+   "end": 120.717,
+   "file": "episodes/ep01/voice/fx/23_khor.mp3",
+   "text": "Термосканер. Видит тепло сквозь стены. Оранжевое — живые. Ищи заложницу."
+  },
+  {
+   "id": "24",
+   "scene": "empty",
+   "role": "gleb",
+   "start": 121.437,
+   "end": 125.251,
+   "file": "episodes/ep01/voice/fx/24_gleb.mp3",
+   "text": "Двенадцать часов. И ни одного живого. Отлично."
+  },
+  {
+   "id": "25",
+   "scene": "cliff",
+   "role": "gleb",
+   "start": 126.771,
+   "end": 129.069,
+   "file": "episodes/ep01/voice/fx/25_gleb.mp3",
+   "text": "Голубое — это что?"
+  },
+  {
+   "id": "26",
+   "scene": "question",
+   "role": "narr",
+   "start": 130.669,
+   "end": 135.789,
+   "file": "episodes/ep01/voice/fx/26_narr.mp3",
+   "text": "Тридцать лет криосна или двенадцать часов на падающей станции. Что выбрал бы ты?"
+  }
+ ]
+}
