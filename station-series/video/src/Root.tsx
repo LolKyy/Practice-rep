@@ -8,6 +8,8 @@ import { EvidenceCard } from "./components/EvidenceCard";
 import { StyleA, StyleB, StyleC } from "./styles/StyleSamples";
 import { StyleD, StyleE, StyleF } from "./styles/DarkStyles";
 import { HaronInk, HaronCine, HaronSil } from "./styles/HaronStyles";
+import { RigTest } from "./rig/RigTest";
+import { HaronFrame1, HaronFrame2, HaronFrame3 } from "./styles/HaronFrames";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
 const EndCardNextPreview: React.FC = () => (
@@ -41,6 +43,14 @@ export const RemotionRoot: React.FC = () => {
       <Folder name="Previews">
         <Composition id="Preview-EndCardNext" component={EndCardNextPreview} durationInFrames={60} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Preview-Evidence" component={EvidencePreview} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+      </Folder>
+      <Folder name="Haron-Frames">
+        <Composition id="Haron-Frame1-Statue" component={HaronFrame1} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Haron-Frame2-Eva" component={HaronFrame2} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Haron-Frame3-Bridge" component={HaronFrame3} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+      </Folder>
+      <Folder name="Rig">
+        <Composition id="RigTest" component={RigTest} durationInFrames={30} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
       </Folder>
       <Folder name="Styles">
         <Composition id="Style-A-Soft" component={StyleA} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
