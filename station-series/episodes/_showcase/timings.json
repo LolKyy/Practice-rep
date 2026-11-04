@@ -1,0 +1,38 @@
+{
+  "audio": "episodes/_showcase/voice.mp3",
+  "language": "ru",
+  "duration": 2.276,
+  "text": "Проверка связи. Студия на связи.",
+  "words": [
+    {
+      "word": "Проверка",
+      "start": 0.0,
+      "end": 0.48,
+      "prob": 0.922
+    },
+    {
+      "word": "связи.",
+      "start": 0.48,
+      "end": 0.96,
+      "prob": 0.992
+    },
+    {
+      "word": "Студия",
+      "start": 1.08,
+      "end": 1.42,
+      "prob": 0.963
+    },
+    {
+      "word": "на",
+      "start": 1.42,
+      "end": 1.52,
+      "prob": 0.982
+    },
+    {
+      "word": "связи.",
+      "start": 1.52,
+      "end": 1.98,
+      "prob": 0.999
+    }
+  ]
+}

@@ -90,10 +90,24 @@ node tools/check-frames.mjs <video.mp4> [outDir]
 .venv/bin/python tools/eleven.py tts "текст" episodes/epNN/voice.mp3 [--voice <voice_id>]
 .venv/bin/python tools/eleven.py sfx "описание звука" assets/sfx/name.mp3 [--seconds 1.5]
 
-# бенчмарк рендера (перезапустить на новом ПК)
-node tools/bench-render.mjs
+# бенчмарк рендера (перезапустить на новом ПК) → tools/bench-results.md + tools/render.config.json
+node tools/bench-render.mjs --repeat 2
+
+# модель Whisper small (один раз на новом ПК; дальше офлайн)
+.venv/bin/python tools/setup-models.py
+
+# скопировать ассеты в video/public (делается автоматически в dev/render-скриптах)
+node tools/sync-assets.mjs
 ```
 Рендер-настройки (gl, concurrency) читаются из `tools/render.config.json` (выбраны бенчмарком).
+Результаты: `video/out/<Comp>_{draft,final}.mp4` или `episodes/<ep>/renders/…` при `--ep`; кадры check-frames — рядом в `frames/`.
+
+## ElevenLabs
+- MCP-сервер `elevenlabs` прописан в `.mcp.json` (появляется после перезапуска Claude Code в папке station-series/).
+  Озвучка: инструмент `text_to_speech` (model_id `eleven_multilingual_v2`, language `ru`), звуки: `text_to_sound_effects`,
+  музыка: `compose_music`. `output_directory` — внутри `assets/` или `episodes/<ep>/`.
+- Голос по умолчанию для тестов: George `JBFqnCBsd6RMkjVDRZzb` (голоса героев выберем с сюжетом → bible/CHARACTERS.md).
+- После озвучки файл переименовать в `episodes/<ep>/voice.mp3` и сразу прогнать `tools/timings.py`.
 
 ## Пайплайн серии (план)
 script.txt → озвучка (ElevenLabs) voice.mp3 → `tools/timings.py` → timings.json → storyboard.md → композиция `video/src/episodes/EpNN.tsx` → render-draft → check-frames → правки → render-final → check-frames.

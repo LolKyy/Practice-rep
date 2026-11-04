@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "elevenlabs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "elevenlabs-mcp"
+      ],
+      "env": {
+        "ELEVENLABS_API_KEY": "${ELEVENLABS_API_KEY:-proxy-injected}",
+        "ELEVENLABS_MCP_BASE_PATH": "${ELEVENLABS_MCP_BASE_PATH:-/home/user/Practice-rep/station-series/assets}"
+      }
+    }
+  }
+}
