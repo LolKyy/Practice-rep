@@ -116,7 +116,7 @@ function head({ cy, r, cowlick = "up", tears = 0, sweat = false, ...f }) {
 
 // ---------- герой «Ты» ----------
 // build: skinny | armR | giant;  pose: idle | reach | shaker | flex | wave | think | walk
-function hero({ x, y, s = 1, build = "skinny", pose = "idle", halo = false, ribs = false, drip = 0, stone = false, walk = 0, ...f }) {
+function hero({ x, y, s = 1, build = "skinny", pose = "idle", glove = null, halo = false, ribs = false, drip = 0, stone = false, walk = 0, ...f }) {
   const keep = [SKIN, SHIRT, HAIR];
   if (stone) { SKIN = "#C9C4D6"; SHIRT = "#9A93B0"; HAIR = "#6E6880"; }
   let g = "", headCy, r;
@@ -128,7 +128,7 @@ function hero({ x, y, s = 1, build = "skinny", pose = "idle", halo = false, ribs
       // стоит на левой ноге (справа на экране), правая рука растёт из бедра (слева на экране)
       g += noodle(`M38 -180 L44 -45`) + sneaker(50);
       if (pose === "walk") g += noodle(`M-60 -172 C-100 -120 -130 -70 ${-140 + lw} -40`) + handOpen(-142 + lw, -10, 180, 0.9);
-      else g += noodle("M-60 -172 C-120 -150 -170 -140 -200 -170") + handOpen(-212, -176, -70, 0.9);
+      else { g += noodle("M-60 -172 C-120 -150 -170 -140 -200 -170"); const k0 = SKIN; if (glove) SKIN = glove; g += handOpen(-212, -176, -70, 0.9); SKIN = k0; }
     } else
     g += noodle(`M-38 -180 L${-44 + lw} -45`) + noodle(`M38 -180 L${44 - lw} -45`) + G(`translate(${lw},0)`, sneaker(-50)) + G(`translate(${-lw},0)`, sneaker(50));
     // левая рука
@@ -138,6 +138,8 @@ function hero({ x, y, s = 1, build = "skinny", pose = "idle", halo = false, ribs
       if (pose === "pole") g += noodle("M-160 -330 C-230 -430 -170 -520 -185 -650", 36) + sockShoe(-185, -700, 180);
       else if (pose === "kick") g += noodle("M-160 -330 C-250 -300 -300 -380 -400 -385", 36) + sockShoe(-440, -385, 95);
       else if (pose === "type") g += noodle("M-160 -330 C-240 -350 -300 -310 -320 -255", 36) + footAt(-345, -245, -90);
+      else if (pose === "brush") g += noodle("M-160 -330 C-300 -400 -270 -590 -150 -585", 36) + footAt(-120, -560, 95) +
+        `<g transform="translate(-75,-540) rotate(-8)"><rect x="-10" y="-8" width="90" height="16" rx="8" fill="#5BC0EB" stroke="${O}" stroke-width="4"/><rect x="60" y="-20" width="24" height="16" rx="4" fill="#fff" stroke="${O}" stroke-width="4"/></g>`;
       else g += noodle("M-160 -330 C-290 -340 -340 -440 -335 -560", 36) + sockShoe(-335, -600, 178, 1.55);
     } else if (build === "armR") g += `<ellipse cx="-235" cy="-330" rx="100" ry="80" transform="rotate(25 -235 -330)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
         <ellipse cx="-315" cy="-215" rx="78" ry="105" transform="rotate(-18 -315 -215)" fill="${SKIN}" stroke="${O}" stroke-width="${SW}"/>
