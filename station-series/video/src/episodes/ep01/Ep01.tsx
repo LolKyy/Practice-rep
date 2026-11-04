@@ -40,8 +40,8 @@ export const Ep01: React.FC<Ep01Props> = ({ scenes, lines, words, duration }) =>
   const sfx: { at: number; file: string; vol: number }[] = [];
   const add = (at: number, file: string, vol = 0.8) => at >= 0 && sfx.push({ at, file, vol });
   add(0, "boom", 0.9);
-  add(0.3, "turret_scan", 0.55);
-  add(3.0, "turret_scan", 0.4);
+  add(0.3, "turret_scan", 0.18);
+  add(3.0, "turret_scan", 0.13);
   add(ln("02").end - 1.4, "glitch", 0.6);
   add(sc("styx").start, "whoosh", 0.5);
   add(sc("styx").start + 1.0, "cryo_hiss", 0.7);
@@ -50,8 +50,8 @@ export const Ep01: React.FC<Ep01Props> = ({ scenes, lines, words, duration }) =>
   add(ln("09").start + 5.6, "boom", 0.8);
   add(sc("hold").start + 0.3, "lid_open", 0.6);
   add(sc("approach").start, "whoosh", 0.5);
-  add(sc("approach").start + 0.6, "turret_scan", 0.6);
-  add(sc("approach").start + 3.2, "turret_scan", 0.5);
+  add(sc("approach").start + 0.6, "turret_scan", 0.2);
+  add(sc("approach").start + 3.2, "turret_scan", 0.15);
   add(ln("15").end - 1.0, "scanner_ping", 0.6);
   add(sc("dock").start, "dock_clamp", 0.9);
   add(sc("dock").start + 0.5, "lid_open", 0.8);

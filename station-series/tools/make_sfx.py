@@ -148,7 +148,8 @@ def turret_scan(d=2.4):
     servo = np.tanh(servo * 2) * 0.25 + bandpass(noise(d), 800, 2500) * 0.05
     scan = np.sin(2 * np.pi * np.cumsum(900 + 500 * np.abs(np.sin(2 * np.pi * 0.8 * tt))) / SR) * 0.25
     e = np.minimum(1, tt / 0.15) * np.minimum(1, (d - tt) / 0.3)
-    return norm((servo + scan) * e, 0.7)
+    # смягчено: срезаем верха, сканирующий тон тише сервопривода
+    return norm(bandpass((servo + scan * 0.6) * e, 60, 2800), 0.6)
 
 
 def cryo_hiss(d=2.2):
