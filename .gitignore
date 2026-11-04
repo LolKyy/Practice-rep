@@ -366,3 +366,6 @@ protein30/audio/*.wav
 protein30/audio/*.mp3
 protein30/out/
 brief_scenarist/*.zip
+swap1/audio/*.wav
+swap1/audio/*.mp3
+swap1/out/
