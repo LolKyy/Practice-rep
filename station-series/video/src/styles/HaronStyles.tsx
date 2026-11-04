@@ -391,7 +391,7 @@ const HaronScene: React.FC<{ mode: Mode }> = ({ mode }) => {
       >
         ОТСЕК: −12°C
       </div>
-      <Callout targetX={300} targetY={760} title="ГЛЕБ СЕВЕРИН, 38" subtitle="ОСУЖДЁН: ГОСИЗМЕНА" side="right" dx={150} dy={-180} accent={RED} />
+      <Callout targetX={300} targetY={760} title="ГЛЕБ СЕВЕРИН, 35" subtitle="ОСУЖДЁН: ГОСИЗМЕНА" side="right" dx={150} dy={-180} accent={RED} />
       <Subtitles words={WORDS} keywords={["замёрзшую"]} centerY={1440} accent={RED} />
     </AbsoluteFill>
   );
