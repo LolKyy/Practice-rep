@@ -11,7 +11,7 @@ if (!comp) {
 }
 syncAssets();
 const out = flags.out || outPath(comp, "draft", flags.ep);
-const extra = ["--scale=0.6666667", "--codec=h264", "--crf=28", "--jpeg-quality=70", "--pixel-format=yuv420p"];
+const extra = ["--scale=0.6666666666666666" /* ровно 720×1280: 1920·s и 1080·s должны быть целыми */, "--codec=h264", "--crf=28", "--jpeg-quality=70", "--pixel-format=yuv420p"];
 if (flags.frames) extra.push(`--frames=${flags.frames}`);
 const sec = remotionRender(comp, out, extra);
 console.log(`\n[render-draft] готово за ${sec.toFixed(1)} с → ${out}`);

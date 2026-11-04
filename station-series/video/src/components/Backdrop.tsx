@@ -32,6 +32,7 @@ export const Backdrop: React.FC<{ accent?: string }> = ({ accent = COLORS.accent
           <rect key={i} x={i * 300 - 40} y={0} width={36} height={1920} fill={COLORS.bg2} />
         ))}
         <rect x={0} y={560} width={1080} height={18} fill={COLORS.bg2} />
+        {/* аварийное мигание — лёгкий тон акцентом поверх всего фона */}
         {/* иллюминатор */}
         <circle cx={780} cy={860} r={232} fill={COLORS.panelEdge} />
         <g clipPath="url(#porthole)">
@@ -43,8 +44,6 @@ export const Backdrop: React.FC<{ accent?: string }> = ({ accent = COLORS.accent
         {/* пол */}
         <rect x={0} y={1250} width={1080} height={670} fill="#080B10" />
         <rect x={0} y={1250} width={1080} height={8} fill={COLORS.line} />
-        {/* аварийная лампа */}
-        <rect x={70} y={590} width={140} height={26} rx={8} fill={accent} opacity={lamp} />
         <rect x={0} y={0} width={1080} height={1920} fill={accent} opacity={0.04 * lamp} />
       </svg>
     </AbsoluteFill>

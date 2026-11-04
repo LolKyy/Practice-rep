@@ -1,0 +1,6 @@
+{
+  "gl": "angle",
+  "concurrency": 4,
+  "measuredOn": "vm linux 2026-11-04",
+  "seconds": 9.5
+}

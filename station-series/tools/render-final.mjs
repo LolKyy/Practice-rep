@@ -44,7 +44,8 @@ if (!measured || !isFinite(Number(measured.input_i)) || Number(measured.input_i)
   const ln =
     `loudnorm=I=${LUFS}:TP=-1:LRA=11:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}` +
     `:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`;
-  run("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", raw, "-c:v", "copy", "-af", ln, "-ar", "48000", "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", out]);
+  const vdur = info.streams.find((s) => s.codec_type === "video").duration;
+  run("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", raw, "-t", String(vdur), "-c:v", "copy", "-af", ln, "-ar", "48000", "-c:a", "aac", "-b:a", "320k", "-movflags", "+faststart", out]);
   fs.unlinkSync(raw);
   const chk = run("ffmpeg", ["-hide_banner", "-nostats", "-i", out, "-af", "ebur128=peak=true", "-f", "null", "-"], { capture: true }).stderr;
   const I = chk.match(/I:\s+(-?[\d.]+) LUFS/g)?.pop();

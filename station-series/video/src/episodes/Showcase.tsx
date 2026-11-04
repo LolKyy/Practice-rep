@@ -80,7 +80,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({ words, voice, beep }) => {
         <Callout targetX={345} targetY={705} title="ТЕСТ, 30 ЛЕТ" subtitle="ИНЖЕНЕР СТАНЦИИ" side="right" dx={180} dy={-70} delay={0.25} />
       </Sequence>
       <Sequence name="Правило" durationInFrames={Math.round(1.8 * fps)} layout="none">
-        <RuleCard number={1} text="ТЕСТ. НЕ ОТВЕЧАЙ, ЕСЛИ ЗОВУТ ПО ИМЕНИ." top={330} delay={0.1} />
+        <RuleCard number={1} text="ТЕСТ. НЕ ОТВЕЧАЙ, ЕСЛИ ЗОВУТ ПО ИМЕНИ." top={330} delay={-0.2} />
       </Sequence>
 
       <Sequence name="Схема + рация" from={Math.round(1.8 * fps)} durationInFrames={Math.round(1.4 * fps)} layout="none">

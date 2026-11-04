@@ -21,6 +21,8 @@ export type HUDProps = {
   distance?: HudDistance;
   top?: number;
   accent?: string;
+  /** Плавное появление в начале. По умолчанию выкл: HUD виден с первого кадра (хук). */
+  animateIn?: boolean;
 };
 
 const pad = (n: number) => String(Math.max(0, Math.floor(n))).padStart(2, "0");
@@ -62,11 +64,11 @@ const Plate: React.FC<{ label: string; children: React.ReactNode; alert?: boolea
   </div>
 );
 
-export const HUD: React.FC<HUDProps> = ({ timer, gauge, distance, top = SAFE.top + 20, accent = COLORS.accent }) => {
+export const HUD: React.FC<HUDProps> = ({ timer, gauge, distance, top = SAFE.top + 20, accent = COLORS.accent, animateIn = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
-  const appear = interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const appear = !animateIn ? 1 : interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <div

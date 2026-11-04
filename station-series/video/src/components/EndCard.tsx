@@ -30,7 +30,7 @@ export const EndCard: React.FC<EndCardProps> = ({
   const ease = { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.16, 1, 0.3, 1) } as const;
   const bg = interpolate(f, [0, 8], [0, 1], ease);
   const title = interpolate(f, [3, 13], [0, 1], ease);
-  const opts = interpolate(f, [8, 18], [0, 1], ease);
+  const opts = interpolate(f, [5, 12], [0, 1], ease);
   const arrow = Math.sin((f / fps) * Math.PI * 2 * 1.5) * 10;
 
   const choiceBox = (letter: string, text: string, i: number) => (

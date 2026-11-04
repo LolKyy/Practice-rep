@@ -62,8 +62,26 @@ claude mcp add -s local elevenlabs -e ELEVENLABS_API_KEY=<ключ> -e ELEVENLAB
 ```
 Запасной путь без MCP: `tools/eleven.py` (REST API, тот же ключ).
 
-## Рендер: бенчмарк
-См. `tools/bench-results.md` (таблица) и `tools/render.config.json` (выбранный вариант, его читают render-скрипты).
+## Рендер: бенчмарк (облачная сессия, 2026-11-04)
+Showcase, 150 кадров 1080×1920, H.264 CRF 18, лучший из 2 прогонов. CPU Xeon 2.1 ГГц × 4, **GPU нет**.
+
+| --gl | --concurrency | время, с | кадров/с | статус |
+|---|---|---|---|---|
+| (по умолчанию) | 2 | 11.4 | 13.2 | ok |
+| (по умолчанию) | 4 | 10.4 | 14.5 | ok |
+| angle | 2 | 11.2 | 13.4 | ok |
+| angle | 4 | 9.5 | 15.7 | **ВЫБРАН** |
+| vulkan | 2 | 10.9 | 13.8 | ok |
+| vulkan | 4 | 10.0 | 15.0 | ok |
+| angle-egl | 2 | 11.0 | 13.7 | ok |
+| angle-egl | 4 | 9.9 | 15.2 | ok |
+| swiftshader | 2 | 11.0 | 13.6 | ok |
+| swiftshader | 4 | 10.3 | 14.6 | ok |
+
+**Выбрано: `--gl=angle --concurrency=4`** (9,5 с на 5 с видео ≈ 15,7 кадра/с). Разброс между вариантами ~10% — без
+видеокарты все режимы GL фактически программные, поэтому на ПК с GPU бенчмарк надо повторить.
+Полная таблица — `tools/bench-results.md`, выбор — `tools/render.config.json` (его читают render-скрипты).
+Финальный Showcase: 9,8 с рендер + loudnorm (−20,1 → −14,3 LUFS). Черновик 720×1280: 6,8 с.
 Перезапуск на новом компьютере: `node tools/bench-render.mjs --repeat 2`.
 
 ## Установка на ПК (Windows / macOS)
