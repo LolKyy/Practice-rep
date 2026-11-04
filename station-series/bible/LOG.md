@@ -4,3 +4,4 @@
 - 2026-11-04 — Скрипты tools/ (render-draft/final, timings, check-frames, eleven, bench-render, setup-models, sync-assets), INSTALL.md.
 - 2026-11-04 — ElevenLabs MCP прописан в .mcp.json, озвучка «Проверка связи. Студия на связи.» через MCP; SFX — 401 (нет права sound_generation у ключа).
 - 2026-11-04 — Бенчмарк рендера: 10 вариантов, выбран angle×4. Финальный рендер Showcase, check-frames: исправлены пустой первый кадр, лампа у края, длина аудио; повтор — ОК.
+- 2026-11-04 — Решение: на ПК всё в D:\Video. Добавлен tools/setup-pc.ps1, обновлены INSTALL.md, CLAUDE.md, DECISIONS.md.

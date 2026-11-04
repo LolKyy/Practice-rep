@@ -84,27 +84,26 @@ Showcase, 150 кадров 1080×1920, H.264 CRF 18, лучший из 2 про�
 Финальный Showcase: 9,8 с рендер + loudnorm (−20,1 → −14,3 LUFS). Черновик 720×1280: 6,8 с.
 Перезапуск на новом компьютере: `node tools/bench-render.mjs --repeat 2`.
 
-## Установка на ПК (Windows / macOS)
-### Windows (PowerShell; пакетный менеджер winget)
+## Установка на ПК пользователя — всё в D:\Video
+Решение пользователя: на ПК всё делается и скачивается в **D:\Video** (см. bible/DECISIONS.md).
+Один скрипт делает всю установку — `tools/setup-pc.ps1`. Скачай его из репозитория в D:\Video и запусти в PowerShell:
 ```powershell
-winget install --id Git.Git -e
-winget install --id OpenJS.NodeJS.LTS -e
-winget install --id Python.Python.3.11 -e
-winget install --id Gyan.FFmpeg -e
-winget install --id astral-sh.uv -e
+powershell -ExecutionPolicy Bypass -File D:\Video\setup-pc.ps1
 ```
-### macOS (Homebrew)
-```bash
-brew install git node python@3.11 ffmpeg uv
-```
-### Проект (одинаково везде, из папки station-series/)
-```bash
-cd video && npm ci && cd ..
-uv venv --python 3.11 .venv
-uv pip install --python .venv faster-whisper fonttools
-# Mac на Apple Silicon дополнительно:
-uv pip install --python .venv mlx-whisper
-.venv/bin/python tools/setup-models.py          # Windows: .venv\Scripts\python tools\setup-models.py
-npx playwright install chromium
-node tools/bench-render.mjs --repeat 2          # выберет --gl и --concurrency под твою видеокарту
-```
+Раскладка:
+| Что | Где |
+|---|---|
+| git, Node.js, ffmpeg, uv | `D:\Video\apps\…` (winget `--location`; если установщик не умеет — папка по умолчанию, скрипт скажет) |
+| Python 3.11 | `D:\Video\cache\uv-python` (ставит uv, отдельный установщик Python не нужен) |
+| кэши npm / uv / pip | `D:\Video\cache\{npm,uv,pip}` |
+| Chromium для Playwright | `D:\Video\cache\ms-playwright` |
+| Hugging Face (модель Whisper при загрузке) | `D:\Video\cache\huggingface` |
+| репозиторий | `D:\Video\Practice-rep` |
+| проект, node_modules, .venv, models, браузер Remotion, рендеры | `D:\Video\Practice-rep\station-series\…` |
+
+Скрипт прописывает переменные пользователя: `NPM_CONFIG_CACHE`, `UV_CACHE_DIR`, `UV_PYTHON_INSTALL_DIR`, `UV_TOOL_DIR`,
+`UV_TOOL_BIN_DIR`, `PIP_CACHE_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `HF_HOME`, `ELEVENLABS_MCP_BASE_PATH` — всё указывает в D:\Video.
+В конце он запускает бенчмарк рендера под твою видеокарту. Claude Code на ПК запускай из `D:\Video\Practice-rep\station-series`.
+
+Команды на Windows: Python — `.venv\Scripts\python`, остальное как в CLAUDE.md
+(`node tools\render-final.mjs Showcase` и т.д.).

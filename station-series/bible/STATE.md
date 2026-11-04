@@ -17,7 +17,7 @@
 ## Дальше
 1. Когда пользователь включит право «Sound Effects» у ключа ElevenLabs — сгенерировать «электронный писк датчика» через MCP (text_to_sound_effects, ~1 с) в assets/sfx/sensor_beep.mp3 (заменить заглушку), перерендерить Showcase.
 2. Ждать промт с сюжетом → прочитать bible/space_series_razbor.md (если появился) → заполнить WORLD.md, CHARACTERS.md.
-3. На ПК пользователя: установка по INSTALL.md + `node tools/bench-render.mjs --repeat 2`.
+3. На ПК пользователя: всё в D:\Video — запустить `tools/setup-pc.ps1` (установка + бенчмарк). Из облачной сессии доступа к ПК нет (папки Remote Control не настроены).
 
 ## Открытые вопросы
 - Права ключа ElevenLabs: нужен sound_generation (и, вероятно, music_generation для музыки).
