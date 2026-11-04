@@ -27,6 +27,7 @@ await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><link re
   <style>html,body{margin:0;background:#000;overflow:hidden}#root svg{display:block}</style></head><body><div id="root"></div></body></html>`, { waitUntil: "networkidle" });
 await page.addScriptTag({ content: `window.DATA = ${data};` });
 await page.addScriptTag({ content: fs.readFileSync(path.join(ROOT, "render/draw.js"), "utf8") });
+await page.addScriptTag({ content: fs.readFileSync(path.join(ROOT, "render/locations.js"), "utf8") });
 await page.addScriptTag({ content: fs.readFileSync(path.join(ROOT, "render/scene.js"), "utf8") });
 await page.evaluate(async () => {
   await Promise.all(["700 40px Oswald", "900 40px Rubik", "800 40px Rubik", "700 40px Caveat"].map((f) => document.fonts.load(f, "АБВ")));

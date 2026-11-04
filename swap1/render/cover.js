@@ -1,6 +1,6 @@
 // Обложка «рука ↔ нога». Важное — в y 240–1680 и x < 940.
 function cover() {
-  let s = bgPaper() + `<path d="${BLOB}" transform="translate(0,120)" fill="${PAL.yellow}" opacity=".75"/>`;
+  let s = bgPaper() + `<g transform="translate(0,140)">${LOCS.bedroom()}</g>`;
   s += hero({ x: 560, y: 1440, s: 1.0, build: "swap", eyes: "dots", brows: "raised", mouth: "o", cowlick: "spiral" }).svg;
   s += sticker(300, 760, -8, "НОГА", 70) + arrow("M300 810 Q290 850 260 870", "M250 846 L258 874 L284 862");
   s += sticker(200, 1500, 6, "РУКА", 70) + arrow("M250 1450 Q300 1420 320 1400", "M296 1396 L324 1398 L318 1424");
@@ -8,7 +8,7 @@ function cover() {
     ${T(520, 400, "РУКА ↔ НОГА", 150, "#fff", "Oswald", 700, "middle", `stroke="${O}" stroke-width="20" stroke-linejoin="round" paint-order="stroke"`)}
     ${T(520, 540, "НА ОДИН ДЕНЬ", 112, RED, "Oswald", 700, "middle", `stroke="${O}" stroke-width="18" stroke-linejoin="round" paint-order="stroke"`)}</g>`;
   s += sfxText(820, 760, 10, "?!", 130, YEL);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}<g filter="url(#wob0)">${s}</g></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS.replace("</defs>", LOC_CLIP + "</defs>")}<g filter="url(#wob0)">${s}</g></svg>`;
 }
 window.renderCover = (safe) => {
   let svg = cover();

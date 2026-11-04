@@ -17,6 +17,19 @@ function wt(pi, stem, occ = 0) {
 // ---------- данные шотов ----------
 const CLOCK = ["07:00", "07:00", "07:15", "08:00", "08:30", "09:00", "11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "00:00", "08:00", null, null];
 const COL = [PAL.mint, PAL.mint, PAL.yellow, PAL.yellow, PAL.yellow, PAL.yellow, PAL.pink, PAL.pink, PAL.pink, PAL.pink, PAL.purple, PAL.purple, null, PAL.mint, PAL.mint, PAL.mint];
+const LOC = ["bedroom", "bedroom", "bathroom", "hallway", "street", "metro", "office", "canteen", "breakroom", "corridor", "cafe", "living", "bedroomNight", "kitchen", "bedroom", "bedroom"];
+const PLACE = ["ТВОЯ КОМНАТА · УТРО", null, "ВАННАЯ", "ПРИХОЖАЯ", "ДВОР", "МЕТРО · ЧАС ПИК", "ОФИС", "СТОЛОВАЯ", "КУХНЯ В ОФИСЕ", "КОРИДОР", "КАФЕ · ВЕЧЕР", "ДОМА · ВЕЧЕР", "ТВОЯ КОМНАТА · НОЧЬ", "КУХНЯ · УТРО", null, null];
+const locBg = (si) => LOC[si] === "bedroomNight" ? LOCS.bedroom(true) : LOCS[LOC[si]]();
+const clip = (c) => `<g clip-path="url(#room)">${c}</g>`;
+// крупный план героя: голова + плечи внутри пятна
+const closeHero = (f) => clip(`<g transform="translate(540,1230) scale(1.5)"><path d="M-200 0 L-170 -120 Q0 -160 170 -120 L200 0 Z" fill="${SHIRT}" stroke="${O}" stroke-width="${SW}"/>${head({ cy: -300, r: 150, ...f })}</g>`);
+function placeTag(t, si) {
+  const txt = PLACE[si]; if (!txt) return "";
+  const u = t - START[si]; if (u > 2.6) return "";
+  const k = pop(t, START[si] + 0.15, 0.35) * (1 - clamp((u - 2.3) / 0.3));
+  const w = txt.length * 20 + 40;
+  return at(540, 205, k, `<g transform="translate(540,205) rotate(-2)"><rect x="${-w / 2}" y="-30" width="${w}" height="56" fill="#FFF6D8" stroke="${O}" stroke-width="4"/><rect x="-35" y="-42" width="70" height="20" fill="#fff" opacity=".75" transform="rotate(4)"/>${T(0, 10, txt, 28, O, "Rubik", 900)}</g>`);
+}
 const REDW = ["местами", "пяткой", "ухо", "погон", "горилла", "кроссовком", "быстрее", "охрана", "позвонить", "справился", "ногу", "звезда", "минуту", "охуеть", "местами", "подпишись"];
 const ACH = [
   { t: wt(5, "уступили"), top: "ДОСТИЖЕНИЕ", text: "ТЕБЕ УСТУПИЛИ МЕСТО" },
@@ -110,7 +123,7 @@ const SHOTS = [];
 // 1. Хук: лежит в кровати → вскакивает
 SHOTS[0] = (t) => {
   const tP = wt(0, "поменялись"), tN = wt(0, "нога", 1), tR = wt(0, "рука", 1);
-  let s = bed();
+  let s = "";
   if (t < tP) {
     s += G("translate(800,900) rotate(-90)", hero({ x: 0, y: 0, s: 0.62, build: "swap", eyes: "closed", brows: "neutral", mouth: "smile", cowlick: "down" }).svg);
     s += sfxPop(t, 0.3, 760, 680, -8, "Z-z-z", 70, "#fff", 2.5);
@@ -128,7 +141,7 @@ SHOTS[0] = (t) => {
 SHOTS[1] = (t) => {
   const tP = wt(1, "пяткой"), tU = wt(1, "удобно");
   const hit = t >= tP;
-  let s = bed() + `${R(110, 880, 200, 270, "#C98A5A", 10)}`;
+  let s = `${R(110, 880, 200, 270, "#A86C42", 10)}`;
   const j = hit ? 0 : Math.sin(t * 50) * 6;
   s += `<g transform="translate(${215 + j},860) rotate(${hit ? 0 : j})">${C(0, -50, 56, "#FF7B7B")}${C(0, -50, 40, "#fff")}<path d="M0 -50 L0 -78 M0 -50 L18 -40" stroke="${O}" stroke-width="6" stroke-linecap="round"/>
     ${C(-40, -104, 16, YEL)}${C(40, -104, 16, YEL)}<path d="M-30 0 L-44 16 M30 0 L44 16" stroke="${O}" stroke-width="7" stroke-linecap="round"/></g>`;
@@ -141,13 +154,13 @@ SHOTS[1] = (t) => {
 // 3. 07:15 зубы ногой
 SHOTS[2] = (t) => {
   const tU = wt(2, "ухо");
-  let s = `<rect x="320" y="540" width="440" height="380" rx="30" fill="#CDEBFA" stroke="${O}" stroke-width="${SW}"/><path d="M380 600 L460 560 M380 680 L520 580" stroke="#fff" stroke-width="12" opacity=".7"/>
-    ${R(330, 980, 420, 70, "#F4F7FB", 20)}${R(500, 1050, 80, 110, "#E3E8F2")}`;
+  let s = "";
   s += hero({ x: 560, y: 1150, s: 0.82, build: "swap", pose: "brush", eyes: "normal", brows: "neutral", mouth: "smile", cowlick: "up" }).svg;
   // пена
   const foam = (x, y, k) => k > 0 ? at(x, y, k, [[0, 0, 16], [16, 6, 12], [-12, 8, 11]].map(([a, b, r]) => C(x + a, y + b, r, "#fff")).join("")) : "";
   s += foam(560, 1150 - 0.82 * 530, pop(t, START[2] + 0.8));
-  s += foam(560 - 0.82 * 150, 1150 - 0.82 * 600, pop(t, tU)) + sfxPop(t, tU, 820, 640, 10, "УХО?!", 80, "#fff", 1.4);
+  if (t >= tU) { s = closeHero({ eyes: "dots", brows: "raised", mouth: "o", cowlick: "spiral" }); s += clip([[0, 0, 26], [26, 10, 20], [-20, 14, 18], [10, -22, 16]].map(([a, b, r]) => C(540 - 1.5 * 150 + a, 1230 - 1.5 * 300 + b, r, "#fff")).join("")); }
+  s += sfxPop(t, tU, 820, 640, 10, "УХО?!", 80, "#fff", 1.4);
   return s;
 };
 
@@ -165,8 +178,7 @@ SHOTS[3] = (t) => {
 // 5. 08:30 горилла и бабки
 SHOTS[4] = (t, u, d) => {
   const tM = wt(4, "молятся");
-  let s = `${R(96, 520, 440, 640, "#E3D2C0")}${R(220, 760, 200, 400, "#6B4A38")}${R(160, 700, 320, 50, "#8B5A3C", 6)}${T(320, 738, "ПОДЪЕЗД №3", 28, "#FFE9C7")}
-    ${R(640, 1060, 360, 30, "#8B5A3C", 6)}${R(660, 1090, 20, 70, "#6B4A38")}${R(960, 1090, 20, 70, "#6B4A38")}`;
+  let s = "";
   const sc = t >= tM;
   s += person({ x: 730, y: 1150, s: 0.66, body: "#8E7CC3", hat: "scarf", faceType: sc ? "shock" : "calm" }) + person({ x: 900, y: 1150, s: 0.66, body: "#3FB27F", hat: "scarf", faceType: sc ? "shock" : "calm" });
   const x = lerp(200, 520, easeInOut(u / d));
@@ -179,12 +191,12 @@ SHOTS[4] = (t, u, d) => {
 SHOTS[5] = (t) => {
   const tK = wt(5, "кроссовком");
   const hit = t >= tK;
-  let s = `<rect x="96" y="520" width="984" height="26" fill="#9AA3B5" stroke="${O}" stroke-width="${SW}"/>
-    ${R(96, 920, 984, 140, "#5B8DEF", 20)}${R(96, 1040, 984, 30, "#3A5CB0")}
-    <rect x="140" y="640" width="200" height="140" rx="18" fill="#BFE3F5" stroke="${O}" stroke-width="${SW}"/><rect x="780" y="640" width="200" height="140" rx="18" fill="#BFE3F5" stroke="${O}" stroke-width="${SW}"/>`;
+  let s = "";
   s += person({ x: 200, y: 1150, s: 0.8, body: "#3FB27F", hat: "cap", faceType: hit ? "shock" : "calm" });
   s += hero({ x: 600, y: 1150, s: 0.82, build: "swap", pose: hit ? "kick" : "pole", eyes: "normal", look: hit ? -1 : 0, brows: hit ? "sad" : "neutral", mouth: hit ? "flat" : "smile", cowlick: hit ? "down" : "up" }).svg;
   s += person({ x: 900, y: 1150, s: 0.72, body: "#E8607A", hat: "scarf", faceType: t >= wt(5, "уступили") ? "happy" : "calm" });
+  const tL = wt(5, "лицо");
+  if (t >= tL && t < tL + 1.1) s = clip(person({ x: 540, y: 1960, s: 2.1, body: "#3FB27F", hat: "cap", faceType: "shock" }) + sockShoe(330, 900, 95, 2.4));
   s += sfxPop(t, tK, 200, 640, -12, "БАЦ!", 100, YEL, 1.2);
   return s;
 };
@@ -227,6 +239,7 @@ SHOTS[8] = (t) => {
   else inner += `${T(0, 0, "00:0" + Math.min(9, Math.floor(t - tV)), 56, "#3FB27F")}${T(0, 60, "разговор", 34, "#8A8AA0", "Rubik", 800)}`;
   let s = phone(400, 820, -3, inner);
   s += hero({ x: 800, y: 1150, s: 0.7, build: "swap", pose: "type", eyes: t >= tV ? "dots" : "normal", look: -1, brows: t >= tC ? "raised" : "neutral", mouth: t >= tC ? "o" : "smile", cowlick: t >= tV ? "spiral" : "up" }).svg;
+  if (t >= tV + 0.3) s = closeHero({ eyes: "dots", brows: "raised", mouth: "o", cowlick: "spiral", sweat: true });
   s += sfxPop(t, tC, 640, 600, 8, "ОЙ", 90, "#fff", 0.9);
   return s;
 };
@@ -269,13 +282,12 @@ SHOTS[11] = (t, u) => {
 // 13. Полночь: всё возвращается
 SHOTS[12] = (t) => {
   const tV = wt(12, "возвращается"), tS = wt(12, "счастлив");
-  let s = `<rect width="${W}" height="${H}" fill="#1B1F4A"/>${C(840, 640, 70, "#FFF6C0")}`;
-  for (let i = 0; i < 40; i++) s += `<circle cx="${rnd(i) * W}" cy="${rnd(i + 50) * 600 + 520}" r="${2 + rnd(i + 3) * 2}" fill="#fff" opacity="${0.4 + 0.6 * Math.abs(Math.sin(t * 2 + i))}"/>`;
-  s += `<path d="M60 1165 Q300 1150 540 1162 T1040 1158" stroke="#fff" stroke-width="5" fill="none" opacity=".5"/>`;
+  let s = "";
   const back = t >= tV + 0.2;
   s += hero(back ? { x: 540, y: 1150, s: 0.84, eyes: t >= tS ? "star" : "normal", brows: "proud", mouth: "grin", cowlick: "up" }
     : { x: 540, y: 1150, s: 0.84, build: "swap", eyes: "closed", brows: "neutral", mouth: "flat", cowlick: "down" }).svg;
   if (t >= tV) s += puff(540, 900, 1.6, easeOutBack((t - tV) / 0.35) * (1 - clamp((t - tV - 0.5) / 0.4)));
+  if (t >= tS) s = closeHero({ eyes: "star", brows: "proud", mouth: "grin", cowlick: "up" });
   s += sfxPop(t, tV, 540, 640, 0, "ПУФ!", 100, "#fff", 1);
   return s;
 };
@@ -292,7 +304,8 @@ SHOTS[13] = (t) => {
       <rect x="-165" y="-100" width="330" height="170" rx="26" fill="#fff" stroke="${O}" stroke-width="4"/>
       ${T(-140, -50, "Верни ногу.", 34, O, "Rubik", 800, "start")}${T(-140, -6, "С ней ты был", 34, O, "Rubik", 800, "start")}${T(-140, 38, "интереснее", 34, O, "Rubik", 800, "start")}`));
   }
-  s += sfxPop(t, tX + 0.1, 330, 600, 0, "...", 110, "#fff", 1.6);
+  if (t >= tX) s = closeHero({ eyes: "closed", brows: "sad", mouth: "flat", cowlick: "down" });
+  s += sfxPop(t, tX + 0.1, 760, 640, 0, "...", 110, "#fff", 1.6);
   return s;
 };
 
@@ -349,7 +362,7 @@ function frame(t) {
   let si = START.findIndex((s, i) => t >= s && t < END[i]);
   if (si < 0) si = NP - 1;
   const u = t - START[si], d = END[si] - START[si];
-  const bg = COL[si] ? bgMix(COL[si], true) : "";
+  const bg = bgPaper() + locBg(si);
   let scene = bg + SHOTS[si](t, u, d);
   const k = 1 + 0.05 * easeInOut(u / d);
   let sx = 0, sy = 0;
@@ -357,8 +370,9 @@ function frame(t) {
   scene = `<g filter="url(#wob${Math.floor(t * 8) % 3})"><g transform="translate(${sx},${sy}) translate(540,860) scale(${k}) translate(-540,-860)">${scene}</g></g>`;
   let hud = "";
   if (CLOCK[si]) hud += clockCard(t, si) + countdown(t, si);
+  hud += placeTag(t, si);
   hud += achievement(t) + subtitles(t);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${scene}${hud}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS.replace("</defs>", LOC_CLIP + "</defs>")}${scene}${hud}</svg>`;
 }
 window.TOTAL = TOTAL; window.SFX = SFX; window.START = START;
 window.renderFrame = (t) => { document.getElementById("root").innerHTML = frame(t); };
