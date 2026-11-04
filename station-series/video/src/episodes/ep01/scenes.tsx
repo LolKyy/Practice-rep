@@ -656,6 +656,33 @@ export const SQuestion: React.FC<SceneProps> = ({ dur, lines }) => {
   );
 };
 
+/* ============================ ФИНАЛ: «ПОДПИШИСЬ, ЧТОБЫ НЕ ПРОПУСТИТЬ ЧАСТЬ N» ============================ */
+export const SEndCard: React.FC<{ part: number }> = ({ part }) => {
+  const t = useT();
+  const op = interpolate(t, [0, 0.35], [0, 1], C);
+  const pulse = 1 + 0.03 * Math.sin(t * 6);
+  return (
+    <AbsoluteFill style={{ background: "#03050A", opacity: op }}>
+      <svg width={1080} height={1920} style={{ position: "absolute" }}>
+        <Defs id="end" />
+        <Stars n={80} />
+        <Mars cx={540} cy={2300} r={1100} id="end" />
+      </svg>
+      <div style={{ position: "absolute", left: 60, right: 60, top: 640, textAlign: "center" }}>
+        <div style={{ fontFamily: FONTS.mono, fontWeight: 700, fontSize: 40, color: "#8A9AA8", letterSpacing: 6 }}>«ХАРОН» • СЕРИЯ 1</div>
+        <div style={{ fontFamily: FONTS.ui, fontWeight: 900, fontSize: 84, color: HARON.white, lineHeight: 1.1, marginTop: 30 }}>
+          ПОДПИШИСЬ,
+          <br />
+          ЧТОБЫ НЕ ПРОПУСТИТЬ
+        </div>
+        <div style={{ display: "inline-block", marginTop: 34, fontFamily: "Oswald", fontWeight: 700, fontSize: 110, background: HARON.red, color: "#05070A", padding: "4px 40px", borderRadius: 10, letterSpacing: 6, scale: String(pulse) }}>
+          ЧАСТЬ {part}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 export const SCENES: Record<string, React.FC<SceneProps>> = {
   hook: SHook,
   who: SWho,
@@ -670,5 +697,4 @@ export const SCENES: Record<string, React.FC<SceneProps>> = {
   scanner: SScanner,
   empty: SEmpty,
   cliff: SCliff,
-  question: SQuestion,
 };

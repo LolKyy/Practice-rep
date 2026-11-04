@@ -3,7 +3,7 @@ import { Audio } from "@remotion/media";
 import { AbsoluteFill, CalculateMetadataFunction, interpolate, Sequence, staticFile, useVideoConfig } from "remotion";
 import { Subtitles, TimedWord } from "../../components/Subtitles";
 import { HARON } from "../../components/HaronHUD";
-import { SCENES, SceneLine } from "./scenes";
+import { SCENES, SceneLine, SEndCard } from "./scenes";
 
 // «ХАРОН», серия 1 «ПОСЫЛКА». Сцены и тайминги берутся из episodes/ep01/timeline.json и timings.json
 // (их пишет tools/make_voice.py), поэтому правка реплик автоматически перестраивает монтаж.
@@ -34,7 +34,8 @@ export const Ep01: React.FC<Ep01Props> = ({ scenes, lines, words, duration }) =>
   const f = (s: number) => Math.round(s * fps);
   const sc = (id: string) => scenes.find((s) => s.id === id) ?? { id, start: 0, end: 0 };
   const ln = (id: string) => lines.find((l) => l.id === id) ?? { id, scene: "", role: "", start: 0, end: 0 };
-  const q = sc("question");
+  const END_LEN = 2.8; // финальная плашка «подпишись»
+  const q = { start: duration - END_LEN };
 
   // звуковые события (секунды от начала серии)
   const sfx: { at: number; file: string; vol: number }[] = [];
@@ -82,11 +83,14 @@ export const Ep01: React.FC<Ep01Props> = ({ scenes, lines, words, duration }) =>
         if (!Comp) return null;
         const local: SceneLine[] = lines.filter((l) => l.scene === s.id).map((l) => ({ id: l.id, role: l.role, start: l.start - s.start, end: l.end - s.start }));
         return (
-          <Sequence key={s.id} name={s.id} from={f(s.start)} durationInFrames={Math.max(1, f(s.end) - f(s.start))}>
+          <Sequence key={s.id} name={s.id} from={f(s.start)} durationInFrames={Math.max(1, Math.min(f(s.end), f(q.start)) - f(s.start))}>
             <Comp dur={s.end - s.start} lines={local} />
           </Sequence>
         );
       })}
+      <Sequence name="Финал: подпишись" from={f(q.start)}>
+        <SEndCard part={2} />
+      </Sequence>
 
       <Sequence name="Субтитры" durationInFrames={Math.max(1, f(q.start))} layout="none">
         <Subtitles words={words} keywords={KEYWORDS} accent={HARON.red} />

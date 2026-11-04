@@ -1,5 +1,5 @@
 {
- "duration": 138.289,
+ "duration": 133.469,
  "scenes": [
   {
    "id": "hook",
@@ -64,12 +64,7 @@
   {
    "id": "cliff",
    "start": 125.251,
-   "end": 129.069
-  },
-  {
-   "id": "question",
-   "start": 129.069,
-   "end": 138.289
+   "end": 133.469
   }
  ],
  "lines": [
@@ -297,15 +292,6 @@
    "end": 129.069,
    "file": "episodes/ep01/voice/fx/25_gleb.mp3",
    "text": "Голубое — это что?"
-  },
-  {
-   "id": "26",
-   "scene": "question",
-   "role": "narr",
-   "start": 130.669,
-   "end": 135.789,
-   "file": "episodes/ep01/voice/fx/26_narr.mp3",
-   "text": "Тридцать лет криосна или двенадцать часов на падающей станции. Что выбрал бы ты?"
   }
  ]
 }
