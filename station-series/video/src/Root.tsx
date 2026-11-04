@@ -5,6 +5,7 @@ import { VIDEO, COLORS } from "./lib/theme";
 import { Showcase, SHOWCASE_DEFAULTS, calculateShowcaseMetadata } from "./episodes/Showcase";
 import { EndCard } from "./components/EndCard";
 import { EvidenceCard } from "./components/EvidenceCard";
+import { StyleA, StyleB, StyleC } from "./styles/StyleSamples";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
 const EndCardNextPreview: React.FC = () => (
@@ -38,6 +39,11 @@ export const RemotionRoot: React.FC = () => {
       <Folder name="Previews">
         <Composition id="Preview-EndCardNext" component={EndCardNextPreview} durationInFrames={60} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
         <Composition id="Preview-Evidence" component={EvidencePreview} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+      </Folder>
+      <Folder name="Styles">
+        <Composition id="Style-A-Soft" component={StyleA} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Style-B-Noir" component={StyleB} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
+        <Composition id="Style-C-Retro" component={StyleC} durationInFrames={90} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} />
       </Folder>
     </>
   );
