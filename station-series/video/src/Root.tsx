@@ -9,6 +9,7 @@ import { StyleA, StyleB, StyleC } from "./styles/StyleSamples";
 import { StyleD, StyleE, StyleF } from "./styles/DarkStyles";
 import { HaronInk, HaronCine, HaronSil } from "./styles/HaronStyles";
 import { RigTest } from "./rig/RigTest";
+import { Ep01, EP01_DEFAULTS, calculateEp01Metadata } from "./episodes/ep01/Ep01";
 import { HaronFrame1, HaronFrame2, HaronFrame3 } from "./styles/HaronFrames";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
@@ -30,6 +31,16 @@ const EvidencePreview: React.FC = () => (
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="Ep01"
+        component={Ep01}
+        durationInFrames={300}
+        fps={VIDEO.fps}
+        width={VIDEO.width}
+        height={VIDEO.height}
+        defaultProps={EP01_DEFAULTS}
+        calculateMetadata={calculateEp01Metadata}
+      />
       <Composition
         id="Showcase"
         component={Showcase}

@@ -35,6 +35,17 @@ export type Look = {
 };
 
 export const LOOKS: Record<string, Look> = {
+  /** Глеб до находки термосканера (серия 1, до сцены со статуей). */
+  glebNoScan: {
+    skin: "#B9957C",
+    suit: "#7A838A",
+    suitDark: "#454C52",
+    boots: "#1C1E21",
+    hair: "#1D1915",
+    hairStyle: "buzz",
+    extras: ["stubble", "scar", "earpiece", "number"],
+    number: "0731",
+  },
   gleb: {
     skin: "#B9957C",
     suit: "#7A838A",
@@ -138,6 +149,10 @@ export type PersonProps = {
   mode?: "cine" | "sil";
   uid: string;
   t?: number; // время (сек) для мигания/пара
+  /** Предмет в правой руке. */
+  item?: "crowbar";
+  /** Угол предмета (°, по умолчанию — продолжение предплечья). */
+  itemAngle?: number;
 };
 
 export const Person: React.FC<PersonProps> = ({
@@ -153,6 +168,8 @@ export const Person: React.FC<PersonProps> = ({
   mode = "cine",
   uid,
   t = 0,
+  item,
+  itemAngle,
 }) => {
   const sil = mode === "sil";
   const ex = new Set(look.extras ?? []);
@@ -221,7 +238,7 @@ export const Person: React.FC<PersonProps> = ({
     return (
       <g key={key}>
         {!sil ? <path d={taper(add(p.a, off(r1, 0.45)), add(p.b, off(r2, 0.45)), r1 * 0.52, r2 * 0.52)} fill="#020611" opacity={0.42} /> : null}
-        <path d={taper(add(p.a, off(r1, -0.78)), add(p.b, off(r2, -0.78)), r1 * (sil ? 0.2 : 0.14), r2 * (sil ? 0.2 : 0.14))} fill={rim} opacity={sil ? 0.95 : 0.75} />
+        {!sil ? <path d={taper(add(p.a, off(r1, -0.78)), add(p.b, off(r2, -0.78)), r1 * 0.14, r2 * 0.14)} fill={rim} opacity={0.75} /> : null}
       </g>
     );
   };
@@ -269,6 +286,18 @@ export const Person: React.FC<PersonProps> = ({
 
       {/* тень на полу */}
       <ellipse cx={(ankleL.x + ankleR.x) / 2 + facing * 30} cy={lowest} rx={190} ry={22} fill="#000" opacity={0.55} />
+
+      {/* СИЛУЭТ: контровой свет полумесяцем — копия силуэта цветом rim, сдвинутая к источнику света */}
+      {sil ? (
+        <g fill={rim} stroke={rim} strokeWidth={10} strokeLinejoin="round" transform={`translate(${lv.x * 9} ${lv.y * 9})`} opacity={0.95}>
+          {all.map((p, i) => (
+            <path key={i} d={p.d} />
+          ))}
+          <path d={TORSO} transform={torsoTf} />
+          <path d={HEAD} transform={headTf} />
+          {look.hairStyle !== "none" ? <path d={HAIR[look.hairStyle]} transform={headTf} /> : null}
+        </g>
+      ) : null}
 
       {/* ЧЁРНАЯ ОБВОДКА — весь силуэт, толстым штрихом под заливками */}
       <g stroke={INK} strokeWidth={sil ? 6 : 16} strokeLinejoin="round" fill={INK}>
@@ -323,11 +352,9 @@ export const Person: React.FC<PersonProps> = ({
         {/* светотень корпуса */}
         <g clipPath={`url(#torso-${uid})`}>
           {!sil ? <rect x={-150} y={-360} width={300} height={400} fill={`url(#tshade-${uid})`} transform={`rotate(${-lean} 0 0)`} /> : null}
-          <path
-            d={lv.x > 0 ? "M 120 -360 L 160 -360 L 160 40 L 100 40 Z" : "M -120 -360 L -160 -360 L -160 40 L -100 40 Z"}
-            fill={rim}
-            opacity={sil ? 0.9 : 0.55}
-          />
+          {!sil ? (
+            <path d={lv.x > 0 ? "M 120 -360 L 160 -360 L 160 40 L 100 40 Z" : "M -120 -360 L -160 -360 L -160 40 L -100 40 Z"} fill={rim} opacity={0.55} />
+          ) : null}
         </g>
       </g>
 
@@ -394,7 +421,7 @@ export const Person: React.FC<PersonProps> = ({
         <g clipPath={`url(#head-${uid})`}>
           <g transform={`rotate(${-(lean + (pose.head ?? 0))})`}>
             {!sil ? <rect x={-110} y={-130} width={220} height={240} fill={`url(#tshade-${uid})`} /> : null}
-            <path d={lv.x > 0 ? "M 44 -130 L 110 -130 L 110 110 L 38 110 Z" : "M -44 -130 L -110 -130 L -110 110 L -38 110 Z"} fill={rim} opacity={sil ? 0.9 : 0.45} />
+            {!sil ? <path d={lv.x > 0 ? "M 44 -130 L 110 -130 L 110 110 L 38 110 Z" : "M -44 -130 L -110 -130 L -110 110 L -38 110 Z"} fill={rim} opacity={0.45} /> : null}
           </g>
         </g>
         {ex.has("earpiece") ? (
@@ -438,6 +465,24 @@ export const Person: React.FC<PersonProps> = ({
           ))}
         </g>
       ) : null}
+
+      {/* монтировка в правой руке */}
+      {item === "crowbar"
+        ? (() => {
+            const a = itemAngle ?? pose.armR[1];
+            const top = add(handR, v(a + 180, 70));
+            const bot = add(handR, v(a, 260));
+            const hook = add(bot, v(a + 70, 46));
+            return (
+              <g>
+                <path d={`M ${top.x} ${top.y} L ${bot.x} ${bot.y} L ${hook.x} ${hook.y}`} stroke={INK} strokeWidth={26} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={`M ${top.x} ${top.y} L ${bot.x} ${bot.y} L ${hook.x} ${hook.y}`} stroke={sil ? "#07090C" : "#8E2A20"} strokeWidth={14} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={`M ${top.x} ${top.y} L ${bot.x} ${bot.y}`} stroke={rim} strokeWidth={3} opacity={0.7} transform={`translate(${-lv.x * -4} ${-lv.y * -4})`} />
+                <path d={capsule(wrR, handR, 27)} fill={C(look.skin)} stroke={INK} strokeWidth={4} />
+              </g>
+            );
+          })()
+        : null}
 
       {/* термосканер на правом запястье */}
       {ex.has("scanner") ? (

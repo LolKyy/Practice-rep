@@ -43,7 +43,8 @@ export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] 
     const next = words[i + 1];
     const punct = /[.!?…,:;—]$/.test(w.word.trim());
     const gap = next ? next.start - w.end : 0;
-    const long = cur.length >= maxWords;
+    const chars = cur.reduce((n, x) => n + x.word.length + 1, 0) + (next ? next.word.length : 0);
+    const long = cur.length >= maxWords || chars > 22; // одна строка (макс. две) при 84 px
     // не оставляем одинокое слово, если можно подождать
     if ((punct && cur.length >= 1) || gap > 0.45 || long || !next) flush();
   });

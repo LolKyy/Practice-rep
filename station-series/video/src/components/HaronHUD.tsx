@@ -38,6 +38,14 @@ export type HaronHUDProps = {
   frost?: number;
   /** Приглушить HUD на 30% (спокойный момент). */
   dim?: boolean;
+  /** Какие блоки показывать (по умолчанию все). */
+  parts?: { timer?: boolean; oxygen?: boolean; temp?: boolean; scheme?: boolean; scanner?: boolean };
+  /** Сек от начала секвенции, когда появляется сканер (анимация «защёлкнулся»). */
+  scannerFrom?: number;
+  /** Во сколько раз быстрее тикает таймер (монтажное сжатие времени). */
+  timeScale?: number;
+  /** Сек, когда таймер «загорается» (вспышка появления). */
+  timerFrom?: number;
 };
 
 const DECKS = ["СТЫКОВКА", "КАПСУЛЫ", "ЖИЛОЙ", "МЕДБЛОК", "БЛОК 0"];
@@ -54,7 +62,12 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
   detectAt,
   frost = 0,
   dim = false,
+  parts = {},
+  scannerFrom,
+  timeScale = 1,
+  timerFrom,
 }) => {
+  const show = { timer: true, oxygen: true, temp: true, scheme: true, scanner: true, ...parts };
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
@@ -100,6 +113,7 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
 
       <div style={{ position: "absolute", inset: 0, opacity: op, translate: `${glitch}px 0px` }}>
         {/* ТАЙМЕР */}
+        {show.timer && (timerFrom === undefined || t >= timerFrom) ? (
         <div
           style={{
             position: "absolute",
@@ -115,10 +129,12 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
         >
           <div style={{ fontSize: 24, letterSpacing: 3, color: HARON.red, fontWeight: 700 }}>ДО ПАДЕНИЯ</div>
           <div style={{ fontSize: 76, lineHeight: 1, fontWeight: 700, color: HARON.red, textShadow: `0 0 18px rgba(255,59,47,0.55)` }}>
-            {formatHMS(Math.max(0, fallSeconds - t))}
+            {formatHMS(Math.max(0, fallSeconds - t * timeScale))}
           </div>
         </div>
+        ) : null}
         {/* КИСЛОРОД */}
+        {show.oxygen ? (
         <div
           style={{
             position: "absolute",
@@ -141,7 +157,9 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
             </div>
           </div>
         </div>
+        ) : null}
         {/* ОТСЕК °C */}
+        {show.temp ? (<>
         <div
           style={{
             position: "absolute",
@@ -159,7 +177,9 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
         >
           {tempLabel}: {tempText ?? `${temp > 0 ? "+" : temp < 0 ? "−" : ""}${Math.abs(temp)}°C`}
         </div>
+        </>) : null}
         {/* МИНИ-СХЕМА 5 палуб */}
+        {show.scheme ? (<>
         <svg width={190} height={250} style={{ position: "absolute", top: 380, left: 60 }}>
           <rect x={0} y={0} width={190} height={250} rx={12} fill={HARON.plate} stroke={HARON.edge} strokeWidth={3} />
           <text x={14} y={26} fontFamily={FONTS.mono} fontWeight={700} fontSize={18} fill="#8A9AA8">
@@ -179,7 +199,11 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
             );
           })}
         </svg>
+        </>) : null}
         {/* ТЕРМОСКАНЕР */}
+        {show.scanner && (scannerFrom === undefined || t >= scannerFrom) ? (
+          <div style={{ position: "absolute", inset: 0, transformOrigin: "870px 470px", scale: String(scannerFrom === undefined ? 1 : interpolate(t - scannerFrom, [0, 0.12, 0.25], [0.3, 1.12, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })) }}>
+
         <svg width={300} height={330} style={{ position: "absolute", top: 302, right: 60 }}>
           <defs>
             <radialGradient id="scan-bg" cx="0.5" cy="0.5" r="0.5">
@@ -221,6 +245,8 @@ export const HaronHUD: React.FC<HaronHUDProps> = ({
             {scanLabel}
           </text>
         </svg>
+          </div>
+        ) : null}
       </div>
     </AbsoluteFill>
   );

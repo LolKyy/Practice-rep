@@ -31,7 +31,7 @@ const copyDir = (src, dst, filter = () => true) => {
     const s = path.join(src, e.name);
     const d = path.join(dst, e.name);
     if (e.isDirectory()) {
-      if (e.name === "renders" || e.name === "src") continue;
+      if (["renders", "src", "casting", "raw", "fx", "frames"].includes(e.name)) continue;
       copyDir(s, d, filter);
     } else if (filter(e.name)) copyFile(s, d);
   }
