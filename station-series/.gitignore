@@ -1,0 +1,24 @@
+# зависимости и окружения
+node_modules/
+.venv/
+__pycache__/
+# модели Whisper (скачиваются tools/setup-models, в git не кладём)
+models/
+# выход рендера
+video/out/
+episodes/*/renders/
+# сгенерированные копии ассетов в public (источник правды — assets/ и episodes/)
+video/public/fonts/
+video/public/sfx/
+video/public/music/
+video/public/episodes/
+# тяжёлое аудио/видео
+*.wav
+*.mp4
+*.mov
+*.webm
+assets/music/*.mp3
+assets/fonts/src/
+# временное
+tools/.bench/
+*.log
