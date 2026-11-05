@@ -369,3 +369,6 @@ brief_scenarist/*.zip
 swap1/audio/*.wav
 swap1/audio/*.mp3
 swap1/out/
+pvz1/audio/*.wav
+pvz1/audio/*.mp3
+pvz1/out/
