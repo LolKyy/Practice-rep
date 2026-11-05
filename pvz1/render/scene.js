@@ -132,7 +132,7 @@ SHOTS[0] = (t) => {
   if (t < tS) s += closedBox(720, 930, 0.95, Math.sin(t * 40) * 6);
   else s += boxMonster(720, 930, 0.95, easeOutBack((t - tS) / 0.4), t);
   s += zheka({ x: 380, y: 1150, s: 0.68, pose: t < tS ? "hold" : "idle", eyes: "calm", mouth: t >= tR - 0.1 ? "talk" : "chew", look: 1 });
-  s += scared(940, 0.5);
+  s += scared(890, 0.62);
   if (t >= tZ && t < tZ + 1.1) s = clip(`<rect x="0" y="400" width="1080" height="900" fill="#2A0F2A"/>`) + clip(boxMonster(540, 1150, 2.6, 1, t));
   s += bubble(330, 600, "НЕ МОЙ РАЗМЕР", 40, 1, pop(t, tR - 0.1));
   s += sfxPop(t, 0.2, 760, 700, 8, "ШУРХ", 70, "#fff", 1.6);
@@ -141,7 +141,7 @@ SHOTS[0] = (t) => {
 // 1. Три часа ночи, смена за 2000, правила
 SHOTS[1] = (t) => {
   const tD = wt(1, "две"), tP = wt(1, "правила");
-  let s = scanner(640, 930, false) + closedBox(720, 930, 0.95, 0, "") + zheka({ x: 380, y: 1150, s: 0.68, eyes: "calm", mouth: "chew" }) + scared(940, 0.5);
+  let s = scanner(640, 930, false) + closedBox(720, 930, 0.95, 0, "") + zheka({ x: 380, y: 1150, s: 0.68, eyes: "calm", mouth: "chew" }) + scared(890, 0.62);
   s += `<g transform="translate(860,610)">${C(0, 0, 50, "#fff")}<path d="M0 0 L0 -32 M0 0 L22 10" stroke="${O}" stroke-width="6" stroke-linecap="round"/></g>`;
   if (t >= tD && t < tP) s += at(540, 720, pop(t, tD), card(540, 720, 420, 160, -3, `${T(0, -10, "НОЧНАЯ СМЕНА", 36, O, "Rubik", 800)}${T(0, 48, "2 000 ₽", 56, "#3FB27F")}`));
   if (t >= tP) s = rulesSheet(t, 0);
@@ -158,7 +158,7 @@ SHOTS[2] = (t) => {
     for (let r = 0; r < 3; r++) for (let i = 0; i < 7; i++) teeth += `<path d="M${-90 + i * 26 + r * 6} ${-40 + r * 22} l13 ${r % 2 ? -18 : 18} l13 ${r % 2 ? 18 : -18} Z" fill="#fff" stroke="${O}" stroke-width="3"/>`;
     s += `<g transform="translate(${hx},${hy}) scale(0.62)"><ellipse cx="0" cy="0" rx="120" ry="80" fill="#6B3B6E" stroke="${O}" stroke-width="${SW}"/><ellipse cx="0" cy="12" rx="100" ry="50" fill="#2A0F2A" stroke="${O}" stroke-width="4"/>${teeth}
       ${[-60, 0, 60].map((ex, i) => `${C(ex, -55 - (i === 1 ? 12 : 0), 18, "#FFE14D")}<circle cx="${ex}" cy="${-55 - (i === 1 ? 12 : 0)}" r="6" fill="${O}"/>`).join("")}</g>`; }
-  s += scared(900, 0.48);
+  s += scared(880, 0.62);
   s += sfxPop(t, tPr + 0.1, 820, 640, 8, "СИДИТ!", 70, YEL, 1.2);
   return s;
 };
@@ -169,7 +169,7 @@ SHOTS[3] = (t) => {
   let s = scanner(640, 930, t >= tSc && t < tSc + 0.8);
   const closed = t >= wt(3, "клеит");
   s += closed ? closedBox(720, 930, 0.95, 0) : boxMonster(720, 930, 0.95, 1 - easeOut((t - tZ) / 0.6), t);
-  s += zheka({ x: 380, y: 1150, s: 0.68, pose: "hold", eyes: "calm", mouth: "chew", look: 1 }) + scared(940, 0.5);
+  s += zheka({ x: 380, y: 1150, s: 0.68, pose: "hold", eyes: "calm", mouth: "chew", look: 1 }) + scared(890, 0.62);
   s += sfxPop(t, tSc + 0.2, 640, 640, -6, "ПИК", 90, YEL, 0.8);
   if (t >= tO) s += at(540, 760, pop(t, tO), card(540, 760, 460, 170, 3, `${T(0, -10, "ВОЗВРАТ", 48, O)}${T(0, 52, "ОФОРМЛЕН ✓", 44, "#3FB27F")}`));
   return s;
@@ -179,7 +179,7 @@ SHOTS[4] = (t) => {
   const tE = wt(4, "это"), tM = wt(4, "маркером");
   const sh = Math.sin(t * 45) * 7;
   let s = scanner(640, 930, false) + closedBox(720, 930, 0.95, sh, t >= tM ? "НЕ КАНТОВАТЬ" : "");
-  s += zheka({ x: 380, y: 1150, s: 0.68, pose: t >= tM ? "write" : "idle", eyes: "calm", mouth: "chew", look: 1 }) + scared(940, 0.5);
+  s += zheka({ x: 380, y: 1150, s: 0.68, pose: t >= tM ? "write" : "idle", eyes: "calm", mouth: "chew", look: 1 }) + scared(890, 0.62);
   s += bubble(760, 650, "ЭТО ОШИБКА", 40, -1, pop(t, tE));
   return s;
 };
@@ -191,7 +191,7 @@ SHOTS[5] = (t) => {
   let s = door(op);
   if (t >= tZa) s += faceless(lerp(980, 780, easeOut((t - tZa) / 0.8)), 1150, 0.56, t);
   s += zheka({ x: 330, y: 1150, s: 0.68, eyes: t >= tSm ? "stare" : "calm", mouth: "chew", look: 1 });
-  s += `<g transform="translate(110,0)">${scared(0, 0.42)}</g>`;
+  s += `<g transform="translate(150,0)">${scared(0, 0.6)}</g>`;
   if (t >= tSm && t < tSm + 1.6) s = clip(`<rect x="0" y="400" width="540" height="900" fill="#FFE3C2"/><rect x="540" y="400" width="540" height="900" fill="#1B1F3A"/>`) +
     clip(`<g transform="translate(270,1430) scale(1.3)">${zheka({ x: 0, y: 0, s: 1, eyes: "stare", mouth: "chew", look: 1 })}</g><g transform="translate(810,1900) scale(1.4)">${faceless(0, 0, 1, t)}</g>`) +
     `<line x1="540" y1="430" x2="540" y2="1150" stroke="${O}" stroke-width="8"/>`;
@@ -204,7 +204,7 @@ SHOTS[6] = (t) => {
   const fx = t >= tU ? lerp(780, 1050, easeInOut((t - tU) / 1.2)) : 780;
   s += faceless(fx, 1150, 0.56, t);
   if (t >= tU) s += `<path d="M${fx + 20} 700 q-12 24 0 34 q12 -10 0 -34 Z" fill="#9FE3FF" stroke="${O}" stroke-width="4"/>`;
-  s += zheka({ x: 330, y: 1150, s: 0.68, eyes: "stare", mouth: (t >= tK && t < tU) ? "talk" : "chew", look: 1 }) + `<g transform="translate(110,0)">${scared(0, 0.42)}</g>`;
+  s += zheka({ x: 330, y: 1150, s: 0.68, eyes: "stare", mouth: (t >= tK && t < tU) ? "talk" : "chew", look: 1 }) + `<g transform="translate(150,0)">${scared(0, 0.6)}</g>`;
   if (t < tK) s += bubble(760, 560, "МОЙ ЗАКАЗ", 42, 1, pop(t, tM));
   else if (t < tB) s += bubble(360, 590, "КОД НАЗОВИ, БРАТАН", 36, 1, pop(t, tK));
   else if (t < tU) s += bubble(360, 590, "ПРИХОДИ С ПАСПОРТОМ", 34, 1, pop(t, tB));
@@ -232,7 +232,7 @@ SHOTS[8] = (t) => {
   s += `<g transform="translate(660,740) rotate(5)">${R(-80, -60, 160, 170, "#fff", 4)}${t >= tT ? T(0, 40, "?", 90, "#C9C1D6") : ""}</g>`;
   s += person({ x: 820, y: 1150, s: 0.74, long: true, hair: "#3B2A20", body: "#2E2A44", glasses: true, faceType: "happy" });
   s += zheka({ x: 300, y: 1150, s: 0.6, eyes: "calm", mouth: "smile" });
-  if (t >= tT) s += hero({ x: 560, y: 1150, s: 0.5, eyes: "closed", brows: "sad", mouth: "sad", cowlick: "down" }).svg;
+  if (t >= tT) s += hero({ x: 560, y: 1150, s: 0.62, eyes: "closed", brows: "sad", mouth: "sad", cowlick: "down" }).svg;
   return s;
 };
 // 9. Курьер: «получатель — Жека», коробка шевелится
@@ -252,7 +252,7 @@ SHOTS[10] = (t, u) => {
   let s = `${T(520, 370, "ПОДПИШИСЬ,", 92, "#fff", "Oswald", 700, "middle", `stroke="${O}" stroke-width="16" paint-order="stroke"`)}
     ${T(520, 460, "ЧТОБЫ НЕ ПРОПУСТИТЬ", 70, "#fff", "Oswald", 700, "middle", `stroke="${O}" stroke-width="14" paint-order="stroke"`)}`;
   s += at(520, 580, pop(t, START[10] + 0.1) * pk, `<rect x="230" y="520" width="580" height="120" rx="60" fill="${RED}" stroke="${O}" stroke-width="${SW + 2}"/>${T(520, 602, "ПОДПИСАТЬСЯ", 62, "#fff")}`);
-  s += G(`translate(0,${-b})`, zheka({ x: 380, y: 1180, s: 0.6, eyes: "calm", mouth: "smile" }) + hero({ x: 720, y: 1180, s: 0.55, pose: "wave", eyes: "normal", brows: "proud", mouth: "grin", cowlick: "up" }).svg);
+  s += G(`translate(0,${-b})`, zheka({ x: 380, y: 1180, s: 0.6, eyes: "calm", mouth: "smile" }) + hero({ x: 720, y: 1180, s: 0.62, pose: "wave", eyes: "normal", brows: "proud", mouth: "grin", cowlick: "up" }).svg);
   return s;
 };
 
