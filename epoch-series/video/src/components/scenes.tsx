@@ -70,7 +70,7 @@ export const EraBackground: React.FC<{ era?: "rome"; place: EraPlace; tod?: TOD;
 // before — сцена комнаты, after — сцена эпохи (её Stage стоит с pop = момент разрыва). at — секунда разрыва внутри Sequence.
 export const Portal: React.FC<{ before: React.ReactNode; after: React.ReactNode; at?: number }> = ({ before, after, at = 0.35 }) => {
   const t = useCurrentFrame() / FPS; const u = t - at;
-  const flash = keys(t, [[0, 0], [at * 0.7, 1], [at + 0.25, 0]]);
+  const flash = keys(t, [[0, 0], [Math.max(0, at - 0.3), 0], [at - 0.02, 1], [at + 0.3, 0]]);
   const open = eo(u / 0.75);
   // линия разрыва: зигзаг сверху вниз по центру
   const r = rng(17); const line: [number, number][] = []; for (let y = -40; y <= 1960; y += 60) line.push([540 + (r() - 0.5) * 140 + Math.sin(y / 300) * 60, y]);

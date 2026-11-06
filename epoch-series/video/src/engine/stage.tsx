@@ -83,7 +83,7 @@ export const Stage: React.FC<{ t0?: number; cam?: CamKey[]; focus?: number; pop?
         <AbsoluteFill style={{ background: `radial-gradient(ellipse 95% 60% at 22% 18%, ${L[0]} 0%, rgba(0,0,0,0) 65%)`, mixBlendMode: "screen", pointerEvents: "none" }} />
         {rays > 0 ? <Rays t={t} a={rays} /> : null}
         {/* лёгкая виньетка (светлая: первые секунды всегда яркие) */}
-        <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 80% at 50% 45%, rgba(0,0,0,0) 60%, rgba(50,30,10,${L[1]}) 100%)`, pointerEvents: "none" }} />
+        <AbsoluteFill style={{ background: `radial-gradient(ellipse 90% 80% at 50% 45%, rgba(0,0,0,0) 60%, rgba(50,30,10,${L[1] * 0.45}) 100%)`, pointerEvents: "none" }} />
       </AbsoluteFill>
     </StageCtx.Provider>
   );
@@ -93,7 +93,7 @@ const Rays: React.FC<{ t: number; a: number }> = ({ t, a }) => (
   <AbsoluteFill style={{ pointerEvents: "none", mixBlendMode: "screen", opacity: a }}>
     {[0, 1, 2, 3].map((i) => (
       <div key={i} style={{ position: "absolute", left: 80 + i * 170 + Math.sin(t * 0.4 + i) * 12, top: -200, width: 70 + i * 26, height: 2000,
-        transform: "rotate(-24deg)", transformOrigin: "50% 0%", background: "linear-gradient(180deg, rgba(255,240,200,0.55), rgba(255,240,200,0) 75%)", filter: "blur(18px)" }} />
+        transform: "rotate(-24deg)", transformOrigin: "50% 0%", background: "linear-gradient(180deg, rgba(255,240,200,0.55), rgba(255,240,200,0) 75%)", filter: "blur(18px)", opacity: 0.6 }} />
     ))}
   </AbsoluteFill>
 );

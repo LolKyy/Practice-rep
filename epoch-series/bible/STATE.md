@@ -1,7 +1,7 @@
 # STATE
 **Шаблон готов. Ждём сценарий серии 1.**
 
-Сделано: движок v2, все компоненты (Sema/Extra/Room/Portal/EraBackground[Рим: лагерь, город, поле × день/золото/сумерки/ночь]/FactCallout/Ruler/CalendarCard/PriceTag/MapCard/SurvivalNotebook/Tag/ChoiceCard/Subtitles/Camera), Showcase (17,8 с, черновой голос Piper), лист героя, style-guide v1↔v2, tools.
+Сделано: движок v2, все компоненты (Sema/Extra/Room/Portal/EraBackground[Рим: лагерь, город, поле × день/золото/сумерки/ночь]/FactCallout/Ruler/CalendarCard/PriceTag/MapCard/SurvivalNotebook/Tag/ChoiceCard/Subtitles/Camera), Showcase v2.1 (18,9 с, черновой голос Piper): блокнот → разрыв листа → Рим, гэги, финал-вопрос без вариантов, лист героя, style-guide v1↔v2, tools.
 
 Ждёт решения пользователя:
 1. Утвердить лист Сёмы (casual + легионер) — `bible/hero_sheet_v2.png`.

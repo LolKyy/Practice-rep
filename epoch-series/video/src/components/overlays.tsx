@@ -4,6 +4,7 @@ import React from "react";
 import { useCurrentFrame } from "remotion";
 import { CanvasArt } from "../engine/CanvasArt";
 import { G, PAL, cut, rectP, rrectP, ellP, fillP, strokeP, tape, pencil, text, inkText, thread, rivet, rng, tear, Pt, clamp } from "../engine/paper";
+import { coin } from "./scenery";
 import { FPS, spring, back, eo, keys } from "../engine/stage";
 
 const useSecs = () => useCurrentFrame() / FPS;
@@ -197,4 +198,78 @@ export const Subtitles: React.FC<{ words: Word[]; keywords?: string[]; y?: numbe
           transform: `rotate(${(i % 2 ? 1 : -1) * 1.2}deg) translateY(${on ? 0 : 20}px)` }}>{txt}</span>; })}
     </div>
   );
+};
+
+// ================================================================ v2.1: своё начало, гэги, финальный вопрос
+// NotebookPage: крупно страница блокнота Сёмы, карандаш пишет строки (интро: «куда попадём»)
+export const NotebookPage: React.FC<{ lines: { s: string; at: number; size?: number; color?: string }[]; doodle?: number }> = ({ lines, doodle = -1 }) => {
+  const t0 = useSecs();
+  return <CanvasArt draw={(g) => {
+    const t = t0;
+    cut(g, rectP(-40, -40, 1160, 2000), "#FCF9F0", { tear: 0, noEdge: true, sort: "water", grain: 0.35 });
+    for (let x = 0; x < 1080; x += 54) strokeP(g, [[x, 0], [x, 1920]], "rgba(80,140,210,0.22)", 1.5); for (let y = 0; y < 1920; y += 54) strokeP(g, [[0, y], [1080, y]], "rgba(80,140,210,0.22)", 1.5);
+    strokeP(g, [[150, 0], [150, 1920]], "rgba(200,53,43,0.5)", 3);
+    for (let i = 0; i < 12; i++) fillP(g, ellP(70, 120 + i * 150, 18, 18, 14), "#D9D2C2");
+    let active: [number, number] = [540, 600];
+    lines.forEach((l, i) => { const p = (t - l.at) / 0.55; if (p <= 0) return; const y = 560 + i * 170; handWrite(g, l.s, 210, y, l.size ?? 120, p, l.color ?? "#23324F"); if (p < 1.2) active = [210 + (l.size ?? 120) * 0.45 * l.s.length * Math.min(1, p), y]; });
+    if (doodle >= 0 && t > doodle) { // карандашный кружок вокруг года + «?!»
+      const u = clamp((t - doodle) / 0.4); g.save(); g.strokeStyle = PAL.scarf; g.lineWidth = 7; g.beginPath(); g.ellipse(560, 560, 330, 110, -0.05, 0, Math.PI * 2 * u); g.stroke(); g.restore();
+      if (u >= 1) text(g, "?!", 930, 450, 140, PAL.scarf, "Caveat", 700);
+    }
+    // карандаш (крупно, у пишущей точки)
+    g.save(); g.translate(active[0] + Math.sin(t * 28) * 6, active[1] + 20 + Math.cos(t * 23) * 5); g.rotate(-0.6);
+    cut(g, rectP(-22, -420, 44, 420), "#F2C230", { seed: 75, edge: 2.5, tear: 0.1, rim: 0.5 }); strokeP(g, [[-7, -410], [-7, -10]], "rgba(150,100,10,0.4)", 3);
+    cut(g, [[-22, 0], [22, 0], [0, 60]], "#E9C9A3", { seed: 76, edge: 2, tear: 0 }); fillP(g, [[-7, 42], [7, 42], [0, 60]], PAL.ink); cut(g, rectP(-24, -460, 48, 44), "#E58A9A", { seed: 77, edge: 2, tear: 0 });
+    g.restore();
+    tape(g, 900, 80, 220, 0.3, 50);
+  }} />;
+};
+
+// CoinGag: монеты сыплются в руки, потом улетают с ярлыками «−ЕДА», «−ДОСПЕХ», «−ПАЛАТКА»
+export const CoinGag: React.FC<{ at?: number; minus: { label: string; at: number }[]; hands: [number, number] }> = ({ at = 0, minus, hands }) => {
+  const t0 = useSecs();
+  return <CanvasArt draw={(g) => {
+    const t = t0 - at; if (t < 0) return; const N = 18; const gone = minus.filter((m) => t > m.at).length;
+    for (let i = 0; i < N; i++) {
+      const r = rng(i * 7 + 1); const delay = i * 0.04; const tt = t - delay; if (tt < 0) continue;
+      const bucket = i % (minus.length + 1); // последняя «корзина» остаётся Сёме
+      let x = hands[0] + (r() - 0.5) * 120, y = Math.min(hands[1] - (i % 5) * 10, -100 + tt * tt * 2600);
+      const m = bucket < minus.length ? minus[bucket] : null;
+      if (m && t > m.at) { const u = t - m.at; x += u * u * 2400 * (bucket % 2 ? 1 : -1); y -= u * 900 - u * u * 600; }
+      coin(g, x, y, 40, tt * 9 + i, 400 + i);
+    }
+    minus.forEach((m, i) => { const u = t - m.at; if (u < 0 || u > 1.4) return; const k = back(u / 0.25); g.save(); g.translate(i % 2 ? 860 : 220, 520 + i * 120); g.rotate((i % 2 ? 1 : -1) * 0.08); g.scale(k, k);
+      g.font = '900 52px "Montserrat"'; const w = g.measureText(m.label).width + 40; cut(g, rectP(-w / 2, -40, w, 80), PAL.scarf, { seed: 500 + i, edge: 2, tear: 0.6, sort: "felt" }); inkText(g, m.label, 0, 2, 50, "#FBF7EC"); g.restore(); });
+    if (gone >= minus.length) { const k = back((t - minus[minus.length - 1].at - 0.4) / 0.3); if (k > 0) { g.save(); g.translate(hands[0] + 150, hands[1] - 170); g.scale(k, k); cut(g, rectP(-110, -45, 220, 90), "#FBF7EC", { seed: 520, edge: 2 }); inkText(g, "ОСТАЛОСЬ", 0, -14, 30, PAL.ink); inkText(g, "3 ДЕН.", 0, 22, 40, PAL.scarf); g.restore(); } }
+  }} />;
+};
+
+// Комикс-пометки из бумаги: капли пота, «!», звёздочки гордости, «ХРУСТЬ»
+export const Marks: React.FC<{ kind: "sweat" | "bang" | "sparkle" | "crack"; x: number; y: number; at?: number; label?: string; s?: number }> = ({ kind, x, y, at = 0, label, s = 1 }) => {
+  const t0 = useSecs();
+  return <CanvasArt draw={(g) => {
+    const t = t0 - at; if (t < 0) return; const k = back(t / 0.25); g.save(); g.translate(x, y); g.scale(k * s, k * s);
+    if (kind === "sweat") for (let i = 0; i < 3; i++) { const yy = ((t * 260 + i * 70) % 200); g.save(); g.translate(-60 + i * 60, yy); cut(g, [[0, -30], [16, 6], [0, 20], [-16, 6]], "#8FD3F4", { seed: 600 + i, edge: 2, sort: "trace", grain: 0.1 }); g.restore(); }
+    if (kind === "bang") { cut(g, [[0, -90], [24, -20], [-24, -20]], PAL.scarf, { seed: 610, edge: 2.5 }); cut(g, ellP(0, 10, 18, 18, 14), PAL.scarf, { seed: 611, edge: 2.5 }); }
+    if (kind === "sparkle") for (let i = 0; i < 4; i++) { const a = i * 1.57 + t * 2; g.save(); g.translate(Math.cos(a) * 140, Math.sin(a) * 90); g.rotate(t * 3 + i); const sp: Pt[] = []; for (let j = 0; j < 8; j++) { const rr = j % 2 ? 10 : 30; sp.push([Math.cos(j * 0.785) * rr, Math.sin(j * 0.785) * rr]); } cut(g, sp, PAL.sticky, { seed: 620 + i, edge: 2, tear: 0.2 }); g.restore(); }
+    if (kind === "crack") { g.rotate(-0.12); g.font = '900 110px "Montserrat"'; const w = g.measureText(label ?? "").width + 60; const P: Pt[] = []; for (let j = 0; j < 16; j++) { const a = (j / 16) * 6.28; const rr = j % 2 ? 0.85 : 1.15; P.push([Math.cos(a) * w * 0.6 * rr, Math.sin(a) * 110 * rr]); }
+      cut(g, P, PAL.sticky, { seed: 630, edge: 3, tear: 1 }); inkText(g, label ?? "", 0, 6, 104, PAL.scarf); }
+    g.restore();
+  }} />;
+};
+
+// QuestionPage: финал — вырванный лист блокнота с одним вопросом (без вариантов)
+export const QuestionPage: React.FC<{ q1: string; q2: string; at?: number }> = ({ q1, q2, at = 0 }) => {
+  const t0 = useSecs();
+  return <CanvasArt draw={(g) => {
+    const t = t0 - at; if (t < 0) return; const k = spring(t / 0.5);
+    g.save(); g.translate(540, 560 - (1 - k) * 900); g.rotate(-0.05 + Math.sin(t * 2) * 0.01); paperShadow(g);
+    cut(g, rectP(-420, -330, 840, 560), "#FCF9F0", { seed: 700, edge: 3, tear: 2.4, sort: "water" }); paperShadow(g, false);
+    for (let y = -300; y < 220; y += 46) strokeP(g, [[-410, y], [410, y]], "rgba(80,140,210,0.25)", 1.5);
+    handWrite(g, q1, 0, -170, 80, (t - 0.2) / 0.5, "#23324F", "center"); handWrite(g, q2, 0, -40, 92, (t - 0.6) / 0.5, "#23324F", "center");
+    const qk = back((t - 1.1) / 0.3); if (qk > 0) { g.save(); g.translate(300, 120); g.rotate(0.15); g.scale(qk, qk); text(g, "?", 0, 0, 260, PAL.scarf, "Caveat", 700); g.restore(); }
+    if (t > 1.3) { handWrite(g, "пиши в комменты!", -40, 140, 64, (t - 1.3) / 0.5, PAL.scarf, "center"); }
+    tape(g, -380, -320, 150, -0.6, 40); tape(g, 380, -320, 150, 0.6, 40);
+    g.restore();
+  }} />;
 };

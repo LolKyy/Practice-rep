@@ -38,7 +38,7 @@ export const phone = (g: G) => { g.save(); g.rotate(-0.25); cut(g, rrectP(-9, -1
 
 // ======================= РИМ (EraBackground: лагерь/город/поле, смена времени суток) =======================
 export type TOD = "day" | "gold" | "dusk" | "night";
-export const SKY: Record<TOD, [string, string]> = { day: ["#9ED3EC", "#E6F4F1"], gold: ["#F2B872", "#FBE3B0"], dusk: ["#6E6AA8", "#F09A78"], night: ["#1D2A4A", "#3A4D78"] };
+export const SKY: Record<TOD, [string, string]> = { day: ["#5FB8F0", "#CDEFF7"], gold: ["#FFA94D", "#FFE29A"], dusk: ["#6E6AA8", "#F09A78"], night: ["#1D2A4A", "#3A4D78"] };
 export const rome = {
   sky: (tod: TOD) => (g: G, t: number) => {
     const [a, b] = SKY[tod]; const gr = g.createLinearGradient(0, -200, 0, 1300); gr.addColorStop(0, a); gr.addColorStop(1, b);
@@ -50,8 +50,8 @@ export const rome = {
   clouds: (g: G, t: number) => { cloud(g, 230 + Math.sin(t * 0.5) * 8, 330, 300, 11, "#FFFFFF", 50); cloud(g, 980 + Math.sin(t * 0.4 + 2) * 8, 520, 240, 12, "#FBFBF6", 120); },
   hills: (g: G) => {
     const hill = (y: number, amp: number, col: string, seed: number) => { const p: Pt[] = [[-400, 2300]]; for (let x = -400; x <= 1500; x += 60) p.push([x, y - Math.sin(x / 260 + seed) * amp - Math.sin(x / 90 + seed * 2) * amp * 0.2]); p.push([1500, 2300]); cut(g, p, col, { seed, sort: "kraft", tear: 1.5, edge: 2.5 }); };
-    hill(1000, 60, "#B9C98E", 2); hill(1080, 40, "#A3B978", 5);
-    for (let i = 0; i < 6; i++) { const x = -150 + i * 260 + (i % 2) * 70; cut(g, rrectP(x - 5, 870 + (i % 3) * 30, 10, 140, 3), "#5A4A30", { seed: 80 + i }); cut(g, ellP(x, 830 + (i % 3) * 30, 26, 95, 20), "#5E7A3A", { seed: 90 + i, sort: "kraft" }); } // кипарисы
+    hill(1000, 60, "#9CCB5E", 2); hill(1080, 40, "#7DB848", 5);
+    for (let i = 0; i < 6; i++) { const x = -150 + i * 260 + (i % 2) * 70; cut(g, rrectP(x - 5, 870 + (i % 3) * 30, 10, 140, 3), "#5A4A30", { seed: 80 + i }); cut(g, ellP(x, 830 + (i % 3) * 30, 26, 95, 20), "#3F8A3A", { seed: 90 + i, sort: "kraft" }); } // кипарисы
   },
   city: (g: G) => { // акведук и храм вдали
     for (let i = 0; i < 9; i++) { const x = -260 + i * 170; cut(g, rectP(x, 860, 150, 200), "#E7D5B0", { seed: 100 + i, sort: "kraft" }); fillP(g, [...ellP(x + 75, 960, 52, 70, 20, Math.PI, Math.PI * 2), [x + 127, 1065], [x + 23, 1065]], "#BFE0EE"); }
@@ -67,9 +67,17 @@ export const rome = {
     // штандарт-аквила
     cut(g, rectP(330, 900, 10, 380), "#6A4426", { seed: 4 }); cut(g, [[300, 900], [335, 860], [370, 900], [335, 915]], "#D9B04A", { seed: 5, rim: 0.7 }); cut(g, rectP(300, 930, 70, 90), PAL.scarf, { seed: 6, sort: "felt" }); text(g, "LEG", 335, 965, 20, "#F3D58A");
   },
-  ground: (tint = "#D9C08E") => (g: G) => { cut(g, rectP(-400, 1240, 1880, 1100), tint, { tear: 1, sort: "kraft", edge: 3 }); for (let i = 0; i < 40; i++) { const r = rng(i + 1); fillP(g, ellP(r() * 1500 - 200, 1300 + r() * 700, 10 + r() * 22, 5 + r() * 8, 12), "#B99B68", 0.6); } pencil(g, [[-100, 1330], [1200, 1310]], 0.15); },
+  ground: (tint = "#E8C27A") => (g: G) => { cut(g, rectP(-400, 1240, 1880, 1100), tint, { tear: 1, sort: "kraft", edge: 3 }); for (let i = 0; i < 40; i++) { const r = rng(i + 1); fillP(g, ellP(r() * 1500 - 200, 1300 + r() * 700, 10 + r() * 22, 5 + r() * 8, 12), "#B99B68", 0.6); } pencil(g, [[-100, 1330], [1200, 1310]], 0.15); },
   foreground: (g: G) => { // размытый передний план: трава и щит
     for (let i = 0; i < 14; i++) { g.save(); g.translate(-60 + i * 22, 2050); g.rotate(-0.5 + i * 0.07); cut(g, [[-12, 0], [0, -300 - (i % 3) * 60], [12, 0]], i % 2 ? "#6F9445" : "#86AC56", { seed: 200 + i }); g.restore(); }
     g.save(); g.translate(1030, 1700); g.rotate(0.15); cut(g, rrectP(-150, -260, 300, 520, 40), "#8E4A32", { seed: 210, sort: "felt", rim: 0.5 }); fillP(g, ellP(0, 0, 45, 45, 24), "#D9B04A"); rivet(g, 0, 0, 14); g.restore();
   },
 };
+
+// ======================= ПРЕДМЕТЫ В РУКИ =======================
+export const notebookProp = (g: G) => { g.save(); g.rotate(-0.15); cut(g, rrectP(-16, -22, 32, 40, 3), "#3E5A7A", { seed: 301, edge: 0.8 }); cut(g, rectP(-13, -19, 26, 34), "#FBF8EF", { seed: 302, edge: 0.5, tear: 0.2 });
+  for (let i = 0; i < 4; i++) strokeP(g, [[-9, -12 + i * 7], [8 - (i % 2) * 6, -12 + i * 7]], "rgba(40,40,60,0.6)", 1); g.restore(); };
+export const gladiusProp = (g: G) => { g.save(); g.rotate(Math.PI); cut(g, [[-3.5, 4], [3.5, 4], [3.5, 40], [0, 48], [-3.5, 40]], "#D5DBE0", { seed: 311, edge: 0.8, rim: 0.8 }); strokeP(g, [[0, 6], [0, 42]], "rgba(90,100,110,0.5)", 0.8);
+  cut(g, rrectP(-9, 0, 18, 5, 2), "#B08A3E", { seed: 312, edge: 0.6 }); cut(g, rrectP(-3, -14, 6, 15, 2), "#6A4426", { seed: 313, sort: "kraft" }); cut(g, ellP(0, -16, 5, 4, 12), "#B08A3E", { seed: 314, edge: 0.6 }); g.restore(); };
+export const coin = (g: G, x: number, y: number, r: number, rot: number, seed: number) => { g.save(); g.translate(x, y); g.rotate(rot); g.scale(Math.abs(Math.cos(rot * 2)) * 0.7 + 0.3, 1);
+  cut(g, ellP(0, 0, r, r, 20), "#E2B54A", { seed, edge: 1.2, rim: 0.6 }); g.strokeStyle = "#A07A22"; g.lineWidth = r * 0.12; g.beginPath(); g.arc(0, 0, r * 0.7, 0, 7); g.stroke(); text(g, "D", 0, 1, r, "#8A6418"); g.restore(); };
