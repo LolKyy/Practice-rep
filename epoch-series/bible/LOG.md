@@ -1,0 +1,8 @@
+# LOG
+- 2026-11-06 · Найден проект динозавров: style.md/characters.md в master, код марионеток (cut.ts, stage2d, puppets) — в ветке `claude/kind-archimedes-vobcgr` (cretaceous_ep2). Копия v1-кода: `legacy_v1/`.
+- 2026-11-06 · Изучены 2 референса пользователя (1812 / крестьянин 1600): светлые кадры, герой по центру, крупные субтитры, календарь, лестница званий, ценники, карта, «КУДА ДАЛЬШЕ?».
+- 2026-11-06 · Создан epoch-series/: движок v2 (paper/stage/puppets), компоненты, Showcase, лист героя, style-guide, tools.
+- 2026-11-06 · Установка: Node 22, Python 3.13, ffmpeg, uv — были. Remotion 4.0.250 + @remotion/transitions, шрифты. .venv с faster-whisper — стоит, но модель small НЕ скачалась: huggingface.co закрыт прокси облака (403). Piper (sherpa-onnx) с GitHub качается — им сделан черновой голос Showcase.
+- 2026-11-06 · Баги: эмодзи/тень плашек в swangle стирали холст — обход в STYLE.md. `--scale` даёт нечётный размер → композиции `-draft`.
+- 2026-11-06 · Замер рендера (облако, 4 ядра): angle 1,3 с/кадр, swiftshader 1,5, swangle 11 → по умолчанию angle, concurrency 4. Черновик Showcase 3 мин, финал 1080×1920 4,6 мин.
+- 2026-11-06 · Showcase финал: H.264 1080×1920, 18 с, −15 LUFS интегр. (loudnorm −14 цель), check-frames: кадр 0 YAVG 154 (светлый), субтитры ниже лица, текст в полях. Поп-ап ускорен (на портале было ~0,5 с пустого неба).

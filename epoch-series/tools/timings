@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# voice.mp3 → timings.json по словам (faster-whisper small, ru).  tools/timings <episodes/NN_эпоха>
+set -euo pipefail; ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+"$ROOT/.venv/bin/python" -I "$ROOT/tools/timings.py" "$1"
