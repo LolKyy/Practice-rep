@@ -1,5 +1,5 @@
 {
- "duration": 81.041,
+ "duration": 119.052,
  "scenes": [
   {
    "id": "hook",
@@ -17,24 +17,39 @@
    "end": 35.388
   },
   {
-   "id": "ryzhy",
+   "id": "guards",
    "start": 35.388,
-   "end": 52.663
+   "end": 43.245
+  },
+  {
+   "id": "ryzhy",
+   "start": 43.245,
+   "end": 63.487
+  },
+  {
+   "id": "riot",
+   "start": 63.487,
+   "end": 77.502
+  },
+  {
+   "id": "sneak",
+   "start": 77.502,
+   "end": 85.188
   },
   {
    "id": "hint",
-   "start": 52.663,
-   "end": 58.93
+   "start": 85.188,
+   "end": 91.455
   },
   {
    "id": "brother",
-   "start": 58.93,
-   "end": 72.954
+   "start": 91.455,
+   "end": 110.966
   },
   {
    "id": "cliff",
-   "start": 72.954,
-   "end": 81.041
+   "start": 110.966,
+   "end": 119.052
   }
  ],
  "lines": [
@@ -102,11 +117,29 @@
    "text": "Кто-то тут пишет инструкции. Уже хорошо."
   },
   {
+   "id": "07a",
+   "scene": "guards",
+   "role": "narr",
+   "start": 36.238,
+   "end": 41.201,
+   "file": "episodes/ep02/voice/fx/07a_narr.mp3",
+   "text": "Между рядами — охрана. Все в инее. Оружие так и осталось на полу."
+  },
+  {
+   "id": "07b",
+   "scene": "guards",
+   "role": "gleb",
+   "start": 41.626,
+   "end": 43.245,
+   "file": "episodes/ep02/voice/fx/07b_gleb.mp3",
+   "text": "Даже выстрелить не успели."
+  },
+  {
    "id": "08",
    "scene": "ryzhy",
    "role": "ryzh",
-   "start": 36.068,
-   "end": 37.818,
+   "start": 44.095,
+   "end": 45.846,
    "file": "episodes/ep02/voice/fx/08_ryzh.mp3",
    "text": "Тише! Не свети!"
   },
@@ -114,8 +147,8 @@
    "id": "09",
    "scene": "ryzhy",
    "role": "gleb",
-   "start": 38.073,
-   "end": 39.013,
+   "start": 46.101,
+   "end": 47.041,
    "file": "episodes/ep02/voice/fx/09_gleb.mp3",
    "text": "Ты кто такой?"
   },
@@ -123,8 +156,8 @@
    "id": "10",
    "scene": "ryzhy",
    "role": "ryzh",
-   "start": 39.268,
-   "end": 44.649,
+   "start": 47.296,
+   "end": 52.677,
    "file": "episodes/ep02/voice/fx/10_ryzh.mp3",
    "text": "Рыжий. Блок два. Мы не бунтуем — мы прячемся."
   },
@@ -132,8 +165,8 @@
    "id": "11",
    "scene": "ryzhy",
    "role": "gleb",
-   "start": 44.904,
-   "end": 46.08,
+   "start": 52.932,
+   "end": 54.108,
    "file": "episodes/ep02/voice/fx/11_gleb.mp3",
    "text": "От кого прячетесь?"
   },
@@ -141,17 +174,62 @@
    "id": "12",
    "scene": "ryzhy",
    "role": "ryzh",
-   "start": 46.42,
-   "end": 52.663,
+   "start": 54.448,
+   "end": 60.691,
    "file": "episodes/ep02/voice/fx/12_ryzh.mp3",
    "text": "Внизу всех будили… и они встали другими. Холодными. Мы зовём их — стылые."
+  },
+  {
+   "id": "12a",
+   "scene": "ryzhy",
+   "role": "gleb",
+   "start": 61.031,
+   "end": 63.487,
+   "file": "episodes/ep02/voice/fx/12a_gleb.mp3",
+   "text": "Погоди. Вы же бунт подняли."
+  },
+  {
+   "id": "12b",
+   "scene": "riot",
+   "role": "ryzh",
+   "start": 63.912,
+   "end": 70.938,
+   "file": "episodes/ep02/voice/fx/12b_ryzh.mp3",
+   "text": "Бунтовали. Три часа назад. Потом наши выломали дверь в Блок Ноль — думали, там оружие и шаттл."
+  },
+  {
+   "id": "12c",
+   "scene": "riot",
+   "role": "ryzh",
+   "start": 71.363,
+   "end": 77.502,
+   "file": "episodes/ep02/voice/fx/12c_ryzh.mp3",
+   "text": "А там были они. Двести. За час — вся охрана. И половина наших."
+  },
+  {
+   "id": "12d",
+   "scene": "sneak",
+   "role": "ryzh",
+   "start": 78.862,
+   "end": 80.665,
+   "file": "episodes/ep02/voice/fx/12d_ryzh.mp3",
+   "text": "Ложись! Не дыши!"
+  },
+  {
+   "id": "12e",
+   "scene": "sneak",
+   "role": "ryzh",
+   "start": 83.725,
+   "end": 85.188,
+   "file": "episodes/ep02/voice/fx/12e_ryzh.mp3",
+   "text": "Тихо… Ушёл."
   },
   {
    "id": "13",
    "scene": "hint",
    "role": "gleb",
-   "start": 53.428,
-   "end": 55.649,
+   "start": 85.953,
+   "end": 88.173,
    "file": "episodes/ep02/voice/fx/13_gleb.mp3",
    "text": "Слышь, полковник, а что за…"
   },
@@ -159,17 +237,26 @@
    "id": "14",
    "scene": "hint",
    "role": "khor",
-   "start": 55.691,
-   "end": 58.93,
+   "start": 88.215,
+   "end": 91.455,
    "file": "episodes/ep02/voice/fx/14_khor.mp3",
    "text": "Не отвлекайся. Иди к лифту."
+  },
+  {
+   "id": "14a",
+   "scene": "brother",
+   "role": "ryzh",
+   "start": 92.305,
+   "end": 96.772,
+   "file": "episodes/ep02/voice/fx/14a_ryzh.mp3",
+   "text": "Мой брат где-то здесь. Его не будили — он спал, когда всё началось."
   },
   {
    "id": "15",
    "scene": "brother",
    "role": "ryzh",
-   "start": 60.46,
-   "end": 64.274,
+   "start": 98.472,
+   "end": 102.285,
    "file": "episodes/ep02/voice/fx/15_ryzh.mp3",
    "text": "Слышишь? Это мой брат! Он стучит — он живой!"
   },
@@ -177,8 +264,8 @@
    "id": "16",
    "scene": "brother",
    "role": "gleb",
-   "start": 64.529,
-   "end": 67.768,
+   "start": 102.54,
+   "end": 105.78,
    "file": "episodes/ep02/voice/fx/16_gleb.mp3",
    "text": "Стекло замёрзло изнутри. Ты правило читал?"
   },
@@ -186,8 +273,8 @@
    "id": "17",
    "scene": "brother",
    "role": "ryzh",
-   "start": 68.023,
-   "end": 71.184,
+   "start": 106.035,
+   "end": 109.195,
    "file": "episodes/ep02/voice/fx/17_ryzh.mp3",
    "text": "Это просто холод! Он там задыхается!"
   },
@@ -195,8 +282,8 @@
    "id": "18",
    "scene": "brother",
    "role": "gleb",
-   "start": 71.439,
-   "end": 72.954,
+   "start": 109.45,
+   "end": 110.966,
    "file": "episodes/ep02/voice/fx/18_gleb.mp3",
    "text": "Не трогай."
   },
@@ -204,8 +291,8 @@
    "id": "19",
    "scene": "cliff",
    "role": "ryzh",
-   "start": 75.674,
-   "end": 76.641,
+   "start": 113.686,
+   "end": 114.652,
    "file": "episodes/ep02/voice/fx/19_ryzh.mp3",
    "text": "Брат…?"
   }

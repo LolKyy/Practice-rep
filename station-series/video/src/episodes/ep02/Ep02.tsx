@@ -19,7 +19,7 @@ export const calculateEp02Metadata: CalculateMetadataFunction<Ep02Props> = async
   return { durationInFrames: Math.ceil(tl.duration * 30), props: { scenes: tl.scenes, lines: tl.lines, words: tm.words, duration: tl.duration } };
 };
 
-const KEYWORDS = ["замёрзло", "Никогда.", "госизмену.", "Харон-семь", "падает.", "свободу.", "живого.", "тишина.", "задерживайся.", "инструкции.", "свети!", "Рыжий.", "прячемся.", "стылые.", "полковник,", "лифту.", "брат!", "живой!", "правило", "задыхается!", "трогай.", "Брат…?"];
+const KEYWORDS = ["замёрзло", "Никогда.", "госизмену.", "Харон-семь", "падает.", "свободу.", "живого.", "тишина.", "задерживайся.", "инструкции.", "свети!", "Рыжий.", "прячемся.", "стылые.", "полковник,", "лифту.", "брат!", "живой!", "правило", "задыхается!", "трогай.", "Брат…?", "оружие", "охрана.", "выстрелить", "бунт", "Ноль", "шаттл.", "Двести.", "половина", "Ложись!", "дыши!", "Ушёл.", "спал,"];
 
 export const Ep02: React.FC<Ep02Props> = ({ scenes, lines, words, duration }) => {
   const { fps } = useVideoConfig();
@@ -39,8 +39,15 @@ export const Ep02: React.FC<Ep02Props> = ({ scenes, lines, words, duration }) =>
   add(ln("07").start - 0.9, "boom", 0.35);
   add(ln("12").end - 0.9, "scanner_ping", 0.6);
   add(ln("14").start, "glitch", 0.35);
-  add(sc("brother").start + 0.1, "knock_glass", 0.85);
-  add(sc("brother").start + 1.9, "knock_glass", 0.7);
+  add(ln("15").start - 1.8, "knock_glass", 0.85);
+  add(ln("15").end + 0.1, "knock_glass", 0.6);
+  add(sc("guards").start, "ice_crunch", 0.25);
+  add(sc("riot").start, "glitch", 0.5);
+  add(sc("riot").start + (ln("12c").start - sc("riot").start) * 0.33, "boom", 0.7);
+  add(ln("12c").start - 0.2, "glitch", 0.4);
+  add(sc("sneak").start + 0.4, "ice_crunch_long", 0.9);
+  add(sc("sneak").start + 0.6, "scanner_detect", 0.6);
+  add(sc("sneak").start + 2.6, "ice_crunch", 0.7);
   add(ln("16").start, "knock_glass", 0.6);
   add(ln("18").end - 0.1, "alarm_button", 0.6);
   add(sc("cliff").start, "glass_burst", 1.0);

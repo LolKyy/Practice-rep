@@ -1,7 +1,7 @@
 {
  "audio": "episodes/ep02/voice.mp3",
  "language": "ru",
- "duration": 81.041,
+ "duration": 119.052,
  "words": [
   {
    "word": "Если",
@@ -405,7 +405,7 @@
   {
    "word": "зала.",
    "start": 28.701,
-   "end": 29.301,
+   "end": 29.321,
    "line": "06",
    "role": "khor"
   },
@@ -419,7 +419,7 @@
   {
    "word": "задерживайся.",
    "start": 29.881,
-   "end": 30.921,
+   "end": 30.901,
    "line": "06",
    "role": "khor"
   },
@@ -466,436 +466,898 @@
    "role": "gleb"
   },
   {
+   "word": "Между",
+   "start": 36.238,
+   "end": 36.498,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "рядами",
+   "start": 36.498,
+   "end": 36.958,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "охрана.",
+   "start": 37.138,
+   "end": 37.718,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "Все",
+   "start": 38.038,
+   "end": 38.158,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "в",
+   "start": 38.158,
+   "end": 38.338,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "инее.",
+   "start": 38.338,
+   "end": 38.578,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "Оружие",
+   "start": 39.138,
+   "end": 39.598,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "так",
+   "start": 39.598,
+   "end": 39.758,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "и",
+   "start": 39.758,
+   "end": 39.878,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "осталось",
+   "start": 39.878,
+   "end": 40.198,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "на",
+   "start": 40.198,
+   "end": 40.358,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "полу.",
+   "start": 40.358,
+   "end": 40.698,
+   "line": "07a",
+   "role": "narr"
+  },
+  {
+   "word": "Даже",
+   "start": 41.626,
+   "end": 41.926,
+   "line": "07b",
+   "role": "gleb"
+  },
+  {
+   "word": "выстрелить",
+   "start": 41.926,
+   "end": 42.526,
+   "line": "07b",
+   "role": "gleb"
+  },
+  {
+   "word": "не",
+   "start": 42.526,
+   "end": 42.646,
+   "line": "07b",
+   "role": "gleb"
+  },
+  {
+   "word": "успели.",
+   "start": 42.646,
+   "end": 43.046,
+   "line": "07b",
+   "role": "gleb"
+  },
+  {
    "word": "Тише!",
-   "start": 36.068,
-   "end": 36.588,
+   "start": 44.095,
+   "end": 44.615,
    "line": "08",
    "role": "ryzh"
   },
   {
    "word": "Не",
-   "start": 36.888,
-   "end": 37.068,
+   "start": 44.915,
+   "end": 45.095,
    "line": "08",
    "role": "ryzh"
   },
   {
    "word": "свети!",
-   "start": 37.068,
-   "end": 37.548,
+   "start": 45.095,
+   "end": 45.575,
    "line": "08",
    "role": "ryzh"
   },
   {
    "word": "Ты",
-   "start": 38.073,
-   "end": 38.213,
+   "start": 46.101,
+   "end": 46.241,
    "line": "09",
    "role": "gleb"
   },
   {
    "word": "кто",
-   "start": 38.213,
-   "end": 38.413,
+   "start": 46.241,
+   "end": 46.441,
    "line": "09",
    "role": "gleb"
   },
   {
    "word": "такой?",
-   "start": 38.413,
-   "end": 38.693,
+   "start": 46.441,
+   "end": 46.721,
    "line": "09",
    "role": "gleb"
   },
   {
    "word": "Рыжий.",
-   "start": 39.268,
-   "end": 39.808,
+   "start": 47.296,
+   "end": 47.836,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "Блок",
-   "start": 40.188,
-   "end": 40.688,
+   "start": 48.216,
+   "end": 48.716,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "два.",
-   "start": 40.688,
-   "end": 40.928,
+   "start": 48.716,
+   "end": 48.956,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "Мы",
-   "start": 41.548,
-   "end": 41.908,
+   "start": 49.576,
+   "end": 49.936,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "не",
-   "start": 41.908,
-   "end": 42.228,
+   "start": 49.936,
+   "end": 50.256,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "бунтуем",
-   "start": 42.228,
-   "end": 42.828,
+   "start": 50.256,
+   "end": 50.856,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "мы",
-   "start": 43.328,
-   "end": 43.708,
+   "start": 51.356,
+   "end": 51.736,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "прячемся.",
-   "start": 43.708,
-   "end": 44.408,
+   "start": 51.736,
+   "end": 52.436,
    "line": "10",
    "role": "ryzh"
   },
   {
    "word": "От",
-   "start": 44.904,
-   "end": 45.044,
+   "start": 52.932,
+   "end": 53.072,
    "line": "11",
    "role": "gleb"
   },
   {
    "word": "кого",
-   "start": 45.044,
-   "end": 45.284,
+   "start": 53.072,
+   "end": 53.312,
    "line": "11",
    "role": "gleb"
   },
   {
    "word": "прячетесь?",
-   "start": 45.284,
-   "end": 45.884,
+   "start": 53.312,
+   "end": 53.912,
    "line": "11",
    "role": "gleb"
   },
   {
    "word": "Внизу",
-   "start": 46.42,
-   "end": 46.94,
+   "start": 54.448,
+   "end": 54.968,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "всех",
-   "start": 46.94,
-   "end": 47.16,
+   "start": 54.968,
+   "end": 55.188,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "будили…",
-   "start": 47.16,
-   "end": 48.1,
+   "start": 55.188,
+   "end": 56.128,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "и",
-   "start": 48.1,
-   "end": 48.3,
+   "start": 56.128,
+   "end": 56.328,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "они",
-   "start": 48.3,
-   "end": 48.46,
+   "start": 56.328,
+   "end": 56.488,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "встали",
-   "start": 48.46,
-   "end": 48.8,
+   "start": 56.488,
+   "end": 56.828,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "другими.",
-   "start": 48.8,
-   "end": 49.38,
+   "start": 56.828,
+   "end": 57.408,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "Холодными.",
-   "start": 49.74,
-   "end": 50.36,
+   "start": 57.768,
+   "end": 58.388,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "Мы",
-   "start": 50.76,
-   "end": 50.94,
+   "start": 58.788,
+   "end": 58.968,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "зовём",
-   "start": 50.94,
-   "end": 51.26,
+   "start": 58.968,
+   "end": 59.288,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "их",
-   "start": 51.26,
-   "end": 51.44,
+   "start": 59.288,
+   "end": 59.468,
    "line": "12",
    "role": "ryzh"
   },
   {
    "word": "стылые.",
-   "start": 51.92,
-   "end": 52.48,
+   "start": 59.948,
+   "end": 60.508,
    "line": "12",
    "role": "ryzh"
   },
   {
+   "word": "Погоди.",
+   "start": 61.031,
+   "end": 61.571,
+   "line": "12a",
+   "role": "gleb"
+  },
+  {
+   "word": "Вы",
+   "start": 62.071,
+   "end": 62.291,
+   "line": "12a",
+   "role": "gleb"
+  },
+  {
+   "word": "же",
+   "start": 62.291,
+   "end": 62.451,
+   "line": "12a",
+   "role": "gleb"
+  },
+  {
+   "word": "бунт",
+   "start": 62.451,
+   "end": 62.811,
+   "line": "12a",
+   "role": "gleb"
+  },
+  {
+   "word": "подняли.",
+   "start": 62.811,
+   "end": 63.311,
+   "line": "12a",
+   "role": "gleb"
+  },
+  {
+   "word": "Бунтовали.",
+   "start": 63.912,
+   "end": 64.672,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "Три",
+   "start": 65.012,
+   "end": 65.452,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "часа",
+   "start": 65.452,
+   "end": 65.712,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "назад.",
+   "start": 65.712,
+   "end": 65.992,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "Потом",
+   "start": 66.532,
+   "end": 66.852,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "наши",
+   "start": 66.852,
+   "end": 67.252,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "выломали",
+   "start": 67.252,
+   "end": 67.852,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "дверь",
+   "start": 67.852,
+   "end": 68.192,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "в",
+   "start": 68.192,
+   "end": 68.252,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "Блок",
+   "start": 68.252,
+   "end": 68.492,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "Ноль",
+   "start": 68.492,
+   "end": 68.792,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "думали,",
+   "start": 69.292,
+   "end": 69.592,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "там",
+   "start": 69.652,
+   "end": 69.792,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "оружие",
+   "start": 69.792,
+   "end": 70.232,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "и",
+   "start": 70.232,
+   "end": 70.312,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "шаттл.",
+   "start": 70.312,
+   "end": 70.712,
+   "line": "12b",
+   "role": "ryzh"
+  },
+  {
+   "word": "А",
+   "start": 71.363,
+   "end": 71.523,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "там",
+   "start": 71.523,
+   "end": 71.763,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "были",
+   "start": 71.763,
+   "end": 72.003,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "они.",
+   "start": 72.003,
+   "end": 72.323,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "Двести.",
+   "start": 73.123,
+   "end": 73.483,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "За",
+   "start": 74.183,
+   "end": 74.363,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "час",
+   "start": 74.363,
+   "end": 74.783,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "вся",
+   "start": 75.083,
+   "end": 75.303,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "охрана.",
+   "start": 75.303,
+   "end": 76.343,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "И",
+   "start": 76.463,
+   "end": 76.503,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "половина",
+   "start": 76.503,
+   "end": 76.943,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "наших.",
+   "start": 76.943,
+   "end": 77.203,
+   "line": "12c",
+   "role": "ryzh"
+  },
+  {
+   "word": "Ложись!",
+   "start": 78.862,
+   "end": 79.482,
+   "line": "12d",
+   "role": "ryzh"
+  },
+  {
+   "word": "Не",
+   "start": 79.862,
+   "end": 80.002,
+   "line": "12d",
+   "role": "ryzh"
+  },
+  {
+   "word": "дыши!",
+   "start": 80.002,
+   "end": 80.402,
+   "line": "12d",
+   "role": "ryzh"
+  },
+  {
+   "word": "Тихо…",
+   "start": 83.725,
+   "end": 84.585,
+   "line": "12e",
+   "role": "ryzh"
+  },
+  {
+   "word": "Ушёл.",
+   "start": 84.585,
+   "end": 85.125,
+   "line": "12e",
+   "role": "ryzh"
+  },
+  {
    "word": "Слышь,",
-   "start": 53.428,
-   "end": 53.868,
+   "start": 85.953,
+   "end": 86.393,
    "line": "13",
    "role": "gleb"
   },
   {
    "word": "полковник,",
-   "start": 53.908,
-   "end": 54.328,
+   "start": 86.433,
+   "end": 86.853,
    "line": "13",
    "role": "gleb"
   },
   {
    "word": "а",
-   "start": 54.768,
-   "end": 54.888,
+   "start": 87.293,
+   "end": 87.413,
    "line": "13",
    "role": "gleb"
   },
   {
    "word": "что",
-   "start": 54.888,
-   "end": 55.148,
+   "start": 87.413,
+   "end": 87.673,
    "line": "13",
    "role": "gleb"
   },
   {
    "word": "за…",
-   "start": 55.148,
-   "end": 55.588,
+   "start": 87.673,
+   "end": 88.113,
    "line": "13",
    "role": "gleb"
   },
   {
    "word": "Не",
-   "start": 55.691,
-   "end": 56.071,
+   "start": 88.215,
+   "end": 88.595,
    "line": "14",
    "role": "khor"
   },
   {
    "word": "отвлекайся.",
-   "start": 56.071,
-   "end": 57.091,
+   "start": 88.595,
+   "end": 89.615,
    "line": "14",
    "role": "khor"
   },
   {
    "word": "Иди",
-   "start": 57.551,
-   "end": 57.851,
+   "start": 90.075,
+   "end": 90.375,
    "line": "14",
    "role": "khor"
   },
   {
    "word": "к",
-   "start": 57.851,
-   "end": 57.991,
+   "start": 90.375,
+   "end": 90.515,
    "line": "14",
    "role": "khor"
   },
   {
    "word": "лифту.",
-   "start": 57.991,
-   "end": 58.511,
+   "start": 90.515,
+   "end": 91.035,
    "line": "14",
    "role": "khor"
   },
   {
+   "word": "Мой",
+   "start": 92.305,
+   "end": 92.525,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "брат",
+   "start": 92.525,
+   "end": 92.765,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "где-то",
+   "start": 92.765,
+   "end": 93.125,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "здесь.",
+   "start": 93.125,
+   "end": 93.465,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "Его",
+   "start": 94.105,
+   "end": 94.325,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "не",
+   "start": 94.325,
+   "end": 94.485,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "будили",
+   "start": 94.485,
+   "end": 94.885,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "он",
+   "start": 95.165,
+   "end": 95.405,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "спал,",
+   "start": 95.405,
+   "end": 95.785,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "когда",
+   "start": 95.825,
+   "end": 96.025,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "всё",
+   "start": 96.025,
+   "end": 96.225,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
+   "word": "началось.",
+   "start": 96.225,
+   "end": 96.605,
+   "line": "14a",
+   "role": "ryzh"
+  },
+  {
    "word": "Слышишь?",
-   "start": 60.46,
-   "end": 61.14,
+   "start": 98.472,
+   "end": 99.152,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "Это",
-   "start": 61.38,
-   "end": 61.64,
+   "start": 99.392,
+   "end": 99.652,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "мой",
-   "start": 61.64,
-   "end": 61.84,
+   "start": 99.652,
+   "end": 99.852,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "брат!",
-   "start": 61.84,
-   "end": 62.24,
+   "start": 99.852,
+   "end": 100.252,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "Он",
-   "start": 62.6,
-   "end": 62.68,
+   "start": 100.612,
+   "end": 100.692,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "стучит",
-   "start": 62.68,
-   "end": 63.32,
+   "start": 100.692,
+   "end": 101.332,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "он",
-   "start": 63.54,
-   "end": 63.6,
+   "start": 101.552,
+   "end": 101.612,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "живой!",
-   "start": 63.6,
-   "end": 64.2,
+   "start": 101.612,
+   "end": 102.212,
    "line": "15",
    "role": "ryzh"
   },
   {
    "word": "Стекло",
-   "start": 64.529,
-   "end": 65.069,
+   "start": 102.54,
+   "end": 103.08,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "замёрзло",
-   "start": 65.069,
-   "end": 65.629,
+   "start": 103.08,
+   "end": 103.64,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "изнутри.",
-   "start": 65.629,
-   "end": 66.109,
+   "start": 103.64,
+   "end": 104.12,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "Ты",
-   "start": 66.529,
-   "end": 66.689,
+   "start": 104.54,
+   "end": 104.7,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "правило",
-   "start": 66.689,
-   "end": 67.129,
+   "start": 104.7,
+   "end": 105.14,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "читал?",
-   "start": 67.129,
-   "end": 67.589,
+   "start": 105.14,
+   "end": 105.6,
    "line": "16",
    "role": "gleb"
   },
   {
    "word": "Это",
-   "start": 68.023,
-   "end": 68.303,
+   "start": 106.035,
+   "end": 106.315,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "просто",
-   "start": 68.303,
-   "end": 68.683,
+   "start": 106.315,
+   "end": 106.695,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "холод!",
-   "start": 68.683,
-   "end": 69.263,
+   "start": 106.695,
+   "end": 107.275,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "Он",
-   "start": 69.743,
-   "end": 69.863,
+   "start": 107.755,
+   "end": 107.875,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "там",
-   "start": 69.863,
-   "end": 70.043,
+   "start": 107.875,
+   "end": 108.055,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "задыхается!",
-   "start": 70.043,
-   "end": 70.883,
+   "start": 108.055,
+   "end": 108.895,
    "line": "17",
    "role": "ryzh"
   },
   {
    "word": "Не",
-   "start": 71.439,
-   "end": 71.679,
+   "start": 109.45,
+   "end": 109.69,
    "line": "18",
    "role": "gleb"
   },
   {
    "word": "трогай.",
-   "start": 71.679,
-   "end": 72.279,
+   "start": 109.69,
+   "end": 110.29,
    "line": "18",
    "role": "gleb"
   },
   {
    "word": "Брат…?",
-   "start": 75.674,
-   "end": 76.334,
+   "start": 113.686,
+   "end": 114.346,
    "line": "19",
    "role": "ryzh"
   }

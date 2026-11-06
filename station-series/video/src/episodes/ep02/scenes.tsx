@@ -311,7 +311,8 @@ export const SBrother: React.FC<SceneProps> = ({ dur, lines }) => {
   const id = "br";
   const l16 = L(lines, "16");
   const l18 = L(lines, "18");
-  const knock = (t % 1.8) < 0.12;
+  const l15 = L(lines, "15");
+  const knock = t > l15.start - 1.8 && (t - (l15.start - 1.8)) % 1.8 < 0.12;
   const press = t > l18.end - 0.1; // Рыжий бьёт по кнопке
   const grab = t > l16.start && !press;
   return (
@@ -418,11 +419,201 @@ export const SCliff2: React.FC<SceneProps> = ({ dur }) => {
   );
 };
 
+/* ============================ 3а. СТАТУИ ОХРАНЫ ============================ */
+const Rifle: React.FC<{ x: number; y: number; r: number }> = ({ x, y, r }) => (
+  <g transform={`translate(${x} ${y}) rotate(${r})`}>
+    <rect x={-110} y={-10} width={220} height={22} rx={4} fill="#1A1E24" stroke="#050608" strokeWidth={5} />
+    <rect x={-40} y={10} width={26} height={40} fill="#1A1E24" stroke="#050608" strokeWidth={5} />
+    <rect x={60} y={-16} width={70} height={10} fill="#2A2F36" />
+    <rect x={-110} y={-10} width={220} height={22} rx={4} fill="#DDF3FF" opacity={0.25} />
+  </g>
+);
+
+export const SGuards: React.FC<SceneProps> = ({ dur }) => {
+  const t = useT();
+  const id = "gd";
+  const walk = interpolate(t, [0, dur], [0, 1], C);
+  const step = Math.sin(t * 5);
+  return (
+    <AbsoluteFill style={{ background: "#000", opacity: fadeIn(t) }}>
+      <Cam dur={dur} z0={1.0} z1={1.12} x0={540} x1={520} y0={960} y1={920}>
+        <svg width={1080} height={1920}>
+          <Defs id={id} />
+          <PodHall id={id} t={t} />
+          {/* ледяные статуи охраны в проходе */}
+          {[
+            { x: 300, g: 1300, s: 0.55, pose: { armL: [-60, -100], armR: [30, -20], legL: [-10, 0], legR: [14, 0], head: -10 } },
+            { x: 790, g: 1330, s: 0.6, pose: { armL: [-10, -40], armR: [120, 160], legL: [-14, 0], legR: [20, 4], lean: 8, head: 12 } },
+            { x: 560, g: 1150, s: 0.42, pose: { armL: [-140, -170], armR: [140, 170], legL: [-6, 0], legR: [6, 0], head: -16 } },
+          ].map((g, i) => (
+            <g key={i}>
+              <ellipse cx={g.x} cy={g.g - 300 * g.s} rx={220 * g.s} ry={420 * g.s} fill={HARON.ice} opacity={0.12} filter={`url(#b24-${id})`} />
+              <Person uid={`gd${i}`} x={g.x} ground={g.g} scale={g.s} look={LOOKS.guardFrozen} emotion="closed" facing={i % 2 ? -1 : 1} light={{ x: 0.3, y: -1 }} rim="#FFFFFF" pose={g.pose as never} />
+            </g>
+          ))}
+          <Rifle x={430} y={1340} r={12} />
+          <Rifle x={700} y={1400} r={-20} />
+          <Person uid="gdg" x={480 + walk * 40} ground={1700} scale={0.95} look={LOOKS.gleb} emotion="tense" facing={1} light={{ x: 0.3, y: -1 }} rim="#7FB8FF" pose={{ armL: [8 + step * 6, 4], armR: [-8 - step * 6, -30], legL: [-6 + step * 10, 0], legR: [6 - step * 10, 2], head: 10 }} item="crowbar" itemAngle={-40} t={t} />
+          <Breath x={500 + walk * 40} y={700} id={id} />
+          <Vignette id={id} />
+        </svg>
+      </Cam>
+      <HUD2 fall={10 * 3600 + 46 * 60} dots={COLD_PODS} label="ХОЛОДНЫХ: 7 • БЛИЖ. 2 м" frost={0.35} />
+    </AbsoluteFill>
+  );
+};
+
+/* ============================ 4а. ХРОНИКА БУНТА: запись камер ============================ */
+export const SRiot: React.FC<SceneProps> = ({ dur, lines }) => {
+  const t = useT();
+  const frame = useCurrentFrame();
+  const id = "rt";
+  const l12c = L(lines, "12c");
+  // кадры «камер»: пост → взрыв → дверь Блока 0 → глаза в темноте → статуи
+  const cuts = [0, l12c.start * 0.33, l12c.start * 0.62, l12c.start - 0.2, l12c.start + (l12c.end - l12c.start) * 0.55, dur];
+  const k = cuts.findIndex((c, i) => t >= c && t < cuts[i + 1]);
+  const lt = t - cuts[Math.max(0, k)];
+  const cams = ["КАМЕРА 02 • ПОСТ УПРАВЛЕНИЯ", "КАМЕРА 07 • ДВИГАТЕЛЬНЫЙ ОТСЕК", "КАМЕРА 11 • БЛОК 0", "КАМЕРА 11 • БЛОК 0", "КАМЕРА 03 • ШЛЮЗ"];
+  const runners = [0, 1, 2, 3, 4];
+  return (
+    <AbsoluteFill style={{ background: "#000" }}>
+      <AbsoluteFill style={{ filter: "grayscale(0.6) contrast(1.15)" }}>
+        <svg width={1080} height={1920}>
+          <Defs id={id} />
+          <rect width={1080} height={1920} fill="#0A1018" />
+          {k === 0 ? (
+            <g>
+              <rect x={0} y={600} width={1080} height={700} fill="#121B26" />
+              <rect x={320} y={640} width={440} height={180} fill="#0B141E" stroke="#2C3A48" strokeWidth={8} />
+              <text x={540} y={745} textAnchor="middle" fontFamily="Oswald" fontWeight={700} fontSize={56} fill="#8FA3B5">
+                ПОСТ УПРАВЛЕНИЯ
+              </text>
+              {runners.map((i) => (
+                <Person key={i} uid={`rr${i}`} x={(-200 + i * 260 + lt * 520) % 1300} ground={1300} scale={0.42} mode="sil" look={LOOKS.ryzhy} facing={1} light={{ x: 0, y: -1 }} rim="#FF8A3D" pose={{ armL: [-40, -80], armR: [50, 90], legL: [-40 + 30 * Math.sin(lt * 12 + i), 10], legR: [40 - 30 * Math.sin(lt * 12 + i), -10], lean: 14 }} />
+              ))}
+            </g>
+          ) : null}
+          {k === 1 ? (
+            <g>
+              <rect x={0} y={600} width={1080} height={700} fill="#121B26" />
+              {[0, 1, 2].map((i) => (
+                <rect key={i} x={180 + i * 260} y={700} width={180} height={480} rx={20} fill="#1E2936" stroke="#050608" strokeWidth={8} />
+              ))}
+              <circle cx={540} cy={900} r={120 + lt * 900} fill="#FFB45A" opacity={Math.max(0, 0.9 - lt * 1.2)} filter={`url(#b24-${id})`} />
+              <rect width={1080} height={1920} fill="#000" opacity={Math.max(0, Math.min(0.8, (lt - 0.6) * 1.2))} />
+              <text x={540} y={960} textAnchor="middle" fontFamily="JetBrains Mono" fontWeight={700} fontSize={50} fill={HARON.red} opacity={lt > 0.4 ? 1 : 0}>
+                ПИТАНИЕ: ОТКАЗ
+              </text>
+            </g>
+          ) : null}
+          {k === 2 ? (
+            <g>
+              <rect x={240} y={560} width={600} height={760} fill="#141C26" stroke="#050608" strokeWidth={12} />
+              <rect x={240} y={560} width={600} height={70} fill="#C9962A" />
+              <text x={540} y={612} textAnchor="middle" fontFamily="Oswald" fontWeight={700} fontSize={44} fill="#141210">
+                БЛОК 0 • НЕ ВХОДИТЬ
+              </text>
+              <g transform={`translate(${540 - lt * 40} 0)`}>
+                <rect x={260} y={650} width={280} height={650} fill="#1E2936" stroke="#050608" strokeWidth={8} />
+              </g>
+              <g transform={`translate(${lt * 40} 0)`}>
+                <rect x={540} y={650} width={280} height={650} fill="#1E2936" stroke="#050608" strokeWidth={8} />
+              </g>
+              <rect x={540 - lt * 40} y={650} width={lt * 80} height={650} fill="#000" />
+              {[0, 1, 2].map((i) => (
+                <Person key={i} uid={`rd${i}`} x={330 + i * 210} ground={1500} scale={0.5} mode="sil" look={LOOKS.ryzhy} facing={1} light={{ x: 0, y: -1 }} rim="#FF8A3D" pose={{ armL: [140, 170], armR: [150, 175], legL: [-14, 0], legR: [14, 0], head: 10 }} />
+              ))}
+            </g>
+          ) : null}
+          {k === 3 ? (
+            <g>
+              <rect width={1080} height={1920} fill="#010204" />
+              {Array.from({ length: 34 }, (_, i) => {
+                const rx = Math.sin(i * 12.9898) * 43758.5453;
+                const ry = Math.sin(i * 78.233) * 12543.123;
+                const x = 120 + (rx - Math.floor(rx)) * 840;
+                const y = 640 + (ry - Math.floor(ry)) * 560;
+                const on = lt > (i % 10) * 0.08;
+                return on ? (
+                  <g key={i} opacity={0.9}>
+                    <ellipse cx={x - 12} cy={y} rx={9} ry={5} fill="#F4FBFF" />
+                    <ellipse cx={x + 12} cy={y} rx={9} ry={5} fill="#F4FBFF" />
+                  </g>
+                ) : null;
+              })}
+            </g>
+          ) : null}
+          {k === 4 ? (
+            <g>
+              <rect x={0} y={600} width={1080} height={700} fill="#0E1620" />
+              {[0, 1, 2, 3].map((i) => (
+                <Person key={i} uid={`rs${i}`} x={180 + i * 240} ground={1350} scale={0.5} look={LOOKS.guardFrozen} emotion="closed" facing={i % 2 ? -1 : 1} light={{ x: 0, y: -1 }} rim="#FFFFFF" pose={{ armL: [-30 - i * 10, -60], armR: [20 + i * 8, 40], legL: [-8, 0], legR: [10, 0], head: -8 + i * 6 }} />
+              ))}
+            </g>
+          ) : null}
+          <Vignette id={id} />
+        </svg>
+      </AbsoluteFill>
+      {/* интерфейс записи камер */}
+      <AbsoluteFill>
+        {Array.from({ length: 60 }, (_, i) => (
+          <div key={i} style={{ position: "absolute", left: 0, right: 0, top: i * 32, height: 2, background: "rgba(255,255,255,0.06)" }} />
+        ))}
+        {lt < 0.1 ? <AbsoluteFill style={{ background: "#FFFFFF", opacity: 0.25 }} /> : null}
+      </AbsoluteFill>
+      <div style={{ position: "absolute", left: 60, right: 60, top: ZONES.hud.top, display: "flex", justifyContent: "space-between", fontFamily: FONTS.mono, fontWeight: 700, fontSize: 28, color: "#E8EEF2" }}>
+        <span>
+          <span style={{ color: HARON.red, opacity: frame % 30 < 18 ? 1 : 0.2 }}>●</span> {cams[Math.max(0, k)]}
+        </span>
+        <span style={{ color: "#FFC27A" }}>−3:00:00</span>
+      </div>
+      <div style={{ position: "absolute", left: 60, top: ZONES.hud.top + 50, fontFamily: FONTS.mono, fontWeight: 700, fontSize: 26, color: "#8A9AA8" }}>ЗАПИСЬ • 3 ЧАСА НАЗАД</div>
+    </AbsoluteFill>
+  );
+};
+
+/* ============================ 4б. ПРЯТКИ: стылый проходит мимо ============================ */
+export const SSneak: React.FC<SceneProps> = ({ dur, lines }) => {
+  const t = useT();
+  const id = "sn";
+  const l12e = L(lines, "12e");
+  const pass = interpolate(t, [0.6, l12e.start - 0.2], [0, 1], C);
+  const gone = t > l12e.start - 0.2;
+  const sx = 1180 - pass * 1400;
+  return (
+    <AbsoluteFill style={{ background: "#000", opacity: fadeIn(t) }}>
+      <Cam dur={dur} z0={1.05} z1={1.12} y0={1000} y1={960}>
+        <svg width={1080} height={1920}>
+          <Defs id={id} />
+          <PodHall id={id} t={t} />
+          {/* стылый идёт по проходу — силуэт, бельма, пар */}
+          {!gone ? (
+            <g>
+              <ellipse cx={sx} cy={940} rx={160} ry={300} fill={HARON.ice} opacity={0.14} filter={`url(#b24-${id})`} />
+              <Person uid="sns" x={sx} ground={1230} scale={0.55} mode="sil" look={LOOKS.stylyy} facing={-1} light={{ x: 0.2, y: -1 }} rim={HARON.ice} pose={{ armL: [-15, -5], armR: [20, 10], legL: [-12 + 14 * Math.sin(t * 3), 0], legR: [12 - 14 * Math.sin(t * 3), 0], lean: -6, head: 14 }} t={t} />
+            </g>
+          ) : null}
+          {/* Глеб и Рыжий прижались за капсулой (передний план) */}
+          <rect x={-40} y={1180} width={720} height={760} rx={60} fill="#101C2C" stroke="#050608" strokeWidth={14} />
+          <rect x={-20} y={1200} width={680} height={40} fill="#5F9FD8" opacity={0.25} />
+          <Person uid="sng" x={250} ground={1880} scale={0.95} look={LOOKS.gleb} emotion="tense" facing={1} light={{ x: 1, y: -0.5 }} rim="#7FB8FF" pose={{ armL: [-30, -80], armR: [50, 120], legL: [80, -10], legR: [70, -20], lean: 10, head: 14 }} t={t} />
+          <Person uid="snr" x={650} ground={1890} scale={0.88} look={LOOKS.ryzhy} emotion="fear" facing={-1} light={{ x: -1, y: -0.5 }} rim="#FFB07A" pose={{ armL: [-40, -100], armR: [20, 50], legL: [-80, 10], legR: [-70, 20], lean: -10, head: -10 }} t={t} />
+          <Vignette id={id} />
+        </svg>
+      </Cam>
+      <HUD2 fall={10 * 3600 + 36 * 60} temp={gone ? -13 : -15} dots={[...COLD_PODS.slice(0, 4), { angle: interpolate(pass, [0, 1], [80, 280]), dist: 0.3, kind: "cold" }, { angle: 180, dist: 0.05, kind: "warm" }]} label={gone ? "СТЫЛЫЙ — 12 м" : "СТЫЛЫЙ — 3 м"} detectAt={0.6} frost={gone ? 0.4 : 0.7} />
+    </AbsoluteFill>
+  );
+};
+
 export const SCENES2: Record<string, React.FC<SceneProps>> = {
   hook: SHook2,
   recap: SRecap,
   hall: SHall,
+  guards: SGuards,
   ryzhy: SRyzhy,
+  riot: SRiot,
+  sneak: SSneak,
   hint: SHint,
   brother: SBrother,
   cliff: SCliff2,
