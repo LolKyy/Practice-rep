@@ -9,3 +9,4 @@
 - 2026-11-06 · Правка по отзыву: своё начало (блокнот → разрыв листа), финал — один вопрос, ярче, разные планы, гэги (CoinGag, Marks, QuestionPage, NotebookPage). ChoiceCard оставлен в коде, но в шаблоне не используется.
 - 2026-11-06 · Конец сессии 1: формат «Сёма-курьер», сценарий серии 1 утверждён, 3 пробных кадра в ярком стиле. Переход в новый чат (окружение с ключом ElevenLabs).
 - 2026-11-06 · Сессия 2: npm install (video, tools), .venv + faster-whisper стоят; huggingface.co всё ещё закрыт (connect_rejected) → тайминги через ElevenLabs /with-timestamps. Ключ ElevenLabs проверен. 3 пробы голоса (Dmitry, Markos, Eugene) → voice_tests/, ждём выбор.
+- 2026-11-06 · Выбран голос Dmitry. Новый tools/tts-elevenlabs.py (абзац = запрос с previous/next_text, кэш, тайминги из /with-timestamps). Серия 1 озвучена: 78,4 с, 24 шота. Отправлено на прослушивание.

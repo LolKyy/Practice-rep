@@ -33,7 +33,7 @@ assets/       music/ (bed.mp3 — фон −20 дБ), sfx/
 ```
 
 ## Пайплайн
-1. Озвучка: ElevenLabs MCP (если подключён) или пользователь кладёт `voice.mp3`. Без ключа — черновик `node tools/tts-placeholder.mjs episodes/NN 1.3` (Piper).
+1. Озвучка: `python3 tools/tts-elevenlabs.py episodes/NN` (ElevenLabs, голос Dmitry, сразу voice.mp3 + timings.json — шаг 2 не нужен), либо ElevenLabs MCP (если подключён) или пользователь кладёт `voice.mp3`. Без ключа — черновик `node tools/tts-placeholder.mjs episodes/NN 1.3` (Piper).
 2. `tools/timings episodes/NN` — faster-whisper small → timings.json (слова + шоты). Нужен доступ к huggingface.co (в облаке закрыт — запускать локально или черновые тайминги tts-placeholder).
 3. Новая серия: `video/src/episodes/EpNN.tsx` по образцу `Showcase.tsx`, timings.json копируется в src, голос — в `video/public/<id>/`; добавить в `EPISODES` в Root.tsx.
 4. `tools/render-draft <Id> episodes/NN` → показ → `tools/render-final <Id> episodes/NN` (H.264, loudnorm −14 LUFS, музыка −20 дБ).
