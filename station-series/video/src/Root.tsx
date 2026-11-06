@@ -10,6 +10,7 @@ import { StyleD, StyleE, StyleF } from "./styles/DarkStyles";
 import { HaronInk, HaronCine, HaronSil } from "./styles/HaronStyles";
 import { RigTest } from "./rig/RigTest";
 import { Ep01, EP01_DEFAULTS, calculateEp01Metadata } from "./episodes/ep01/Ep01";
+import { Ep02, EP02_DEFAULTS, calculateEp02Metadata } from "./episodes/ep02/Ep02";
 import { HaronFrame1, HaronFrame2, HaronFrame3 } from "./styles/HaronFrames";
 
 // Превью отдельных компонентов (для Studio), не для публикации.
@@ -41,6 +42,7 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={EP01_DEFAULTS}
         calculateMetadata={calculateEp01Metadata}
       />
+      <Composition id="Ep02" component={Ep02} durationInFrames={300} fps={VIDEO.fps} width={VIDEO.width} height={VIDEO.height} defaultProps={EP02_DEFAULTS} calculateMetadata={calculateEp02Metadata} />
       <Composition
         id="Showcase"
         component={Showcase}

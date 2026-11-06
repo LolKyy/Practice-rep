@@ -28,13 +28,24 @@ export type Look = {
   boots: string;
   hair: string;
   hairStyle: "buzz" | "bob" | "helmet" | "none";
-  extras?: ("stubble" | "scar" | "earpiece" | "scanner" | "tablet" | "number" | "commission" | "crystals" | "veins" | "frost" | "icicles" | "blanket")[];
+  extras?: ("stubble" | "scar" | "earpiece" | "scanner" | "tablet" | "number" | "commission" | "crystals" | "veins" | "frost" | "icicles" | "blanket" | "freckles")[];
   number?: string;
   eyes?: string;
   glowEyes?: boolean; // бельма стылых
 };
 
 export const LOOKS: Record<string, Look> = {
+  /** Рыжий — заключённый блока 2 (серия 2): оранжевая роба, рыжий, веснушки. */
+  ryzhy: {
+    skin: "#E2B49A",
+    suit: "#C8642E",
+    suitDark: "#7A3A1C",
+    boots: "#1C1E21",
+    hair: "#C8552A",
+    hairStyle: "buzz",
+    extras: ["freckles", "number"],
+    number: "2-041",
+  },
   /** Глеб до находки термосканера (серия 1, до сцены со статуей). */
   glebNoScan: {
     skin: "#B9957C",
@@ -397,6 +408,13 @@ export const Person: React.FC<PersonProps> = ({
             <path d={`M ${fx} -4 L ${fx + 9} 28 L ${fx - 4} 32`} stroke="#3A2E28" strokeWidth={3} fill="none" opacity={0.6} />
             <path d={`M ${-38 + fx} 4 q 14 6 28 0 M ${12 + fx} 4 q 14 6 28 0`} stroke="#3A2E28" strokeWidth={2.5} fill="none" opacity={0.45} />
             <g transform={`translate(${fx} 0)`}>{mouth}</g>
+            {ex.has("freckles") ? (
+              <g fill="#B0603A" opacity={0.7}>
+                {[[-34, 14], [-26, 20], [-40, 22], [-20, 12], [30, 14], [38, 20], [24, 21], [44, 12], [6, 6]].map(([fx2, fy], i) => (
+                  <circle key={i} cx={fx2 + fx} cy={fy} r={2.6} />
+                ))}
+              </g>
+            ) : null}
             {ex.has("scar") ? (
               <>
                 <path d="M -32 -48 L -18 22" stroke="#E7C6B6" strokeWidth={4.5} />

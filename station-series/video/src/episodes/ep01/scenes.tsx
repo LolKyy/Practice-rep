@@ -20,7 +20,7 @@ const speaking = (lines: SceneLine[], t: number, role = "khor") => lines.some((l
 const fadeIn = (t: number, d = 0.25) => interpolate(t, [0, d], [0, 1], C);
 
 /** Камера: плавный зум/сдвиг всей сцены. */
-const Cam: React.FC<{ children: React.ReactNode; z0?: number; z1?: number; x0?: number; x1?: number; y0?: number; y1?: number; dur: number; shake?: number }> = ({
+export const Cam: React.FC<{ children: React.ReactNode; z0?: number; z1?: number; x0?: number; x1?: number; y0?: number; y1?: number; dur: number; shake?: number }> = ({
   children,
   z0 = 1,
   z1 = 1.06,
@@ -657,7 +657,7 @@ export const SQuestion: React.FC<SceneProps> = ({ dur, lines }) => {
 };
 
 /* ============================ ФИНАЛ: «ПОДПИШИСЬ, ЧТОБЫ НЕ ПРОПУСТИТЬ ЧАСТЬ N» ============================ */
-export const SEndCard: React.FC<{ part: number }> = ({ part }) => {
+export const SEndCard: React.FC<{ part: number; episode?: number }> = ({ part, episode = part - 1 }) => {
   const t = useT();
   const op = interpolate(t, [0, 0.35], [0, 1], C);
   const pulse = 1 + 0.03 * Math.sin(t * 6);
@@ -669,7 +669,7 @@ export const SEndCard: React.FC<{ part: number }> = ({ part }) => {
         <Mars cx={540} cy={2300} r={1100} id="end" />
       </svg>
       <div style={{ position: "absolute", left: 60, right: 60, top: 640, textAlign: "center" }}>
-        <div style={{ fontFamily: FONTS.mono, fontWeight: 700, fontSize: 40, color: "#8A9AA8", letterSpacing: 6 }}>«ХАРОН» • СЕРИЯ 1</div>
+        <div style={{ fontFamily: FONTS.mono, fontWeight: 700, fontSize: 40, color: "#8A9AA8", letterSpacing: 6 }}>«ХАРОН» • СЕРИЯ {episode}</div>
         <div style={{ fontFamily: FONTS.ui, fontWeight: 900, fontSize: 84, color: HARON.white, lineHeight: 1.1, marginTop: 30 }}>
           ПОДПИШИСЬ,
           <br />
