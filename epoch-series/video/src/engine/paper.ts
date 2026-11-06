@@ -102,12 +102,15 @@ let LIGHT = { ang: -2.3, rim: "rgba(255,226,170,0.85)", edge: "#F6F1E4" };
 export const setLight = (o: Partial<typeof LIGHT>) => { LIGHT = { ...LIGHT, ...o }; };
 export const setEdge = (c?: string) => { LIGHT.edge = c ?? "#F6F1E4"; };
 
+// «Яркая аппликация» (v2.2): меньше серой фактуры, толще белая кромка — как наклейка
+export const VIVID = { grain: 1, edge: 1 };
+export const setVivid = (on: boolean) => { VIVID.grain = on ? 0.5 : 1; VIVID.edge = on ? 1.6 : 1; };
 export type CutOpts = { edge?: number; tear?: number; seed?: number; grain?: number; thick?: boolean; stroke?: string; noEdge?: boolean; alpha?: number;
   sort?: Sort; relief?: number; hairs?: number; rim?: number };
 // Вырезанная форма: тень толщины → белая кромка (+волокна) → цвет → фактура → рельеф листа → контровой край
 export const cut = (g: G, pts: Pt[], color: string | CanvasGradient, o: CutOpts = {}) => {
   const P = o.tear === 0 ? pts : tear(pts, o.tear ?? 0.9, 3.5, o.seed ?? 1);
-  const e = (o.edge ?? 1.1) * 0.55; const sort = o.sort ?? "card";
+  const e = (o.edge ?? 1.1) * 0.55 * VIVID.edge; const sort = o.sort ?? "card";
   g.save();
   if (o.alpha != null) g.globalAlpha = o.alpha;
   g.lineJoin = "round";
@@ -130,7 +133,7 @@ export const cut = (g: G, pts: Pt[], color: string | CanvasGradient, o: CutOpts 
     }
   }
   path(g, P); g.fillStyle = color; g.fill();
-  const gr = o.grain ?? (sort === "trace" ? 0.12 : 0.3);
+  const gr = (o.grain ?? (sort === "trace" ? 0.12 : 0.3)) * VIVID.grain;
   if (gr > 0 || (o.relief ?? 1) > 0) {
     g.save(); path(g, P); g.clip();
     if (gr > 0) { g.save(); g.globalCompositeOperation = "multiply"; g.globalAlpha *= gr; g.fillStyle = makeTex(g, sort); g.fill(); g.restore();
