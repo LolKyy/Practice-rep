@@ -1,10 +1,10 @@
 # STATE (2026-11-06, сессия 2)
 
 ## Где остановились
-**Серия 1 — озвучка готова, ждём ок пользователя на голос. Дальше: сборка Ep01.tsx и черновик 720p (рендер только после «ок»).**
+**Серия 1 — озвучка v2 (правки: ударения, темп, пауза в диалоге) отправлена, ждём ок. Дальше: сборка Ep01.tsx и черновик 720p (рендер только после «ок»).**
 
-- Голос: ElevenLabs Dmitry `hU3rD0Yk7DoiYULTX1pD`, eleven_multilingual_v2, stability 0.4 / similarity 0.8 / style 0.35 / speed 1.1. Текст — `storyboard.md` (не вариант из чата).
-- `episodes/01_rim_cezar/script.txt` (24 абзаца = 24 шота) → `tools/tts-elevenlabs.py` → `voice.mp3` (78,4 с, −21 LUFS; нормализация до −14 в render-final) + `timings.json` (194 слова, тайминги из ElevenLabs /with-timestamps, точнее whisper).
+- Голос: ElevenLabs Dmitry `hU3rD0Yk7DoiYULTX1pD`, eleven_multilingual_v2, stability 0.4 / similarity 0.8 / style 0.35 / speed 1.0 (было 1.1 — «слишком быстро»); реплики в «кавычках» — stability 0.3 / style 0.6. Ударения — `tools/stress-ru.txt`. В script.txt «|» = пауза 0,4 с между репликами, «||» = 0,75 с (реакция не сразу). Текст — `storyboard.md` (не вариант из чата).
+- `episodes/01_rim_cezar/script.txt` (24 абзаца = 24 шота) → `tools/tts-elevenlabs.py` → `voice.mp3` (v2: 89,0 с; громкость нормализация до −14 в render-final) + `timings.json` (194 слова, тайминги из ElevenLabs /with-timestamps, точнее whisper).
 - Кэш ответов API: `episodes/01_rim_cezar/tts_cache/` — правка одного абзаца перегенерирует только его (и соседей не трогает).
 - Пробы голосов: `voice_tests/`.
 
