@@ -1,7 +1,7 @@
 # STATE (2026-11-06, сессия 2)
 
 ## Где остановились
-**Серия 1 — озвучка v3 утверждена («отлично»), ролик собран: `video/src/episodes/Ep01.tsx` (25 шотов по timings.json), черновик 720p → `episodes/01_rim_cezar/renders/draft.mp4`. Ждём отзыв на черновик → правки точечно → финал 1080p один раз.**
+**Серия 1 — озвучка v3 утверждена («отлично»), ролик собран: `video/src/episodes/Ep01.tsx` (25 шотов по timings.json), черновик 720p готов (`episodes/01_rim_cezar/renders/draft.mp4`, 94,6 с, рендер 14 мин) и отправлен. Ждём отзыв на черновик → правки точечно → финал 1080p один раз.**
 
 - Голос A: Dmitry `hU3rD0Yk7DoiYULTX1pD`, eleven_v3, stability 0, `tools/tts-v3.py` (script_v3.txt + script_v3_tts.txt с тегами). voice.mp3 94,3 с. **mp3 в .gitignore** — голос восстанавливается из `tts_cache_v3/` без трат: `python3 tools/tts-v3.py episodes/01_rim_cezar`, потом `cp voice.mp3 video/public/ep01/`, `cp timings.json video/src/ep01_timings.json`.
 - Новые декорации/реквизит: `video/src/components/ep01art.ts` (appScreen, insula+огонь, латрина, губка, рынок+амфора, ростры, Сенат с дверями и тенями, голубь, салат, щит, летящий венок, толпа).
