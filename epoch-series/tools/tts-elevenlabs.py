@@ -2,7 +2,8 @@
   python3 tools/tts-elevenlabs.py episodes/NN [voice_id] [speed]
 script.txt: абзац = шот. Внутри абзаца «|» — отдельная фраза с паузой PAUSE (реплики диалога),
 «||» — длинная пауза LONG (реакция «не сразу»). Каждая фраза — отдельный запрос с previous_text/next_text.
-Реплики в «кавычках» читаются эмоциональнее (EMO). Ударения — tools/stress-ru.txt (в субтитры не попадают).
+Реплики в «кавычках» читаются эмоциональнее (EMO). Фраза с префиксом [shout] — крик:
+модель SHOUT_MODEL (по умолчанию eleven_v3 с тегом [shouting]; SHOUT_MODEL=v2 — крик капсом на multilingual_v2). Ударения — tools/stress-ru.txt (в субтитры не попадают).
 Кэш в <ep>/tts_cache/ — повторный запуск тратит символы только на изменённые фразы.
 Ключ подставляет прокси окружения (заголовок xi-api-key) либо переменная ELEVEN_API_KEY."""
 import base64, hashlib, json, os, re, subprocess, sys, pathlib, urllib.request
@@ -11,6 +12,7 @@ ep = pathlib.Path(sys.argv[1]); VOICE = sys.argv[2] if len(sys.argv) > 2 else "h
 SPEED = float(sys.argv[3]) if len(sys.argv) > 3 else 1.0
 BASE = {"stability": 0.4, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": True, "speed": SPEED}
 EMO = {**BASE, "stability": 0.3, "style": 0.6}
+SHOUT_MODEL = os.environ.get("SHOUT_MODEL", "v3")
 MODEL, SR, LEAD, GAP, PAUSE, LONG, PAD = "eleven_multilingual_v2", 44100, 0.15, 0.32, 0.4, 0.75, 0.04
 ACC = "́"
 stress = {}
@@ -30,10 +32,17 @@ for i, p in enumerate(paras):
         segs.append((i, parts[k], PAUSE if sep == "|" else LONG if sep == "||" else GAP))
 cache = ep / "tts_cache"; cache.mkdir(exist_ok=True)
 def tts(n):
-    txt = segs[n][1]; quoted = txt.lstrip("— ").startswith("«")
+    txt = segs[n][1]; quoted = "«" in txt or "»" in txt; clean = lambda x: x.replace("[shout] ", "")
     body = {"text": accent(txt), "model_id": MODEL, "voice_settings": EMO if quoted else BASE,
-            "previous_text": accent(segs[n - 1][1]) if n else None,
-            "next_text": accent(segs[n + 1][1]) if n + 1 < len(segs) else None}
+            "previous_text": accent(clean(segs[n - 1][1])) if n else None,
+            "next_text": accent(clean(segs[n + 1][1])) if n + 1 < len(segs) else None}
+    if txt.startswith("[shout] "):
+        txt = clean(txt)
+        if SHOUT_MODEL == "v3":
+            body = {"text": "[shouting] " + accent(txt), "model_id": "eleven_v3", "voice_settings": {"stability": 0.5, "similarity_boost": 0.8}}
+        else:
+            body.update(text=accent(re.sub(r"^(«?)(\w+)", lambda m: m[1] + m[2].upper(), txt)).rstrip("!") + "!!!",
+                        voice_settings={**EMO, "stability": 0.2, "style": 0.9})
     key = hashlib.sha1(json.dumps([VOICE, body], ensure_ascii=False).encode()).hexdigest()[:12]
     f = cache / f"{segs[n][0]:02d}_{key}.json"
     if not f.exists():
@@ -47,14 +56,18 @@ def pcm(mp3):
 out, words, shots, t = bytearray(b"\0\0" * int(LEAD * SR)), [], {}, LEAD
 for n, (i, txt, pause) in enumerate(segs):
     r = tts(n); al = r["alignment"]; ch, cs, ce = al["characters"], al["character_start_times_seconds"], al["character_end_times_seconds"]
+    j = "".join(ch); tag = {k for m in re.finditer(r"\[[^\]]*\]\s*", j) for k in range(m.start(), m.end())}
+    ch = [" " if k in tag else c for k, c in enumerate(ch)]
     speech = [k for k, c in enumerate(ch) if re.match(r"\w", c)]
     a0, a1 = max(0, cs[speech[0]] - PAD), ce[speech[-1]] + PAD          # обрезаем тишину по выравниванию
     raw = pcm(base64.b64decode(r["audio_base64"])); seg = raw[int(a0 * SR) * 2:int(a1 * SR) * 2]
     for m in re.finditer(r"\S+", "".join(ch)):
         idx = [j for j in range(m.start(), m.end()) if re.match(r"\w", ch[j])]
-        if idx: words.append({"w": m.group().replace(ACC, ""), "s": round(t + cs[idx[0]] - a0, 3), "e": round(t + ce[idx[-1]] - a0, 3), "shot": i})
+        w = m.group().replace(ACC, "")
+        if segs[n][1].startswith("[shout] ") and SHOUT_MODEL != "v3": w = w.lower().rstrip("!") + ("!" if w.endswith("!") else "")
+        if idx: words.append({"w": w, "s": round(t + cs[idx[0]] - a0, 3), "e": round(t + ce[idx[-1]] - a0, 3), "shot": i})
     d = len(seg) / 2 / SR
-    sh = shots.setdefault(i, {"i": i, "text": re.sub(r"\s*\|+\s*", " ", paras[i]), "s": round(t, 3)}); sh["e"] = round(t + d, 3)
+    sh = shots.setdefault(i, {"i": i, "text": re.sub(r"\s*\|+\s*", " ", paras[i]).replace("[shout] ", ""), "s": round(t, 3)}); sh["e"] = round(t + d, 3)
     last = n + 1 == len(segs)
     out += seg + b"\0\0" * int((0 if last else pause) * SR); t += d + (0 if last else pause)
 out += b"\0\0" * int(0.5 * SR); total = len(out) / 2 / SR
