@@ -1,0 +1,213 @@
+{
+ "duration": 81.041,
+ "scenes": [
+  {
+   "id": "hook",
+   "start": 0.0,
+   "end": 4.624
+  },
+  {
+   "id": "recap",
+   "start": 4.624,
+   "end": 21.213
+  },
+  {
+   "id": "hall",
+   "start": 21.213,
+   "end": 35.388
+  },
+  {
+   "id": "ryzhy",
+   "start": 35.388,
+   "end": 52.663
+  },
+  {
+   "id": "hint",
+   "start": 52.663,
+   "end": 58.93
+  },
+  {
+   "id": "brother",
+   "start": 58.93,
+   "end": 72.954
+  },
+  {
+   "id": "cliff",
+   "start": 72.954,
+   "end": 81.041
+  }
+ ],
+ "lines": [
+  {
+   "id": "01",
+   "scene": "hook",
+   "role": "narr",
+   "start": 0.34,
+   "end": 4.624,
+   "file": "episodes/ep02/voice/fx/01_narr.mp3",
+   "text": "Если стекло капсулы замёрзло изнутри — не открывай. Никогда."
+  },
+  {
+   "id": "02",
+   "scene": "recap",
+   "role": "narr",
+   "start": 5.134,
+   "end": 8.608,
+   "file": "episodes/ep02/voice/fx/02_narr.mp3",
+   "text": "Ты — Глеб Северин. Бывший агент, осуждён за госизмену."
+  },
+  {
+   "id": "03",
+   "scene": "recap",
+   "role": "narr",
+   "start": 8.863,
+   "end": 15.655,
+   "file": "episodes/ep02/voice/fx/03_narr.mp3",
+   "text": "Тебя закинули на «Харон-семь» — тюрьму на орбите Марса. Её захватили заключённые, и теперь она падает."
+  },
+  {
+   "id": "04",
+   "scene": "recap",
+   "role": "narr",
+   "start": 15.91,
+   "end": 21.213,
+   "file": "episodes/ep02/voice/fx/04_narr.mp3",
+   "text": "Найди дочь председателя — и получишь свободу. Только сканер пока не видит ни одного живого."
+  },
+  {
+   "id": "05",
+   "scene": "hall",
+   "role": "narr",
+   "start": 22.063,
+   "end": 26.661,
+   "file": "episodes/ep02/voice/fx/05_narr.mp3",
+   "text": "Палуба два. Блок капсул. Сотни спящих — и тишина."
+  },
+  {
+   "id": "06",
+   "scene": "hall",
+   "role": "khor",
+   "start": 27.001,
+   "end": 31.311,
+   "file": "episodes/ep02/voice/fx/06_khor.mp3",
+   "text": "Лифт вниз — в конце зала. Не задерживайся."
+  },
+  {
+   "id": "07",
+   "scene": "hall",
+   "role": "gleb",
+   "start": 32.671,
+   "end": 35.388,
+   "file": "episodes/ep02/voice/fx/07_gleb.mp3",
+   "text": "Кто-то тут пишет инструкции. Уже хорошо."
+  },
+  {
+   "id": "08",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "start": 36.068,
+   "end": 37.818,
+   "file": "episodes/ep02/voice/fx/08_ryzh.mp3",
+   "text": "Тише! Не свети!"
+  },
+  {
+   "id": "09",
+   "scene": "ryzhy",
+   "role": "gleb",
+   "start": 38.073,
+   "end": 39.013,
+   "file": "episodes/ep02/voice/fx/09_gleb.mp3",
+   "text": "Ты кто такой?"
+  },
+  {
+   "id": "10",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "start": 39.268,
+   "end": 44.649,
+   "file": "episodes/ep02/voice/fx/10_ryzh.mp3",
+   "text": "Рыжий. Блок два. Мы не бунтуем — мы прячемся."
+  },
+  {
+   "id": "11",
+   "scene": "ryzhy",
+   "role": "gleb",
+   "start": 44.904,
+   "end": 46.08,
+   "file": "episodes/ep02/voice/fx/11_gleb.mp3",
+   "text": "От кого прячетесь?"
+  },
+  {
+   "id": "12",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "start": 46.42,
+   "end": 52.663,
+   "file": "episodes/ep02/voice/fx/12_ryzh.mp3",
+   "text": "Внизу всех будили… и они встали другими. Холодными. Мы зовём их — стылые."
+  },
+  {
+   "id": "13",
+   "scene": "hint",
+   "role": "gleb",
+   "start": 53.428,
+   "end": 55.649,
+   "file": "episodes/ep02/voice/fx/13_gleb.mp3",
+   "text": "Слышь, полковник, а что за…"
+  },
+  {
+   "id": "14",
+   "scene": "hint",
+   "role": "khor",
+   "start": 55.691,
+   "end": 58.93,
+   "file": "episodes/ep02/voice/fx/14_khor.mp3",
+   "text": "Не отвлекайся. Иди к лифту."
+  },
+  {
+   "id": "15",
+   "scene": "brother",
+   "role": "ryzh",
+   "start": 60.46,
+   "end": 64.274,
+   "file": "episodes/ep02/voice/fx/15_ryzh.mp3",
+   "text": "Слышишь? Это мой брат! Он стучит — он живой!"
+  },
+  {
+   "id": "16",
+   "scene": "brother",
+   "role": "gleb",
+   "start": 64.529,
+   "end": 67.768,
+   "file": "episodes/ep02/voice/fx/16_gleb.mp3",
+   "text": "Стекло замёрзло изнутри. Ты правило читал?"
+  },
+  {
+   "id": "17",
+   "scene": "brother",
+   "role": "ryzh",
+   "start": 68.023,
+   "end": 71.184,
+   "file": "episodes/ep02/voice/fx/17_ryzh.mp3",
+   "text": "Это просто холод! Он там задыхается!"
+  },
+  {
+   "id": "18",
+   "scene": "brother",
+   "role": "gleb",
+   "start": 71.439,
+   "end": 72.954,
+   "file": "episodes/ep02/voice/fx/18_gleb.mp3",
+   "text": "Не трогай."
+  },
+  {
+   "id": "19",
+   "scene": "cliff",
+   "role": "ryzh",
+   "start": 75.674,
+   "end": 76.641,
+   "file": "episodes/ep02/voice/fx/19_ryzh.mp3",
+   "text": "Брат…?"
+  }
+ ]
+}

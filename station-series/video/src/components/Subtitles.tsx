@@ -38,6 +38,7 @@ export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] 
     groups.push({ words: cur, start: cur[0].start, end: cur[cur.length - 1].end, key });
     cur = [];
   };
+  const SHORT = new Set(["в", "во", "с", "со", "и", "а", "но", "на", "к", "ко", "по", "за", "от", "до", "из", "у", "о", "об", "не", "ни", "что", "как", "для", "без", "под", "над", "при", "через"]);
   words.forEach((w, i) => {
     cur.push(w);
     const next = words[i + 1];
@@ -46,6 +47,14 @@ export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] 
     const chars = cur.reduce((n, x) => n + x.word.length + 1, 0) + (next ? next.word.length : 0);
     const long = cur.length >= maxWords || chars > 22; // одна строка (макс. две) при 84 px
     // не оставляем одинокое слово, если можно подождать
+    // не оставляем предлог/союз висеть в конце строки — он уйдёт в следующую группу
+    const dangling = !punct && next && cur.length > 1 && SHORT.has(norm(w.word));
+    if (dangling && long) {
+      cur.pop();
+      flush();
+      cur.push(w);
+      return;
+    }
     if ((punct && cur.length >= 1) || gap > 0.45 || long || !next) flush();
   });
   return groups;

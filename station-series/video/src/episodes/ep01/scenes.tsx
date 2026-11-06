@@ -333,32 +333,32 @@ export const SFall: React.FC<SceneProps> = ({ lines }) => {
   const p = interpolate(t, [l9.start + 3, l9.end], [0, 1], { ...C, easing: Easing.in(Easing.quad) });
   const timerAt = l9.start + 5.6; // «…Двенадцать часов»
   // траектория: спираль к колонии
-  const path = "M 880 560 C 980 820 860 1040 660 1120 C 520 1180 470 1260 520 1340";
+  const path = "M 880 640 C 960 760 880 860 700 900 C 600 920 540 900 520 930";
   return (
     <AbsoluteFill style={{ background: "#03060B", opacity: fadeIn(t) }}>
       <svg width={1080} height={1920}>
         <Defs id={id} />
         <Stars n={90} />
-        <Mars cx={540} cy={2150} r={900} id={id} />
-        {/* купола колонии */}
-        {[[430, 1300, 60], [520, 1280, 80], [620, 1310, 54]].map(([x, y, r], i) => (
+        <Mars cx={540} cy={1880} r={900} id={id} />
+        {/* купола колонии — на горизонте, выше субтитров */}
+        {[[440, 985, 46], [520, 982, 62], [600, 986, 40]].map(([x, y, r], i) => (
           <g key={i}>
             <path d={`M ${x - r} ${y} A ${r} ${r} 0 0 1 ${x + r} ${y} Z`} fill="#9FE3FF" opacity={0.25} stroke="#CDEFFF" strokeWidth={3} />
             <circle cx={x} cy={y - r * 0.3} r={6} fill="#FFE3A0" />
           </g>
         ))}
         <path d={path} stroke={HARON.red} strokeWidth={6} fill="none" strokeDasharray="22 16" opacity={0.9} />
-        <circle cx={520} cy={1340} r={60 + 20 * Math.sin(t * 6)} fill="none" stroke={HARON.red} strokeWidth={4} opacity={0.8} />
+        <circle cx={520} cy={950} r={60 + 20 * Math.sin(t * 6)} fill="none" stroke={HARON.red} strokeWidth={4} opacity={0.8} />
         {/* станция-иконка движется по траектории */}
-        <g transform={`translate(${880 - 360 * p} ${560 + 780 * p})`}>
+        <g transform={`translate(${880 - 360 * p} ${640 + 290 * p})`}>
           <ellipse rx={60} ry={22} fill="none" stroke="#C9D3DB" strokeWidth={10} />
           <rect x={-8} y={-44} width={16} height={56} fill="#C9D3DB" />
           <circle r={50} fill={HARON.red} opacity={0.2} filter={`url(#b12-${id})`} />
         </g>
         <Vignette id={id} />
       </svg>
-      <Plate lines={["ДВИГАТЕЛИ ОРБИТЫ: ОТКАЗ", "ГЕНЕРАТОРЫ: ОТКАЗ"]} top={420} from={l9.start + 1.0} size={40} color={HARON.red} border={HARON.red} />
-      <Plate lines={["НОВЫЙ ВОСТОК", "40 000 ЧЕЛОВЕК"]} top={1040} from={l9.start + 6.5} size={44} color={HARON.ice} border={HARON.iceDeep} />
+      <Plate lines={["ДВИГАТЕЛИ ОРБИТЫ: ОТКАЗ", "ГЕНЕРАТОРЫ: ОТКАЗ"]} top={330} from={l9.start + 1.0} size={40} color={HARON.red} border={HARON.red} />
+      <Plate lines={["НОВЫЙ ВОСТОК", "40 000 ЧЕЛОВЕК"]} top={700} left={60} right={600} from={l9.start + 6.5} size={40} color={HARON.ice} border={HARON.iceDeep} />
       <HaronHUD fallSeconds={12 * 3600} oxygen={71} temp={-12} deck={1} dots={[]} scanLabel="" parts={{ oxygen: false, temp: false, scheme: false, scanner: false }} timerFrom={timerAt} timeScale={0.0001} />
       {t > timerAt && t < timerAt + 0.3 ? <AbsoluteFill style={{ boxShadow: "inset 0 0 180px 60px rgba(255,40,30,0.6)" }} /> : null}
       <CommLink speaking={speaking(lines, t)} />

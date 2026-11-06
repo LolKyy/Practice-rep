@@ -251,6 +251,42 @@ def music_bed(d=150):
     return norm(out + shimmer + sub, 0.7)
 
 
+def knock(n=3, seed=21):
+    """Глухой стук изнутри по стеклу капсулы."""
+    r = np.random.default_rng(seed)
+    out = np.zeros(int((0.45 * n + 0.6) * SR))
+    for k in range(n):
+        d = 0.25
+        x = np.sin(2 * np.pi * r.uniform(110, 140) * t(d)) * env(int(d * SR), 0.001, 0.05)
+        x += bandpass(noise(d), 300, 1800) * env(int(d * SR), 0.0005, 0.02) * 0.6
+        x += np.sin(2 * np.pi * 1900 * t(d)) * env(int(d * SR), 0.001, 0.03) * 0.08  # «стеклянный» призвук
+        i = int((k * 0.45 + r.uniform(-0.03, 0.03) + 0.05) * SR)
+        out[i : i + len(x)] += x * (0.8 + 0.2 * k / n)
+    return norm(out, 0.9)
+
+
+def glass_burst(d=2.2):
+    """Стекло лопается наружу + осколки + выдох холода."""
+    x = crack(d, 31) * 0.9
+    L = int(0.12 * SR)
+    x[:L] += bandpass(noise(0.12), 1500, 12000) * env(L, 0.0003, 0.04) * 1.5
+    x += bandpass(noise(d), 200, 3000) * env(int(d * SR), 0.05, 0.6) * 0.35
+    return norm(x, 0.95)
+
+
+def alarm(d=1.2):
+    tt = t(d)
+    x = np.sign(np.sin(2 * np.pi * np.where((tt * 4).astype(int) % 2 == 0, 880, 660) * tt)) * 0.3
+    x = bandpass(x, 300, 4000) * np.minimum(1, (d - tt) / 0.2)
+    return norm(x, 0.5)
+
+
+def cold_wind(d=3.0):
+    tt = t(d)
+    x = bandpass(noise(d), 300, 2500) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.5 * tt)) * np.minimum(1, tt / 0.3) * np.minimum(1, (d - tt) / 1.0)
+    return norm(x, 0.6)
+
+
 if __name__ == "__main__":
     print("[sfx] синтез:")
     save("ice_crunch", ice_crunch(), stereo_width=0.004)
@@ -268,3 +304,7 @@ if __name__ == "__main__":
     save("lid_open", lid())
     save("drone_station", drone(), stereo_width=0.012)
     save("haron_bed", music_bed(), folder=MUS, stereo_width=0.015)
+    save("knock_glass", knock(), stereo_width=0.003)
+    save("glass_burst", glass_burst(), stereo_width=0.006)
+    save("alarm_button", alarm())
+    save("cold_wind", cold_wind(), stereo_width=0.01)

@@ -2,6 +2,7 @@ import React from "react";
 import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { FONTS } from "../../lib/theme";
 import { HARON } from "../../components/HaronHUD";
+import { safeTop } from "../../haron/layout";
 
 // Общие элементы серий «ХАРОНА»: Марс, станция, звёзды, окно связи, капсулы, контейнер, заголовки.
 
@@ -176,14 +177,25 @@ export const TitleCard: React.FC<{ text: string; sub?: string; from?: number; to
 };
 
 /** Плашка-надпись (системная/информационная). */
-export const Plate: React.FC<{ lines: string[]; top: number; color?: string; from?: number; size?: number; border?: string }> = ({ lines, top, color = HARON.white, from = 0, size = 34, border = "#1F2A36" }) => {
+export const Plate: React.FC<{ lines: string[]; top: number; color?: string; from?: number; size?: number; border?: string; left?: number; right?: number }> = ({
+  lines,
+  top: topWanted,
+  color = HARON.white,
+  from = 0,
+  size = 34,
+  border = "#1F2A36",
+  left = 60,
+  right = 60,
+}) => {
+  // страховка от наложений: плашка не может встать на окно связи / субтитры
+  const top = safeTop(topWanted, 34 + size * 1.3 + (lines.length - 1) * size * 0.94);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps - from;
   if (t < 0) return null;
   const op = interpolate(t, [0, 0.2], [0, 1], { extrapolateRight: "clamp" });
   return (
-    <div style={{ position: "absolute", left: 60, right: 60, top, opacity: op, translate: `0px ${(1 - op) * 14}px`, background: "rgba(6,10,16,0.88)", border: `3px solid ${border}`, borderRadius: 12, padding: "14px 22px" }}>
+    <div style={{ position: "absolute", left, right, top, opacity: op, translate: `0px ${(1 - op) * 14}px`, background: "rgba(6,10,16,0.88)", border: `3px solid ${border}`, borderRadius: 12, padding: "14px 22px" }}>
       {lines.map((l, i) => (
         <div key={i} style={{ fontFamily: FONTS.mono, fontWeight: 700, fontSize: i === 0 ? size : size * 0.72, color: i === 0 ? color : "#9AAAB8", letterSpacing: 2, lineHeight: 1.3 }}>
           {l}

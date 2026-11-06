@@ -1,0 +1,172 @@
+{
+ "episode": "ep02",
+ "voices": {
+  "narr": {
+   "id": "JBFqnCBsd6RMkjVDRZzb",
+   "fx": "clean",
+   "tempo": 1.1
+  },
+  "gleb": {
+   "id": "SOYHLrjzK2X1ezoPC6cr",
+   "fx": "clean",
+   "tempo": 1.04
+  },
+  "khor": {
+   "id": "N2lVS1w4EtoT3dr4eOWO",
+   "fx": "radio",
+   "tempo": 1.08
+  },
+  "pred": {
+   "id": "nPczCjzI2devNBz1zQrb",
+   "fx": "earth",
+   "tempo": 1.0
+  },
+  "sys": {
+   "id": "XrExE9yKIg1WjnnlVkGX",
+   "fx": "system",
+   "tempo": 1.0
+  },
+  "ryzh": {
+   "id": "TX3LPaxmHKxFdv7VOQHJ",
+   "fx": "clean",
+   "tempo": 1.05
+  }
+ },
+ "preScale": 0.85,
+ "tail": 4.4,
+ "lines": [
+  {
+   "id": "01",
+   "scene": "hook",
+   "role": "narr",
+   "pre": 0.4,
+   "text": "Если стекло капсулы замёрзло изнутри — не открывай. Никогда."
+  },
+  {
+   "id": "02",
+   "scene": "recap",
+   "role": "narr",
+   "pre": 0.6,
+   "text": "Ты — Глеб Северин. Бывший агент, осуждён за госизмену."
+  },
+  {
+   "id": "03",
+   "scene": "recap",
+   "role": "narr",
+   "pre": 0.3,
+   "text": "Тебя закинули на «Харон-семь» — тюрьму на орбите Марса. Её захватили заключённые, и теперь она падает."
+  },
+  {
+   "id": "04",
+   "scene": "recap",
+   "role": "narr",
+   "pre": 0.3,
+   "text": "Найди дочь председателя — и получишь свободу. Только сканер пока не видит ни одного живого."
+  },
+  {
+   "id": "05",
+   "scene": "hall",
+   "role": "narr",
+   "pre": 1.0,
+   "text": "Палуба два. Блок капсул. Сотни спящих — и тишина."
+  },
+  {
+   "id": "06",
+   "scene": "hall",
+   "role": "khor",
+   "pre": 0.4,
+   "text": "Лифт вниз — в конце зала. Не задерживайся."
+  },
+  {
+   "id": "07",
+   "scene": "hall",
+   "role": "gleb",
+   "pre": 1.6,
+   "text": "[dryly] Кто-то тут пишет инструкции. Уже хорошо."
+  },
+  {
+   "id": "08",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "pre": 0.8,
+   "text": "[whispers] Тише! Не свети!"
+  },
+  {
+   "id": "09",
+   "scene": "ryzhy",
+   "role": "gleb",
+   "pre": 0.3,
+   "text": "Ты кто такой?"
+  },
+  {
+   "id": "10",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "pre": 0.3,
+   "text": "[nervous] Рыжий. Блок два. Мы не бунтуем — мы прячемся."
+  },
+  {
+   "id": "11",
+   "scene": "ryzhy",
+   "role": "gleb",
+   "pre": 0.3,
+   "text": "От кого прячетесь?"
+  },
+  {
+   "id": "12",
+   "scene": "ryzhy",
+   "role": "ryzh",
+   "pre": 0.4,
+   "text": "[whispers] Внизу всех будили… и они встали другими. Холодными. Мы зовём их — стылые."
+  },
+  {
+   "id": "13",
+   "scene": "hint",
+   "role": "gleb",
+   "pre": 0.9,
+   "text": "Слышь, полковник, а что за…"
+  },
+  {
+   "id": "14",
+   "scene": "hint",
+   "role": "khor",
+   "pre": 0.05,
+   "text": "Не отвлекайся. Иди к лифту."
+  },
+  {
+   "id": "15",
+   "scene": "brother",
+   "role": "ryzh",
+   "pre": 1.8,
+   "text": "[desperate] Слышишь? Это мой брат! Он стучит — он живой!"
+  },
+  {
+   "id": "16",
+   "scene": "brother",
+   "role": "gleb",
+   "pre": 0.3,
+   "text": "Стекло замёрзло изнутри. Ты правило читал?"
+  },
+  {
+   "id": "17",
+   "scene": "brother",
+   "role": "ryzh",
+   "pre": 0.3,
+   "text": "[shouting] Это просто холод! Он там задыхается!"
+  },
+  {
+   "id": "18",
+   "scene": "brother",
+   "role": "gleb",
+   "pre": 0.3,
+   "text": "[firmly] Не трогай."
+  },
+  {
+   "id": "19",
+   "scene": "cliff",
+   "role": "ryzh",
+   "pre": 3.2,
+   "text": "[whispers] Брат…?"
+  }
+ ]
+}
