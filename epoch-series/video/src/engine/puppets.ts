@@ -253,6 +253,7 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   g.save(); g.translate(0, shY - 10 - hr * 0.78); g.rotate(p.tilt ?? 0);
   cut(g, rectP(-6, hr * 0.6, 12, 10), skin, { seed: sd + 50, edge: 0.6 });
   for (const s of [-1, 1]) cut(g, ellP(s * hr * 0.97, 3, 4, 6, 14), skin, { seed: sd + 51 + s, edge: 0.6 });
+  if (x.hat === "hood") cut(g, [...ellP(0, 0, hr * 1.25, hr * 1.22, 30, Math.PI * 0.9, Math.PI * 2.1), [hr * 1.2, hr * 1.1], [-hr * 1.2, hr * 1.1]], x.cloak ?? "#7A6A55", { seed: sd + 80, sort: "felt" }); // капюшон: задняя часть за лицом
   cut(g, ellP(0, 0, hr, hr, 40), skin, { seed: sd + 53, sort: "water" });
   clipTo(g, ellP(0, 0, hr, hr, 40), () => fillP(g, ellP(hr * 0.6, hr * 0.2, hr * 0.7, hr * 1.1, 30), "#000", 0.08));
   if (x.bald) { cut(g, [...ellP(0, 2, hr * 1.06, hr * 0.95, 30, Math.PI * 0.82, Math.PI * 1.18)], x.hair ?? "#4A3A2A", { seed: sd + 55, edge: 0.6 }); cut(g, [...ellP(0, 2, hr * 1.06, hr * 0.95, 30, -Math.PI * 0.18, Math.PI * 0.18)], x.hair ?? "#4A3A2A", { seed: sd + 56, edge: 0.6 });
@@ -266,7 +267,7 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
     cut(g, crest, "#3B2A20", { seed: sd + 62, edge: 0.8, sort: "kraft" });
   } else if (x.hat === "laurel") {
     for (let i = 0; i < 9; i++) { const a = Math.PI * 1.05 + (i / 8) * Math.PI * 0.9; g.save(); g.translate(Math.cos(a) * hr * 0.98, Math.sin(a) * hr * 0.9 - 4); g.rotate(a + 1.2); cut(g, ellP(0, 0, 3, 7, 12), "#6E8A3A", { seed: sd + 70 + i, edge: 0.5 }); g.restore(); }
-  } else if (x.hat === "hood") cut(g, [...ellP(0, 0, hr * 1.2, hr * 1.18, 30, Math.PI * 0.9, Math.PI * 2.1), [hr * 1.15, hr * 0.9], [-hr * 1.15, hr * 0.9]], x.cloak ?? "#7A6A55", { seed: sd + 80, sort: "felt" });
+  } else if (x.hat === "hood") cut(g, [...ellP(0, -hr * 0.42, hr * 1.14, hr * 0.78, 24, Math.PI, Math.PI * 2)], x.cloak ?? "#7A6A55", { seed: sd + 82, sort: "felt" }); // козырёк над лбом, лицо открыто
   else if (x.hat === "cap") cut(g, [...ellP(0, -hr * 0.3, hr * 0.9, hr * 0.8, 24, Math.PI, Math.PI * 2), [hr * 0.9, -hr * 0.2], [-hr * 0.9, -hr * 0.2]], "#8C5A3A", { seed: sd + 81, sort: "felt" });
   g.restore();
   arm(g, tw / 2 - 2, shY + 5, 1, p.aR ?? [0.1, 0.1], 28, 26, 12, tunic, null, skin, sd + 44, p.holdR, p.holdR ? "fist" : "open");

@@ -22,6 +22,7 @@ const shot = (a: number, b = a + 1) => ({ from: f(st(a)), durationInFrames: Math
 const wt = (i: number, k: number) => W.filter((w) => w.shot === i)[k].s - st(i); // время k-го слова шота i от начала Sequence
 const e = (k: [number, Emo][]) => (t: number) => step<Emo>(t, k);
 const speak = (t: number, ranges: [number, number][]) => (ranges.some(([a, b]) => t >= a && t < b) ? 0.35 + Math.abs(Math.sin(t * 17)) * 0.6 : 0);
+const walk = (t: number, sp: number, ph = 0) => Math.sin(t * sp + ph); // шаг: −1…1 (поднимает то одну, то другую ногу)
 const VIV: React.CSSProperties = { filter: "saturate(1.35) contrast(1.06) brightness(1.04)" };
 const Sticker: React.FC<{ s: string; x: number; y: number; at?: number; rot?: number; size?: number; color?: string; bg?: string }> = ({ s, x, y, at = 0, rot = -0.06, size = 64, color = PAL.ink, bg = "#F7D84A" }) => (
   <CanvasArt draw={(g, t) => { const k = back((t - at) / 0.3); if (k <= 0) return; g.save(); g.translate(x, y); g.rotate(rot); g.scale(k, k);
@@ -79,7 +80,7 @@ export const Ep01: React.FC = () => (
         <Plane z={14} draw={(g) => cut(g, rectP(-400, -600, 1880, 3000), "#FFD08A", { tear: 0, noEdge: true, sort: "water" })} shadow={0} />
         <Plane z={6} draw={insula(1)} dyn y={-60} />
         <Plane z={5} draw={(g) => cut(g, rectP(-400, 1450, 1880, 900), "#D9C08E", { sort: "kraft", tear: 1 })} />
-        <Sema outfit="casual" s={4.6} y={1700} z={4.6} pose={(t) => bagPose({ emo: "fear", aL: [2.4, 0.6], aR: [2.4, 0.6], step: t * 3, t, lean: 0.12 })} dy={() => 0} />
+        <Sema outfit="casual" s={4.6} y={1700} z={4.6} pose={(t) => bagPose({ emo: "fear", aL: [2.4, 0.6], aR: [2.4, 0.6], step: walk(t, 6), t, lean: 0.12 })} dy={() => 0} />
       </Stage>
       <Marks kind="bang" x={300} y={900} at={0.4} />
     </Sequence>
@@ -151,9 +152,9 @@ export const Ep01: React.FC = () => (
     {/* 14. МАРШ: 30 км в день, 30 кг — Сёму сплющило */}
     <Sequence {...shot(13)}>
       <EraBackground place="field" tod="gold" cam={Camera.pan(0, 4, 160, 1.12)} fg>
-        <Extra spec={legio(63)} x={160} y={1560} s={4} z={5.6} pose={(t) => ({ emo: "calm", step: t * 4, t, look: [1, 0] })} />
-        <Extra spec={legio(64)} x={920} y={1560} s={4} z={5.6} pose={(t) => ({ emo: "tired", step: t * 4 + 1, t, look: [1, 0] })} />
-        <Sema outfit="legion" s={4.8} y={1640} pose={(t) => bagPose({ emo: "tired", squash: 1.2 + Math.sin(t * 6) * 0.2, step: t * 4, lean: 0.08, aL: [0.3, 0.2], aR: [0.3, 0.2], t })} />
+        <Extra spec={legio(63)} x={160} y={1560} s={4} z={5.6} pose={(t) => ({ emo: "calm", step: walk(t, 8), t, look: [1, 0] })} />
+        <Extra spec={legio(64)} x={920} y={1560} s={4} z={5.6} pose={(t) => ({ emo: "tired", step: walk(t, 8, 1.6), t, look: [1, 0] })} />
+        <Sema outfit="legion" s={4.8} y={1640} pose={(t) => bagPose({ emo: "tired", squash: 1.2 + Math.sin(t * 6) * 0.2, step: walk(t, 8), lean: 0.08, aL: [0.3, 0.2], aR: [0.3, 0.2], t })} />
       </EraBackground>
       <Marks kind="sweat" x={620} y={600} at={0.3} />
       <Sticker s="30 КМ / ДЕНЬ" x={540} y={290} at={0.3} size={58} bg="#2E3A57" color="#FBF7EC" />
@@ -164,8 +165,8 @@ export const Ep01: React.FC = () => (
       <EraBackground place="city" cam={Camera.push(0, 2.4, 0.1, 140, -40)} fg={false}>
         <Plane z={9} draw={rostra} />
         <Extra spec={caesar} x={540} y={1100} s={2} z={9} pose={() => ({ emo: "proud", aR: [2.5, 0.4] })} />
-        <Extra spec={legio(65)} x={250} y={1580} s={4.2} z={5.2} pose={(t) => ({ emo: "calm", step: t * 4, t })} />
-        <Sema outfit="legion" x={600} s={4.5} y={1600} pose={(t) => bagPose({ emo: "smile", step: t * 4, look: [1, -1], t })} />
+        <Extra spec={legio(65)} x={250} y={1580} s={4.2} z={5.2} pose={(t) => ({ emo: "calm", step: walk(t, 8), t })} />
+        <Sema outfit="legion" x={600} s={4.5} y={1600} pose={(t) => bagPose({ emo: "smile", step: walk(t, 8), look: [1, -1], t })} />
       </EraBackground>
       <Marks kind="sparkle" x={540} y={760} at={0.7} s={0.7} />
     </Sequence>
@@ -207,7 +208,7 @@ export const Ep01: React.FC = () => (
         <Plane z={14} draw={(g) => cut(g, rectP(-400, -600, 1880, 3000), "#9FD3EE", { tear: 0, noEdge: true, sort: "water" })} shadow={0} />
         <Plane z={7} draw={senate(0)} />
         <Extra spec={caesar} x={300} y={1560} s={3.9} z={5.6} pose={() => ({ emo: "curious", look: [1, 0], facing: 1 })} />
-        <Sema outfit="casual" x={760} s={4.6} y={1700} z={5} pose={(t) => bagPose({ emo: "resolve", step: t * 6, lean: -0.15, aL: [2.2, 0.8], look: [-1, 0], t })} dy={() => 0} />
+        <Sema outfit="casual" x={760} s={4.6} y={1700} z={5} pose={(t) => bagPose({ emo: "resolve", step: walk(t, 12), lean: -0.15, aL: [2.2, 0.8], look: [-1, 0], t })} dy={() => 0} />
       </Stage>
       <Sticker s="ДОСТАВЛЕНО!" x={540} y={320} at={0.7} size={64} bg="#3DBE5A" color="#FFFFFF" />
     </Sequence>
