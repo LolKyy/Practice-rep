@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Черновик 720×1280:  tools/render-draft <CompositionId> <episodes/NN_эпоха>
+set -euo pipefail; source "$(dirname "$0")/_env.sh"
+ID="$1"; EP="$(cd "$2" && pwd)"; mkdir -p "$EP/renders"
+cd "$VIDEO" && npx remotion render src/index.ts "$ID-draft" "$EP/renders/draft.mp4" --concurrency="$CONC" --gl="$GL" $BX --log=error
+echo "→ $EP/renders/draft.mp4"

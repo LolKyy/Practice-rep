@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Финал 1080×1920, H.264, громкость −14 LUFS (+ музыка −20 дБ под голосом, если есть assets/music/bed.mp3)
+#   tools/render-final <CompositionId> <episodes/NN_эпоха>
+set -euo pipefail; source "$(dirname "$0")/_env.sh"
+ID="$1"; EP="$(cd "$2" && pwd)"; mkdir -p "$EP/renders"
+cd "$VIDEO" && npx remotion render src/index.ts "$ID" "$EP/renders/raw.mp4" --codec=h264 --crf=18 --concurrency="$CONC" --gl="$GL" $BX --log=error
+MUSIC="$ROOT/assets/music/bed.mp3"
+if [ -f "$MUSIC" ]; then
+  ffmpeg -v error -y -i "$EP/renders/raw.mp4" -stream_loop -1 -i "$MUSIC" -filter_complex "[1:a]volume=-20dB[m];[0:a][m]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 192k "$EP/renders/final.mp4"
+else
+  ffmpeg -v error -y -i "$EP/renders/raw.mp4" -af "loudnorm=I=-14:TP=-1.5:LRA=11" -c:v copy -c:a aac -b:a 192k "$EP/renders/final.mp4"
+fi
+rm -f "$EP/renders/raw.mp4"; echo "→ $EP/renders/final.mp4"

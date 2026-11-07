@@ -1,0 +1,12 @@
+node_modules/
+.venv/
+renders/
+**/renders/
+*.mp3
+*.mp4
+*.wav
+video/public/showcase/
+video/out/
+tools/node_modules/
+tools/package-lock.json
+video/public/ep01/
