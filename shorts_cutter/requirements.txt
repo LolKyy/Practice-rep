@@ -1,0 +1,4 @@
+faster-whisper>=1.0
+yt-dlp
+numpy
+opencv-python-headless<5   # поиск лица для кадрирования (в OpenCV 5 нет Haar-каскадов)
