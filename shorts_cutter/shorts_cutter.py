@@ -16,6 +16,9 @@ shorts_cutter — нарезка длинного видео на вертика
   python shorts_cutter.py "https://youtu.be/XXXX" -n 5 --language ru
   python shorts_cutter.py podcast.mp4 --clips "12:30-13:15, 1:02:10-1:02:50"
   python shorts_cutter.py stream.mp4 --dry-run          # только показать найденные моменты
+  # Twitch: моменты по всплескам чата, вебка сверху, игра снизу
+  python shorts_cutter.py https://www.twitch.tv/videos/123 --section 1:00:00-2:00:00 \
+         --chat chat.json --layout stream
 """
 from __future__ import annotations
 
@@ -172,9 +175,9 @@ class Clip:
 
 # ───────────────────────────── источник ─────────────────────────────
 
-def resolve_source(src: str, workdir: Path) -> Path:
+def resolve_source(src: str, workdir: Path, section: str | None = None) -> Path:
     if re.match(r"^https?://", src):
-        log(f"⬇  Скачиваю {src}")
+        log(f"⬇  Скачиваю {src}" + (f" (кусок {section})" if section else ""))
         cmd = [
             sys.executable, "-m", "yt_dlp", src,
             "-f", "bv*[height<=1080]+ba/b[height<=1080]/b",
@@ -182,6 +185,10 @@ def resolve_source(src: str, workdir: Path) -> Path:
             "-o", str(workdir / "%(id)s.%(ext)s"),
             "--no-playlist", "--print", "after_move:filepath", "--no-simulate",
         ]
+        if section:
+            a, b = section.split("-")
+            cmd += ["--download-sections", f"*{a.strip()}-{b.strip()}",
+                    "-o", str(workdir / f"%(id)s_{int(parse_time(a))}-{int(parse_time(b))}.%(ext)s")]
         res = run(cmd)
         path = Path(res.stdout.strip().splitlines()[-1])
         log(f"   → {path}")
@@ -318,9 +325,64 @@ class Loudness:
         return ((float(seg.mean()) - self.mean) + 0.5 * (peak - self.mean - self.std)) / max(self.std, 1.0)
 
 
+# ───────────────────────────── чат Twitch ─────────────────────────────
+
+HYPE_TOKENS = {
+    "kekw", "lul", "lulw", "omegalul", "lmao", "lol", "pog", "pogu", "poggers", "pogchamp",
+    "monkas", "monkaw", "kappa", "ez", "w", "l", "+", "++", "+++", "wtf", "omg", "clip", "clipit",
+    "ахах", "ахаха", "хаха", "хахаха", "ору", "лол", "кек", "жиза", "кринж", "сочно", "вау", "имба", "клип",
+    "pepelaugh", "icant", "aware", "sadge", "catjam", "xd", "xdd",
+}
+
+
+class Chat:
+    """Активность чата: на стримах лучшие моменты видны по всплеску сообщений и эмоутов.
+
+    Понимает JSON из TwitchDownloader (comments[].content_offset_seconds / message.body)
+    и простой список [{"time"|"offset": сек, "text"|"message": "..."}].
+    """
+
+    def __init__(self, path: Path, delay: float, shift: float = 0.0, win: int = 5):
+        import numpy as np
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+        items = data.get("comments", data) if isinstance(data, dict) else data
+        times, weights = [], []
+        for c in items:
+            t = c.get("content_offset_seconds", c.get("time", c.get("offset")))
+            if t is None:
+                continue
+            msg = c.get("message", c.get("text", ""))
+            body = msg.get("body", "") if isinstance(msg, dict) else str(msg)
+            tokens = {tok.lower() for tok in body.split()}
+            hype = bool(tokens & HYPE_TOKENS) or "!!!" in body or re.search(r"(ха|ah|ах){3,}", body.lower())
+            times.append(float(t) - delay - shift)
+            weights.append(2.0 if hype else 1.0)
+        if not times:
+            raise SystemExit(f"В {path} не нашлось сообщений чата")
+        n = int(max(times) + win) + 1
+        hist = np.zeros(n)
+        for t, w in zip(times, weights):
+            if 0 <= t < n:
+                hist[int(t)] += w
+        # сообщений в окне [t-1, t+win-1): высоко ровно там, где начинается реакция
+        self.rate = np.convolve(hist, np.ones(win), mode="full")[win - 2: win - 2 + n]
+        active = self.rate[self.rate > 0]
+        self.base = float(np.median(active)) if len(active) else 1.0
+        log(f"💬 Чат: {len(times)} сообщений, обычно ~{self.base:.0f} за {win} с")
+
+    def score(self, start: float, end: float) -> float:
+        # всплеск должен быть внутри клипа: ≥3 с завязки до него и ≥1.5 с после
+        a, b = max(0, int(start + 3)), min(len(self.rate), int(end - 1.5) + 1)
+        if b <= a:
+            return 0.0
+        peak = float(self.rate[a:b].max())
+        return max(-1.0, min(4.0, math.log2((peak + 1) / (self.base + 1))))
+
+
 # ───────────────────────────── выбор моментов ─────────────────────────────
 
-def score_clip(sents: list[Sentence], loud: Loudness | None, target: float) -> float:
+def score_clip(sents: list[Sentence], loud: Loudness | None, target: float,
+               chat: Chat | None = None) -> float:
     words = [w for s in sents for w in s.words]
     start, end = sents[0].start, sents[-1].end
     dur = end - start
@@ -352,11 +414,13 @@ def score_clip(sents: list[Sentence], loud: Loudness | None, target: float) -> f
     energy = max(-2.0, min(2.5, loud.z(start, end))) if loud else 0.0
     ending = 0.5 if sents[-1].text.rstrip().endswith((".", "!", "?", "…")) else -0.5
 
-    return 1.5 * hook + 1.0 * energy + 0.6 * emotion + 0.5 * density + keywords + silence + length + ending
+    chat_score = 2.0 * chat.score(start, end) if chat else 0.0
+
+    return chat_score + 1.5 * hook + 1.0 * energy + 0.6 * emotion + 0.5 * density + keywords + silence + length + ending
 
 
 def find_moments(sents: list[Sentence], loud: Loudness | None, n: int,
-                 min_len: float, max_len: float) -> list[Clip]:
+                 min_len: float, max_len: float, chat: Chat | None = None) -> list[Clip]:
     target = min(max_len, max(min_len, (min_len + max_len) / 2))
     cands: list[Clip] = []
     for i in range(len(sents)):
@@ -366,7 +430,7 @@ def find_moments(sents: list[Sentence], loud: Loudness | None, n: int,
                 break
             if dur >= min_len:
                 chunk = sents[i: j + 1]
-                cands.append(Clip(sents[i].start, sents[j].end, score_clip(chunk, loud, target),
+                cands.append(Clip(sents[i].start, sents[j].end, score_clip(chunk, loud, target, chat),
                                   " ".join(s.text for s in chunk), chunk))
     cands.sort(key=lambda c: c.score, reverse=True)
     picked: list[Clip] = []
@@ -503,10 +567,10 @@ def ass_escape(s: str) -> str:
     return s.replace("\\", "\\\\").replace("{", "(").replace("}", ")")
 
 
-def write_ass(caps: list[Caption], path: Path, a) -> None:
+def write_ass(caps: list[Caption], path: Path, a, sub_y: float) -> None:
     hl = hex_to_ass(a.highlight_color)
     base = hex_to_ass(a.text_color)
-    y = int(OUT_H * a.sub_y)
+    y = int(OUT_H * sub_y)
     header = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {OUT_W}
@@ -546,17 +610,27 @@ def write_srt(caps: list[Caption], path: Path) -> None:
 
 def detect_face_x(video: Path, start: float, end: float, samples: int = 16) -> tuple[float | None, float]:
     """Медианная X-координата лица (0..1) и доля кадров, где лицо найдено."""
+    boxes = sample_faces(video, start, end, samples)
+    if not boxes:
+        return None, 0.0
+    xs = sorted(x + w / 2 for x, y, w, h in boxes)
+    return xs[len(xs) // 2], len(boxes) / samples
+
+
+def sample_faces(video: Path, start: float, end: float, samples: int = 16,
+                 min_size: float = 0.08) -> list[tuple[float, float, float, float]]:
+    """Самое крупное лицо на равномерно взятых кадрах: (x, y, w, h) в долях кадра."""
     try:
         import cv2
         cv2.CascadeClassifier  # в OpenCV 5 Haar-каскады убраны из основного пакета
     except (ImportError, AttributeError):
-        log("   (OpenCV 4.x не найден — лицо не ищу, кадр по центру)")
-        return None, 0.0
+        log("   (OpenCV 4.x не найден — лицо не ищу)")
+        return []
     cap = cv2.VideoCapture(str(video))
     if not cap.isOpened():
-        return None, 0.0
+        return []
     cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    xs = []
+    boxes = []
     for k in range(samples):
         t = start + (end - start) * (k + 0.5) / samples
         cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
@@ -567,19 +641,64 @@ def detect_face_x(video: Path, start: float, end: float, samples: int = 16) -> t
         scale = 640 / w if w > 640 else 1.0
         small = cv2.resize(frame, (int(w * scale), int(h * scale))) if scale != 1.0 else frame
         gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
-        faces = cascade.detectMultiScale(gray, 1.1, 6, minSize=(int(small.shape[0] * 0.08),) * 2)
+        min_face = int(small.shape[0] * min_size)
+        faces = cascade.detectMultiScale(gray, 1.1, 6, minSize=(min_face, min_face))
         if len(faces):
             x, y, fw, fh = max(faces, key=lambda f: f[2] * f[3])
-            xs.append((x + fw / 2) / small.shape[1])
+            sw, sh = small.shape[1], small.shape[0]
+            boxes.append((x / sw, y / sh, fw / sw, fh / sh))
     cap.release()
-    if not xs:
-        return None, 0.0
-    xs.sort()
-    return xs[len(xs) // 2], len(xs) / samples
+    return boxes
 
 
-def layout_filter(layout: str, info: dict, face_x: float | None, blur: int) -> str:
+def detect_facecam(video: Path, info: dict, start: float, end: float) -> tuple[int, int, int, int] | None:
+    """Ищет вебку стримера: лицо в стабильном месте кадра → прямоугольник 16:9 вокруг него."""
+    boxes = sample_faces(video, start, end, samples=20, min_size=0.03)
+    if len(boxes) < 6:
+        return None
+    med = [sorted(b[i] for b in boxes)[len(boxes) // 2] for i in range(4)]
+    stable = [b for b in boxes if abs(b[0] - med[0]) < 0.05 and abs(b[1] - med[1]) < 0.05]
+    if len(stable) < 6:
+        return None
+    W, H = info["width"], info["height"]
+    fx, fy, fw, fh = med[0] * W, med[1] * H, med[2] * W, med[3] * H
+    cw = min(W, fw * 3.2)
+    ch = min(H, cw * 9 / 16 * 1.15)
+    x = max(0, min(W - cw, fx + fw / 2 - cw / 2))
+    y = max(0, min(H - ch, fy + fh * 0.55 - ch / 2))
+    return int(x) // 2 * 2, int(y) // 2 * 2, int(cw) // 2 * 2, int(ch) // 2 * 2
+
+
+def parse_box(spec: str, info: dict) -> tuple[int, int, int, int]:
+    """'x,y,w,h' в пикселях исходника или в долях (0..1)."""
+    vals = [float(v) for v in re.split(r"[,:x ]+", spec.strip()) if v]
+    if len(vals) != 4:
+        raise SystemExit("--facecam ожидает 4 числа: x,y,w,h")
+    if all(v <= 1 for v in vals):
+        W, H = info["width"], info["height"]
+        vals = [vals[0] * W, vals[1] * H, vals[2] * W, vals[3] * H]
+    return tuple(int(v) // 2 * 2 for v in vals)
+
+
+def layout_filter(layout: str, info: dict, face_x: float | None, blur: int,
+                  cam: tuple[int, int, int, int] | None = None, cam_height: float = 0.35,
+                  game_x: float = 0.5) -> str:
     w, h = info["width"], info["height"]
+    if layout == "stream" and cam:
+        # вебка сверху, игра снизу
+        top = int(OUT_H * cam_height) // 2 * 2
+        bottom = OUT_H - top
+        cx, cy, cw, ch = cam
+        gw = min(w, int(h * OUT_W / bottom)) // 2 * 2
+        gx = int(max(0, min(w - gw, game_x * w - gw / 2))) // 2 * 2
+        return (
+            f"split=2[cam][game];"
+            f"[cam]crop={cw}:{ch}:{cx}:{cy},scale={OUT_W}:{top}:force_original_aspect_ratio=increase,"
+            f"crop={OUT_W}:{top}[camv];"
+            f"[game]crop={gw}:{h}:{gx}:0,scale={OUT_W}:{bottom}:force_original_aspect_ratio=increase,"
+            f"crop={OUT_W}:{bottom}[gamev];"
+            f"[camv][gamev]vstack=inputs=2,setsar=1"
+        )
     if w / h <= OUT_W / OUT_H + 0.01:  # уже вертикальное
         return f"scale={OUT_W}:{OUT_H}:force_original_aspect_ratio=increase,crop={OUT_W}:{OUT_H},setsar=1"
     if layout == "crop":
@@ -629,6 +748,14 @@ def render_clip(idx: int, clip: Clip, video: Path, info: dict, words: list[Word]
     # раскладка
     layout = a.layout
     face_x, face_ratio = (None, 0.0)
+    cam = None
+    if layout == "stream":
+        cam = parse_box(a.facecam, info) if a.facecam else detect_facecam(video, info, src_start, src_end)
+        if cam is None:
+            log("   ⚠ вебка не найдена — делаю размытый фон. Укажите её вручную: --facecam x,y,w,h")
+            layout = "blur"
+        elif not a.facecam:
+            log(f"   вебка найдена: --facecam {','.join(map(str, cam))}")
     if layout in ("auto", "crop") and info["width"] / info["height"] > OUT_W / OUT_H + 0.01:
         face_x, face_ratio = detect_face_x(video, src_start, src_end)
         if layout == "auto":
@@ -641,20 +768,21 @@ def render_clip(idx: int, clip: Clip, video: Path, info: dict, words: list[Word]
     caps: list[Caption] = []
     if a.subs and words:
         caps = build_captions(words, tmap, clip.start, clip.end, a.words, a.max_chars)
-        write_ass(caps, workdir / f"{name}.ass", a)
+        sub_y = a.sub_y if a.sub_y is not None else (a.cam_height if layout == "stream" else 0.62)
+        write_ass(caps, workdir / f"{name}.ass", a, sub_y)
         write_srt(caps, outdir / f"{name}.srt")
         fontsdir = f":fontsdir='{Path(a.fonts_dir).resolve().as_posix()}'" if a.fonts_dir else ""
         vf_subs = f",ass={name}.ass{fontsdir}"
 
     sent_starts = [tmap(s.start) for s in clip.sentences[1:]] if clip.sentences else []
-    zoom = zoom_filter(sent_starts, tmap.total, a.zoom)
+    zoom = zoom_filter(sent_starts, tmap.total, a.zoom) if layout != "stream" else ""
 
     sel = "+".join(f"between(t,{x:.4f},{y - 0.5 / FPS:.4f})" for x, y in rel)
     asel = "+".join(f"between(t,{x - 0.0005:.4f},{y - 0.0005:.4f})" for x, y in rel)
 
     fc = (
         f"[0:v]fps={FPS},select='{sel}',setpts=N/{FPS}/TB,"
-        f"{layout_filter(layout, info, face_x, a.blur)}{zoom}{vf_subs},format=yuv420p[vout];"
+        f"{layout_filter(layout, info, face_x, a.blur, cam, a.cam_height, a.game_x)}{zoom}{vf_subs},format=yuv420p[vout];"
         f"[0:a]aresample={SAMPLE_RATE},asetnsamples=n={SAMPLES_PER_FRAME}:p=0,"
         f"aselect='{asel}',asetpts=N/SR/TB,"
         f"loudnorm=I=-14:TP=-1.5:LRA=11,aresample={SAMPLE_RATE},"
@@ -718,6 +846,15 @@ def main() -> None:
     p.add_argument("--max", dest="max_len", type=float, default=55, help="макс. длина момента, с")
     p.add_argument("--clips", help='свои таймкоды вместо автопоиска: "1:20-2:05, 10:00-10:45"')
     p.add_argument("--dry-run", action="store_true", help="только найти моменты, не рендерить")
+    p.add_argument("--section", help='скачать только кусок стрима/видео по ссылке: "1:00:00-2:30:00"')
+
+    g = p.add_argument_group("Twitch / стримы")
+    g.add_argument("--chat", help="чат стрима в JSON (TwitchDownloader) — моменты ищутся по всплескам чата")
+    g.add_argument("--chat-delay", type=float, default=6.0,
+                   help="на сколько секунд чат отстаёт от событий на стриме")
+    g.add_argument("--facecam", help="где вебка в исходнике для --layout stream: x,y,w,h (пиксели или доли 0..1)")
+    g.add_argument("--cam-height", type=float, default=0.35, help="доля высоты шортса под вебку")
+    g.add_argument("--game-x", type=float, default=0.5, help="центр кадра игры по горизонтали (0..1)")
 
     g = p.add_argument_group("распознавание речи")
     g.add_argument("--model", default="small", help="модель whisper: tiny/base/small/medium/large-v3")
@@ -726,8 +863,9 @@ def main() -> None:
     g.add_argument("--transcript", help="готовая расшифровка JSON со словами (пропустить whisper)")
 
     g = p.add_argument_group("монтаж")
-    g.add_argument("--layout", default="auto", choices=["auto", "crop", "blur"],
-                   help="crop — кадр по лицу; blur — видео на размытом фоне; auto — crop, если есть лицо")
+    g.add_argument("--layout", default="auto", choices=["auto", "crop", "blur", "stream"],
+                   help="crop — кадр по лицу; blur — видео на размытом фоне; "
+                        "stream — вебка сверху, игра снизу; auto — crop, если есть лицо")
     g.add_argument("--no-cut-pauses", dest="cut_pauses", action="store_false", help="не вырезать паузы")
     g.add_argument("--max-pause", type=float, default=0.35, help="паузы длиннее этого вырезаются, с")
     g.add_argument("--zoom", type=float, default=0.08, help="сила панч-зума на смене фраз (0 — выкл.)")
@@ -745,7 +883,8 @@ def main() -> None:
     g.add_argument("--outline", type=int, default=7, help="толщина обводки")
     g.add_argument("--text-color", default="FFFFFF", help="цвет текста RRGGBB")
     g.add_argument("--highlight-color", default="FFE11A", help="цвет ключевых слов RRGGBB")
-    g.add_argument("--sub-y", type=float, default=0.62, help="высота субтитров (0 — верх, 1 — низ)")
+    g.add_argument("--sub-y", type=float, default=None,
+                   help="высота субтитров (0 — верх, 1 — низ); по умолчанию 0.62, в stream — на стыке вебки и игры")
     g.add_argument("--upper", action="store_true", help="субтитры капсом")
 
     g = p.add_argument_group("кодирование")
@@ -760,7 +899,9 @@ def main() -> None:
     workdir = outdir / ".work"
     workdir.mkdir(parents=True, exist_ok=True)
 
-    video = resolve_source(a.source, workdir)
+    if a.section and not re.match(r"^https?://", a.source):
+        raise SystemExit("--section работает только со ссылкой. Для файла используйте --clips.")
+    video = resolve_source(a.source, workdir, a.section)
     info = probe(video)
     log(f"🎞  {video.name}: {info['width']}×{info['height']}, {fmt_time(info['duration'])}")
 
@@ -783,7 +924,11 @@ def main() -> None:
             loud = Loudness(wav)
         except Exception as e:  # numpy не установлен и т.п.
             log(f"   (громкость не учитывается: {e})")
-        clips = find_moments(sents, loud, a.count, a.min_len, a.max_len)
+        chat = None
+        if a.chat:
+            shift = parse_time(a.section.split("-")[0]) if a.section else 0.0
+            chat = Chat(Path(a.chat), a.chat_delay, shift)
+        clips = find_moments(sents, loud, a.count, a.min_len, a.max_len, chat)
         clips.sort(key=lambda c: c.start)
 
     if not clips:

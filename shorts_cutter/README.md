@@ -50,6 +50,44 @@ python shorts_cutter.py stream.mp4 --clips "12:30-13:15, 1:02:10-1:02:50" --uppe
 python shorts_cutter.py interview.mp4 --layout blur --words 2 --highlight-color 39FF14
 ```
 
+## Нарезка стримов с Twitch
+
+На стриме лучшие моменты видны по чату: зрители спамят KEKW, LUL, «ахах», «+». Поэтому для стримов есть три вещи.
+
+**1. Скачать только нужный кусок** (8-часовой стрим целиком качать не нужно):
+
+```bash
+python shorts_cutter.py https://www.twitch.tv/videos/1234567890 --section 1:00:00-3:00:00 --dry-run
+```
+
+**2. Искать моменты по всплескам чата.** Чат скачивается [TwitchDownloader](https://github.com/lay295/TwitchDownloader) (есть версия с окнами и консольная):
+
+```bash
+TwitchDownloaderCLI chatdownload --id 1234567890 -o chat.json
+```
+
+```bash
+python shorts_cutter.py stream.mp4 --chat chat.json -n 10 --dry-run
+```
+
+Сообщения с эмоутами и смехом весят вдвое больше. Момент выбирается так, чтобы всплеск чата был внутри клипа, а перед ним оставалось хотя бы 3 секунды завязки. Чат отстаёт от событий на стриме, по умолчанию сдвиг 6 секунд (`--chat-delay`). Если скачали кусок через `--section`, сдвиг чата учитывается сам.
+
+**3. Раскладка «вебка сверху, игра снизу»:**
+
+```bash
+python shorts_cutter.py stream.mp4 --chat chat.json --layout stream
+```
+
+Скрипт пытается сам найти вебку по лицу и пишет найденные координаты. Если не нашёл или нашёл не то, укажите прямоугольник вебки в исходнике: `--facecam x,y,w,h` в пикселях (например `--facecam 1500,760,420,320`) или в долях кадра (`--facecam 0.78,0.7,0.22,0.3`). Координаты удобно снять со скриншота в любом редакторе.
+`--cam-height 0.35` задаёт долю экрана под вебку, `--game-x 0.5` задаёт, какую часть игры показывать по горизонтали.
+Субтитры по умолчанию ставятся на стык вебки и игры.
+
+Готовый вариант для стрима:
+
+```bash
+python shorts_cutter.py https://www.twitch.tv/videos/1234567890 --section 2:00:00-4:00:00 --chat chat.json --layout stream -n 8 --language ru
+```
+
 ## Результат
 
 В папке `shorts_out/`:
@@ -68,13 +106,16 @@ python shorts_cutter.py interview.mp4 --layout blur --words 2 --highlight-color 
 | `--clips` | — | свои таймкоды вместо автопоиска |
 | `--model` | small | модель whisper: tiny, base, small, medium, large-v3 (точнее, но медленнее) |
 | `--language` | авто | язык речи: ru, en, … |
-| `--layout` | auto | crop (по лицу), blur (размытый фон), auto |
+| `--layout` | auto | crop (по лицу), blur (размытый фон), stream (вебка + игра), auto |
+| `--section` | — | скачать по ссылке только кусок, например `1:00:00-3:00:00` |
+| `--chat`, `--chat-delay` | —, 6 | чат Twitch (JSON TwitchDownloader) и его отставание, с |
+| `--facecam`, `--cam-height`, `--game-x` | авто, 0.35, 0.5 | вебка и раскладка для `--layout stream` |
 | `--max-pause` | 0.35 | паузы длиннее вырезаются; `--no-cut-pauses` отключает |
 | `--zoom` | 0.08 | сила панч-зума, 0 отключает |
 | `--music`, `--music-volume` | —, 0.12 | фоновая музыка и её громкость |
 | `--words` | 3 | максимум слов на экране |
 | `--font`, `--fonts-dir` | Arial | шрифт субтитров (нужна кириллица); папка со своими .ttf |
-| `--font-size`, `--sub-y` | 92, 0.62 | размер и высота субтитров (0 — верх, 1 — низ) |
+| `--font-size`, `--sub-y` | 92, 0.62 (в stream — стык) | размер и высота субтитров (0 — верх, 1 — низ) |
 | `--upper` | выкл. | субтитры капсом |
 | `--transcript` | — | готовая расшифровка JSON (`[{"start","end","text"}]`), whisper не запускается |
 | `--crf`, `--preset` | 20, medium | качество и скорость кодирования |
