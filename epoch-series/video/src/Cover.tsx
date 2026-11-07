@@ -27,6 +27,6 @@ export const Ep01Cover: React.FC = () => (
       <span style={strip("ЦЕЗАРЯ", PAL.scarf, "#FBF7EC", 1.5, 150)}>ЦЕЗАРЯ</span>
     </AbsoluteFill>
     <CanvasArt draw={(g) => { g.save(); g.translate(540, 1640); g.rotate(0.03); g.shadowColor = "rgba(60,36,12,0.35)"; g.shadowBlur = 14; g.shadowOffsetX = 6; g.shadowOffsetY = 10;
-      cut(g, rrectP(-330, -50, 660, 100, 14), "#2E3A57", { seed: 995, edge: 2.5, tear: 0.5 }); g.shadowColor = "transparent"; inkText(g, "ПОПАЛ В ЭПОХУ · СЕРИЯ 1", 0, 2, 40, "#FBF7EC"); g.restore(); }} />
+      cut(g, rrectP(-330, -50, 660, 100, 14), "#2E3A57", { seed: 995, edge: 2.5, tear: 0.5 }); g.shadowColor = "transparent"; inkText(g, "ПОПАЛ В ЭПОХУ", 0, 2, 48, "#FBF7EC"); g.restore(); }} />
   </AbsoluteFill>
 );
