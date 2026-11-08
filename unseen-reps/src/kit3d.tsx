@@ -10,6 +10,8 @@ import { EffectComposer, Bloom, Vignette, DepthOfField } from "@react-three/post
 import { Easing, useCurrentFrame, useVideoConfig } from "remotion";
 
 export const FPS = 30;
+/** Быстрый режим для превью без видеокарты: REMOTION_FAST=1 (простой пол, без размытия, мягче тени). */
+export const FAST = process.env.REMOTION_FAST === "1";
 export type V3 = [number, number, number];
 
 // Палитра канала: белые герои, холодный бирюзовый = «будущее я» и плюсы, красный = минусы.
@@ -131,7 +133,9 @@ export const Ghost: React.FC<{ p: V3; rotY?: number; pose?: Pose; power: number 
 
 // ------------------------------------------------------------ окружение
 /** Глянцевый тёмный пол с настоящими (размытыми) отражениями. */
-export const GlossFloor: React.FC<{ size?: number; color?: string; mirror?: number }> = ({ size = 60, color = COL.floor, mirror = 0.75 }) => (
+export const GlossFloor: React.FC<{ size?: number; color?: string; mirror?: number }> = ({ size = 60, color = COL.floor, mirror = 0.75 }) => FAST ? (
+  <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[size, size]} /><meshStandardMaterial color={color} roughness={0.25} metalness={0.6} /></mesh>
+) : (
   <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
     <planeGeometry args={[size, size]} />
     <MeshReflectorMaterial resolution={1024} blur={[300, 80]} mixBlur={0.9} mixStrength={2.2} mirror={mirror}
@@ -204,7 +208,7 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus?: V3; dof?: bo
     const hand: V3 = [p[0] + Math.sin(frame / 29) * 0.01, p[1] + Math.sin(frame / 19) * 0.007, p[2]]; // «живая» камера
     return (
       <ShotCtx.Provider value={{ t0 }}>
-        <ThreeCanvas width={width} height={height} shadows gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1, antialias: false }}
+        <ThreeCanvas width={width} height={height} shadows={!FAST} gl={{ toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1, antialias: false }}
           style={{ backgroundColor: COL.bg }}>
           <ShotCtx.Provider value={{ t0 }}>
             <color attach="background" args={[COL.bg]} />
@@ -215,7 +219,7 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus?: V3; dof?: bo
             <GlossFloor />
             {children}
             <EffectComposer multisampling={4}>
-              {dof ? <DepthOfField target={focus} focalLength={0.02} bokehScale={4} height={960} /> : <></>}
+              {dof && !FAST ? <DepthOfField target={focus} focalLength={0.02} bokehScale={4} height={960} /> : <></>}
               <Bloom luminanceThreshold={0.85} intensity={0.9} mipmapBlur radius={0.7} />
               <Vignette eskil={false} offset={0.2} darkness={0.75} />
             </EffectComposer>
