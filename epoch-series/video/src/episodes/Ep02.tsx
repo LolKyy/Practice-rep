@@ -113,7 +113,7 @@ export const Ep02: React.FC = () => (
           <Sema outfit="casual" x={600} s={4.5} y={1590} pose={(t) => bagPose({ emo: t > 1.5 ? (t > 3 ? "tired" : "shock") : "fear", aL: [2.6, 0.4], aR: [2.6, 0.4], tilt: t < 1.4 ? Math.sin(t * 20) * 0.3 : 0, squash: keys(t, [[1.4, 0], [1.48, 1.6], [1.75, 0]], back), t })}
             dy={(t) => keys(t, [[0.8, -1700], [1.42, 0]], (u) => u * u)} />
         </Nassau>} />
-      <Sequence from={f(1.5)}><Marks kind="crack" label="ПЛЮХ!" x={760} y={760} s={0.85} /></Sequence>
+      <Sequence from={f(1.5)}><Marks kind="crack" label="ПЛЮХ!" x={300} y={600} s={0.8} /></Sequence>
       <Sequence from={f(1.6)}><Marks kind="sweat" x={600} y={620} /></Sequence>
       <Sequence from={f(1.9)}><Tag big x={780} lines={["1718", "НАССАУ"]} /></Sequence>
     </AbsoluteFill></Sequence>
@@ -147,7 +147,7 @@ export const Ep02: React.FC = () => (
       </Stage>
       <Vignette a={0.6} />
       <Sticker s={"ПИРАТСКИЙ\nКОДЕКС"} x={330} y={320} at={0.3} size={50} bg="#E9D8B0" />
-      <PriceTag x={780} y={700} title="Правая рука" price="600 пиастров" note="по кодексу" delay={wt(5, 5) - 0.2} />
+      <PriceTag x={780} y={700} title="Правая рука" price="600" note="пиастров" delay={wt(5, 5) - 0.2} />
     </AbsoluteFill></Sequence>
     {/* 7. ОТБОЙ в 8 — фонарь гаснет */}
     <Sequence {...shot(6)}><AbsoluteFill style={DARK}>
