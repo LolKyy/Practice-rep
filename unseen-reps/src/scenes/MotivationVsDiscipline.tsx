@@ -6,7 +6,7 @@ import { COL } from "../kit3d";
 import { Grain, MONO } from "../overlay";
 
 export const MVD_FPS = 60;
-export const MVD_TOTAL = Math.round(19.5 * MVD_FPS);
+export const MVD_TOTAL = Math.round(21 * MVD_FPS);
 
 // ------------------------------------------------------------------ мир: лестница
 const SW = 60, SH = 34, N = 32;                        // ширина/высота ступени, число ступеней
@@ -218,8 +218,8 @@ export const MotivationVsDiscipline: React.FC = () => {
     { t0: 6.9, t1: 9.2, inT: "dip", cam: (_, k) => ({ c: [stepX(15) + 40 + 30 * k, stepTop(15) - 190], z: lerp(1.45, 1.55, k) }) },
     { t0: 9.2, t1: 12.4, inT: "cut", cam: (_, k) => ({ c: [skD.hip[0] + 50, skD.hip[1] - 120], z: lerp(1.35, 1.25, k) }) },
     { t0: 12.4, t1: 15.4, inT: "dip", cam: (_, k) => ({ c: lerpP([skD.hip[0] + 140, skD.hip[1] - 170], [topX - 140, topY - 280], ease(clamp01((k - 0.55) / 0.45))), z: lerp(1.6, 1.5, k) }) },
-    { t0: 15.4, t1: 19.5, cam: (_, k) => {
-      const kk = ease(clamp01(k / 0.85));
+    { t0: 15.4, t1: 21, cam: (_, k) => {
+      const kk = ease(clamp01(k / 0.72));
       return { c: lerpP([topX - 120, topY - 280], [(N * SW) / 2 + 260, stepTop(N / 2) - 120], kk), z: Math.exp(lerp(Math.log(1.55), Math.log(0.36), kk)) };
     } },
   ];
@@ -233,7 +233,7 @@ export const MotivationVsDiscipline: React.FC = () => {
   // --- атмосфера
   const rain = clamp01((t - 6.9) / 0.6) * (1 - clamp01((t - 13.8) / 1.2));
   const day = Math.round(keys(t, [[1.6, 1], [5.5, 3], [6.9, 4], [9.2, 7], [10.8, 14], [12.4, 21], [14.9, 30]]));
-  const beam = keys(t, [[0, 0.15], [13.9, 0.2], [15.0, 1], [19.5, 0.85]]);     // кульминация: луч на вершине
+  const beam = keys(t, [[0, 0.15], [13.9, 0.2], [15.0, 1], [21, 0.85]]);     // кульминация: луч на вершине
   const lamps = [5, 13, 21, 28];
 
   const W = (<g transform={`translate(${tx},${ty}) scale(${zoom})`}>
@@ -257,7 +257,7 @@ export const MotivationVsDiscipline: React.FC = () => {
   // --- переходы между шотами
   const flashO = shot.inT === "flash" ? Math.max(0, 1 - sinceCut / 0.12) : 0;
   const dipO = shot.inT === "dip" ? Math.max(0, 1 - sinceCut / 0.3) : 0;
-  const fadeIn = Math.max(0, 1 - t / 0.25), fadeOut = clamp01((t - 18.6) / 0.9);
+  const fadeIn = Math.max(0, 1 - t / 0.25), fadeOut = clamp01((t - 20.0) / 1.0);
 
   // --- подписи (в экранных координатах, постоянный мелкий кегль)
   const labelAt = (s: Skel, extra: number) => toScreen([s.head[0], s.head[1] - HEAD - extra]);
