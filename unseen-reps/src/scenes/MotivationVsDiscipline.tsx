@@ -1,11 +1,12 @@
-// «Motivation vs Discipline» (~19 с) — плоский 2D в духе drleonkessel: тёмная лестница вверх, свет, туман, отражение.
-// Мотивация (с огнём над головой) бежит, выдыхается, огонь гаснет, садится. Дисциплина идёт ровно до вершины.
+// «Motivation vs Discipline» v2 (~19.5 с, 60 fps) — по рецепту STYLE_RECIPE.md: тёмный мир, светящиеся герои,
+// конусы света в дымке, отражения, 7 шотов (общий → средний → крупный → обгон → проводка → вершина → отъезд).
 import React from "react";
 import { AbsoluteFill, Audio, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
-import { COL, FPS } from "../kit3d";
-import { Grain, MONO, PUNCH, SERIF } from "../overlay";
+import { COL } from "../kit3d";
+import { Grain, MONO } from "../overlay";
 
-export const MVD_TOTAL = Math.round(19 * FPS);
+export const MVD_FPS = 60;
+export const MVD_TOTAL = Math.round(19.5 * MVD_FPS);
 
 // ------------------------------------------------------------------ мир: лестница
 const SW = 60, SH = 34, N = 32;                        // ширина/высота ступени, число ступеней
@@ -97,28 +98,42 @@ const mixSkel = (a: Skel, b: Skel, k: number): Skel => {
   return o as Skel;
 };
 
-const Figure: React.FC<{ s: Skel; color?: string; back?: string; glow?: number; glowColor?: string }> = ({ s, color = "#f1f1ee", back = "#9d9d9b", glow = 0, glowColor = COL.ghost }) => {
-  const line = (a: P, b: P, c: string, w: number) => <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={c} strokeWidth={w} strokeLinecap="round" />;
-  const body = (<>
-    {line(s.hip, s.kB, back, 20)}{line(s.kB, s.fB, back, 18)}
-    {line(s.neck, s.eB, back, 17)}{line(s.eB, s.hB, back, 16)}
-    {line(s.hip, s.neck, color, 30)}
-    {line(s.hip, s.kA, color, 20)}{line(s.kA, s.fA, color, 18)}
-    <line x1={s.fA[0] - 4 * s.face} y1={s.fA[1] - 5} x2={s.fA[0] + 16 * s.face} y2={s.fA[1] - 5} stroke={color} strokeWidth={14} strokeLinecap="round" />
-    <line x1={s.fB[0] - 4 * s.face} y1={s.fB[1] - 5} x2={s.fB[0] + 16 * s.face} y2={s.fB[1] - 5} stroke={back} strokeWidth={14} strokeLinecap="round" />
-    {line(s.neck, s.eA, color, 17)}{line(s.eA, s.hA, color, 16)}
-    <circle cx={s.head[0]} cy={s.head[1]} r={HEAD} fill={color} />
-    <circle cx={s.head[0] - 9 * s.face} cy={s.head[1] - 10} r={HEAD * 0.45} fill="#ffffff" opacity={0.35} />
-  </>);
+
+// ------------------------------------------------------------------ фигура: тонкий тёмный контур + белое тело + ореол
+const OUT = "#14151a";
+const Body: React.FC<{ s: Skel; color: string; back: string; outline?: boolean }> = ({ s, color, back, outline = true }) => {
+  const seg = (a: P, b: P, c: string, w: number, k: string) => (
+    <g key={k}>
+      {outline ? <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={OUT} strokeWidth={w + 7} strokeLinecap="round" /> : null}
+      <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={c} strokeWidth={w} strokeLinecap="round" />
+    </g>
+  );
+  const foot = (f: P, c: string, k: string) => seg([f[0] - 4 * s.face, f[1] - 5], [f[0] + 16 * s.face, f[1] - 5], c, 14, k);
   return (<g>
-    {glow > 0 ? <g opacity={glow} filter="url(#glow)" style={{ mixBlendMode: "screen" }}>
-      <g>{React.Children.map(body.props.children, (c: any) => c && React.cloneElement(c, { stroke: c.props.stroke ? glowColor : undefined, fill: c.props.fill ? glowColor : undefined }))}</g>
-    </g> : null}
-    {body}
+    {seg(s.hip, s.kB, back, 20, "1")}{seg(s.kB, s.fB, back, 18, "2")}{foot(s.fB, back, "3")}
+    {seg(s.neck, s.eB, back, 17, "4")}{seg(s.eB, s.hB, back, 16, "5")}
+    {seg(s.hip, s.neck, color, 30, "6")}
+    {seg(s.hip, s.kA, color, 20, "7")}{seg(s.kA, s.fA, color, 18, "8")}{foot(s.fA, color, "9")}
+    {seg(s.neck, s.eA, color, 17, "10")}{seg(s.eA, s.hA, color, 16, "11")}
+    {outline ? <circle cx={s.head[0]} cy={s.head[1]} r={HEAD + 3.5} fill={OUT} /> : null}
+    <circle cx={s.head[0]} cy={s.head[1]} r={HEAD} fill={color} />
   </g>);
 };
+const Figure: React.FC<{ s: Skel; color?: string; back?: string; glow?: number; glowColor?: string; refl?: number }> =
+  ({ s, color = "#f4f4f1", back = "#a9a9a6", glow = 0.55, glowColor = "#ffffff", refl = 0 }) => {
+    const floorY = Math.max(s.fA[1], s.fB[1]);
+    return (<g>
+      {/* отражение в глянцевой ступени: зеркально вниз, размыто, гаснет */}
+      {refl > 0 ? <g opacity={refl} filter="url(#reflBlur)" transform={`translate(0,${2 * floorY}) scale(1,-1)`} mask="url(#reflFadeFig)">
+        <Body s={s} color={color} back={back} outline={false} />
+      </g> : null}
+      {/* ореол */}
+      {glow > 0 ? <g opacity={glow} filter="url(#heroGlow)"><Body s={s} color={glowColor} back={glowColor} outline={false} /></g> : null}
+      <Body s={s} color={color} back={back} />
+    </g>);
+  };
 
-/** Огонь мотивации над головой. size 0..1, flicker 0..1. */
+/** Огонь мотивации над головой. size 0..1. */
 const Flame: React.FC<{ at: P; size: number; t: number }> = ({ at, size, t }) => {
   if (size <= 0.01) return null;
   const w = Math.sin(t * 23) * 4 + Math.sin(t * 37) * 3;
@@ -126,56 +141,66 @@ const Flame: React.FC<{ at: P; size: number; t: number }> = ({ at, size, t }) =>
   const d = `M ${at[0] - r} ${at[1]} Q ${at[0] - r * 1.1} ${at[1] - h * 0.55} ${at[0] + w} ${at[1] - h} Q ${at[0] + r * 1.1} ${at[1] - h * 0.5} ${at[0] + r} ${at[1]} Q ${at[0]} ${at[1] + r * 0.7} ${at[0] - r} ${at[1]} Z`;
   const d2 = `M ${at[0] - r * 0.5} ${at[1]} Q ${at[0] - r * 0.6} ${at[1] - h * 0.4} ${at[0] + w * 0.6} ${at[1] - h * 0.65} Q ${at[0] + r * 0.6} ${at[1] - h * 0.35} ${at[0] + r * 0.5} ${at[1]} Q ${at[0]} ${at[1] + r * 0.4} ${at[0] - r * 0.5} ${at[1]} Z`;
   return (<g>
-    <circle cx={at[0]} cy={at[1] - h * 0.4} r={h * 1.3} fill="url(#fireGlow)" opacity={0.8 * size} />
+    <circle cx={at[0]} cy={at[1] - h * 0.4} r={h * 2.2} fill="url(#fireGlow)" opacity={0.9 * size} />
+    <g filter="url(#softGlow)" opacity={0.8}><path d={d} fill="#ff7a2a" /></g>
     <path d={d} fill="#ff6a1f" />
     <path d={d2} fill="#ffd36a" />
   </g>);
 };
 const Smoke: React.FC<{ at: P; t: number }> = ({ at, t }) => {
-  if (t < 0 || t > 2.2) return null;
-  return (<g>{[0, 1, 2, 3, 4].map((i) => {
-    const k = clamp01((t - i * 0.12) / 1.8);
+  if (t < 0 || t > 2.4) return null;
+  return (<g filter="url(#reflBlur)">{[0, 1, 2, 3, 4, 5].map((i) => {
+    const k = clamp01((t - i * 0.1) / 2);
     if (k <= 0) return null;
-    return <circle key={i} cx={at[0] + Math.sin(i * 2.1 + t * 2) * 18 * k} cy={at[1] - 30 - k * 160} r={12 + k * 34} fill="#8f8f8f" opacity={0.45 * (1 - k)} />;
+    return <circle key={i} cx={at[0] + Math.sin(i * 2.1 + t * 2) * 20 * k} cy={at[1] - 20 - k * 190} r={10 + k * 40} fill="#9a9a9a" opacity={0.5 * (1 - k)} />;
   })}</g>);
 };
 
-const Label: React.FC<{ at: P; text: string; color: string; o?: number }> = ({ at, text, color, o = 1 }) => (
-  <text x={at[0]} y={at[1]} fill={color} opacity={o} fontFamily={MONO} fontWeight={800} fontSize={26} letterSpacing={5} textAnchor="middle">{text}</text>
-);
-
-// ------------------------------------------------------------------ лестница
+// ------------------------------------------------------------------ лестница (светлые грани ступеней, тёмные подступенки)
 const Stairs: React.FC = () => {
   const pts: string[] = ["-3000,0"];
   for (let k = 0; k <= N; k++) pts.push(`${k * SW},${stepTop(k)}`, `${(k + 1) * SW},${stepTop(k)}`);
-  pts.push(`${(N + 1) * SW + 2400},${stepTop(N)}`, `${(N + 1) * SW + 2400},900`, "-3000,900");
+  pts.push(`${(N + 1) * SW + 2400},${stepTop(N)}`, `${(N + 1) * SW + 2400},1400`, "-3000,1400");
   return (<g>
     <polygon points={pts.join(" ")} fill="url(#stairBody)" />
     {Array.from({ length: N + 1 }, (_, k) => (
       <g key={k}>
-        <rect x={k * SW} y={stepTop(k) - 2} width={SW} height={5} fill="#5d5f66" />
-        <rect x={(k + 1) * SW - 2} y={stepTop(k + 1)} width={3} height={SH} fill="#121318" />
+        <rect x={k * SW} y={stepTop(k) - 2} width={SW} height={6} fill="#4b4d55" />
+        <rect x={k * SW} y={stepTop(k) + 4} width={SW} height={10} fill="#2a2c32" opacity={0.6} />
       </g>
     ))}
-    <rect x={(N + 1) * SW} y={stepTop(N) - 2} width={2400} height={5} fill="#7a7c84" />
+    <rect x={-3000} y={-2} width={3000} height={6} fill="#4b4d55" />
+    <rect x={(N + 1) * SW} y={stepTop(N) - 2} width={2400} height={6} fill="#5a5c64" />
   </g>);
 };
 
-// ------------------------------------------------------------------ сцена
+/** Конус света сверху с пятном на ступени (в мировых координатах). */
+const Cone: React.FC<{ x: number; floor: number; h?: number; w?: number; o?: number; color?: string }> = ({ x, floor, h = 900, w = 360, o = 1, color = "#ffffff" }) => (
+  <g opacity={o}>
+    <polygon points={`${x - 22},${floor - h} ${x + 22},${floor - h} ${x + w / 2},${floor} ${x - w / 2},${floor}`} fill="url(#coneGrad)" filter="url(#coneBlur)" style={{ mixBlendMode: "screen" }} />
+    <ellipse cx={x} cy={floor + 2} rx={w * 0.55} ry={26} fill={color} opacity={0.16} filter="url(#coneBlur)" />
+    <rect x={x - 26} y={floor - h - 10} width={52} height={12} rx={6} fill="#d9d9d4" opacity={0.6} />
+  </g>
+);
+
+// ------------------------------------------------------------------ шоты
+type Shot = { t0: number; t1: number; cam: (t: number, k: number) => { c: P; z: number }; inT?: "cut" | "flash" | "dip" };
+
 export const MotivationVsDiscipline: React.FC = () => {
   const f = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
   const t = f / fps;
 
-  // --- дисциплина: ровно 1 ступень / 0.42 с, с 1.6 с; на вершине стоит
+  // --- дисциплина: 1 ступень / 0.42 с с 1.6 с; на вершине останавливается
   const sD = Math.max(0, Math.min(N, (t - 1.6) / 0.42));
+  const tTop = 1.6 + N * 0.42;
   const topX = (N + 1) * SW + 120, topY = stepTop(N);
-  const atTop = clamp01((t - (1.6 + N * 0.42)) / 0.6);
-  const startK = clamp01((t - 1.3) / 0.6);   // дисциплина стоит позади на полу, потом подходит к лестнице
+  const atTop = clamp01((t - tTop) / 0.6);
+  const startK = clamp01((t - 1.3) / 0.6);
   const skDclimb = mixSkel(standing(stepX(0) - 150, 0), climb(sD, false), ease(startK));
   const skD = atTop > 0 ? mixSkel(climb(N, false), standing(topX - 60 + atTop * 60, topY, 0.15 * atTop), atTop) : skDclimb;
 
-  // --- мотивация: рывок бегом, замедление, остановка, садится
+  // --- мотивация: рывок, выдох, садится на 15-й ступени
   const sM = keys(t, [[1.2, 0], [5.4, 13.4], [6.9, 15]]);
   const tiredK = clamp01((t - 5.2) / 1.6);
   const sitK = clamp01((t - 7.0) / 0.55);
@@ -184,91 +209,119 @@ export const MotivationVsDiscipline: React.FC = () => {
   const flame = t < 4.6 ? 1 : t < 6.3 ? (0.55 + 0.45 * Math.abs(Math.sin(t * 19))) * (1 - (t - 4.6) / 1.9) : 0;
   const grey = clamp01((t - 6.3) / 2);
 
-  // --- камера (мировые координаты центра кадра + масштаб)
-  const mid: P = [(skD.hip[0] + skM.hip[0]) / 2, (skD.hip[1] + skM.hip[1]) / 2];
-  const followD: P = [skD.hip[0] + 40, skD.hip[1] - 40];
-  const kFollow = clamp01((t - 6.6) / 1.6);
-  let cam = lerpP(mid, followD, ease(kFollow));
-  let zoom = keys(t, [[0, 1.35], [2, 1.15], [7, 1.15], [9, 1.05]]);
-  const kOut = clamp01((t - 15.4) / 2.0);
-  const wide: P = [(N * SW) / 2 + 200, stepTop(N / 2) - 160];
-  cam = lerpP(cam, wide, ease(kOut));
-  zoom = lerp(zoom, 0.43, ease(kOut));
-  const camY = 1080;                                     // точка кадра, куда ставим «центр» (чуть ниже середины)
-  const tx = width / 2 - cam[0] * zoom, ty = camY - cam[1] * zoom;
+  // --- 7 шотов (крупность героя: общий ~15 %, средний ~25 %, крупный ~45 %, финал ~3 %)
+  const headOf = (s: Skel): P => s.head;
+  const SHOTS: Shot[] = [
+    { t0: 0, t1: 2.4, cam: (_, k) => ({ c: [stepX(0) - 60, -260], z: lerp(0.95, 1.08, k) }) },
+    { t0: 2.4, t1: 4.8, inT: "cut", cam: (_, k) => ({ c: [skM.hip[0] + 60, skM.hip[1] - 120], z: lerp(1.5, 1.6, k) }) },
+    { t0: 4.8, t1: 6.9, inT: "flash", cam: (_, k) => ({ c: [headOf(skM)[0] + 10, headOf(skM)[1] - 30], z: lerp(2.6, 2.9, k) }) },
+    { t0: 6.9, t1: 9.2, inT: "dip", cam: (_, k) => ({ c: [stepX(15) + 40 + 30 * k, stepTop(15) - 190], z: lerp(1.45, 1.55, k) }) },
+    { t0: 9.2, t1: 12.4, inT: "cut", cam: (_, k) => ({ c: [skD.hip[0] + 50, skD.hip[1] - 120], z: lerp(1.35, 1.25, k) }) },
+    { t0: 12.4, t1: 15.4, inT: "dip", cam: (_, k) => ({ c: lerpP([skD.hip[0] + 140, skD.hip[1] - 170], [topX - 140, topY - 280], ease(clamp01((k - 0.55) / 0.45))), z: lerp(1.6, 1.5, k) }) },
+    { t0: 15.4, t1: 19.5, cam: (_, k) => {
+      const kk = ease(clamp01(k / 0.85));
+      return { c: lerpP([topX - 120, topY - 280], [(N * SW) / 2 + 260, stepTop(N / 2) - 120], kk), z: Math.exp(lerp(Math.log(1.55), Math.log(0.36), kk)) };
+    } },
+  ];
+  const si = Math.max(0, SHOTS.findIndex((s) => t >= s.t0 && t < s.t1));
+  const shot = SHOTS[si === -1 ? SHOTS.length - 1 : si];
+  const { c: cam, z: zoom } = shot.cam(t, clamp01((t - shot.t0) / (shot.t1 - shot.t0)));
+  const tx = width / 2 - cam[0] * zoom, ty = height * 0.5 - cam[1] * zoom;
+  const toScreen = (p: P): P => [tx + p[0] * zoom, ty + p[1] * zoom];
+  const sinceCut = t - shot.t0;
 
-  // --- дождь
-  const rain = clamp01((t - 6.6) / 0.8) * (1 - clamp01((t - 13.6) / 1.2));
-  const day = Math.round(keys(t, [[1.6, 1], [5.5, 3], [6.6, 4], [9, 7], [11, 14], [13, 21], [14.9, 30]]));
-  const topLight = keys(t, [[0, 0.35], [13.6, 0.4], [15, 1]]);
+  // --- атмосфера
+  const rain = clamp01((t - 6.9) / 0.6) * (1 - clamp01((t - 13.8) / 1.2));
+  const day = Math.round(keys(t, [[1.6, 1], [5.5, 3], [6.9, 4], [9.2, 7], [10.8, 14], [12.4, 21], [14.9, 30]]));
+  const beam = keys(t, [[0, 0.15], [13.9, 0.2], [15.0, 1], [19.5, 0.85]]);     // кульминация: луч на вершине
+  const lamps = [5, 13, 21, 28];
 
   const W = (<g transform={`translate(${tx},${ty}) scale(${zoom})`}>
+    {/* дальний туман/дымка слоями */}
+    <ellipse cx={600} cy={-500} rx={1600} ry={260} fill="#2a2d35" opacity={0.35} filter="url(#hazeBlur)" />
+    <ellipse cx={1500} cy={-1050} rx={1500} ry={220} fill="#2a2d35" opacity={0.3} filter="url(#hazeBlur)" />
     <Stairs />
-    {/* отсвет вершины в мире */}
-    <circle cx={topX + 80} cy={topY - 260} r={900} fill="url(#summit)" opacity={topLight} />
-    <Figure s={skM} color={grey > 0 ? `rgb(${241 - 110 * grey},${241 - 110 * grey},${238 - 108 * grey})` : undefined} back={`rgb(${157 - 60 * grey},${157 - 60 * grey},${155 - 60 * grey})`} />
-    <Flame at={[skM.head[0], skM.head[1] - HEAD - 14]} size={flame} t={t} />
+    {lamps.map((k) => <Cone key={k} x={stepX(k)} floor={stepTop(k)} o={0.85} />)}
+    {/* вершина: луч сверху (кульминация) */}
+    <g opacity={beam}>
+      <polygon points={`${topX - 60},${topY - 2200} ${topX + 60},${topY - 2200} ${topX + 260},${topY} ${topX - 260},${topY}`} fill="url(#beamGrad)" filter="url(#coneBlur)" style={{ mixBlendMode: "screen" }} />
+      <ellipse cx={topX} cy={topY} rx={380} ry={40} fill={COL.ghost} opacity={0.35} filter="url(#coneBlur)" />
+    </g>
+    <Figure s={skM} refl={0.22} glow={0.55 * (1 - grey)}
+      color={`rgb(${244 - 120 * grey},${244 - 120 * grey},${241 - 118 * grey})`} back={`rgb(${169 - 70 * grey},${169 - 70 * grey},${166 - 70 * grey})`} />
+    <Flame at={[skM.head[0], skM.head[1] - HEAD - 12]} size={flame} t={t} />
     <Smoke at={[skM.head[0], skM.head[1] - HEAD]} t={t - 6.2} />
-    <Figure s={skD} glow={clamp01((t - 14.6) / 0.8)} />
-    {kOut < 0.6 && t > 2.2 ? (<>
-      <Label at={[skM.head[0], skM.head[1] - HEAD - (flame > 0.05 ? 120 : 30)]} text="MOTIVATION" color={grey > 0.5 ? "#7d7d7d" : "#ff8a3d"} o={1 - kOut * 1.6} />
-      <Label at={[skD.head[0], skD.head[1] - HEAD - 30]} text="DISCIPLINE" color={atTop > 0.5 ? COL.ghost : "#f1f1ee"} o={1 - kOut * 1.6} />
-    </>) : null}
+    <Figure s={skD} refl={0.22} glow={0.55 + 0.45 * clamp01((t - 14.6) / 0.8)} glowColor={t > 14.6 ? COL.ghost : "#ffffff"} />
   </g>);
 
-  // заголовок и финал
-  const sp = (t0: number) => spring({ frame: f - t0 * fps, fps, config: { damping: 14, stiffness: 180 } });
-  const titleO = 1 - clamp01((t - 2.2) / 0.4);
-  const fin1 = t > 16.2 ? sp(16.2) : 0, fin2 = t > 17.1 ? sp(17.1) : 0;
+  // --- переходы между шотами
+  const flashO = shot.inT === "flash" ? Math.max(0, 1 - sinceCut / 0.12) : 0;
+  const dipO = shot.inT === "dip" ? Math.max(0, 1 - sinceCut / 0.3) : 0;
+  const fadeIn = Math.max(0, 1 - t / 0.25), fadeOut = clamp01((t - 18.6) / 0.9);
+
+  // --- подписи (в экранных координатах, постоянный мелкий кегль)
+  const labelAt = (s: Skel, extra: number) => toScreen([s.head[0], s.head[1] - HEAD - extra]);
+  const showLabels = t > 0.4 && si !== 2 && si < 6;
+  const lM = labelAt(skM, flame > 0.05 ? 125 : 30), lD = labelAt(skD, 30);
+
+  // --- мораль: печатная машинка в последних ~25 %
+  const typed = (txt: string, t0: number) => txt.slice(0, Math.max(0, Math.floor((t - t0) * 16)));
+  const m1 = typed("MOTIVATION STARTS IT.", 16.1), m2 = typed("DISCIPLINE FINISHES IT.", 17.4);
 
   return (
-    <AbsoluteFill style={{ background: "#08090c", overflow: "hidden" }}>
+    <AbsoluteFill style={{ background: "#0e0f12", overflow: "hidden" }}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <defs>
-          <radialGradient id="bg" cx="0.7" cy="0.15" r="0.9"><stop offset="0" stopColor="#2a2d36" /><stop offset="0.55" stopColor="#101116" /><stop offset="1" stopColor="#060608" /></radialGradient>
-          <linearGradient id="stairBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2b2d34" /><stop offset="1" stopColor="#111216" /></linearGradient>
-          <radialGradient id="summit"><stop offset="0" stopColor="#dff8ff" stopOpacity="0.9" /><stop offset="0.25" stopColor={COL.ghost} stopOpacity="0.25" /><stop offset="1" stopColor="#000" stopOpacity="0" /></radialGradient>
-          <radialGradient id="fireGlow"><stop offset="0" stopColor="#ff9a3d" stopOpacity="0.55" /><stop offset="1" stopColor="#ff6a1f" stopOpacity="0" /></radialGradient>
-          <radialGradient id="spot" cx="0.5" cy="0.45" r="0.55"><stop offset="0" stopColor="#ffffff" stopOpacity="0.10" /><stop offset="1" stopColor="#000" stopOpacity="0" /></radialGradient>
-          <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#08090c" stopOpacity="0" /><stop offset="1" stopColor="#08090c" stopOpacity="0.95" /></linearGradient>
-          <linearGradient id="reflFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0.28" /><stop offset="0.5" stopColor="#fff" stopOpacity="0" /></linearGradient>
-          <mask id="reflMask" maskUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}><rect x="0" y={ty} width={width} height={height} fill="url(#reflFade)" /></mask>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14" /></filter>
+          <radialGradient id="bg" cx="0.6" cy="0.2" r="1"><stop offset="0" stopColor="#262830" /><stop offset="0.6" stopColor="#14151a" /><stop offset="1" stopColor="#0c0d10" /></radialGradient>
+          <linearGradient id="stairBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#1f2126" /><stop offset="1" stopColor="#111216" /></linearGradient>
+          <linearGradient id="coneGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffffff" stopOpacity="0.30" /><stop offset="1" stopColor="#ffffff" stopOpacity="0.04" /></linearGradient>
+          <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e9fbff" stopOpacity="0.05" /><stop offset="0.7" stopColor="#bff3ff" stopOpacity="0.35" /><stop offset="1" stopColor={COL.ghost} stopOpacity="0.5" /></linearGradient>
+          <radialGradient id="fireGlow"><stop offset="0" stopColor="#ff9a3d" stopOpacity="0.6" /><stop offset="1" stopColor="#ff6a1f" stopOpacity="0" /></radialGradient>
+          <radialGradient id="vig" cx="0.5" cy="0.47" r="0.75"><stop offset="0.55" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity="0.75" /></radialGradient>
+          <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0e0f12" stopOpacity="0" /><stop offset="1" stopColor="#0e0f12" stopOpacity="0.9" /></linearGradient>
+          <linearGradient id="reflGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="1" /><stop offset="0.35" stopColor="#fff" stopOpacity="0" /></linearGradient>
+          <mask id="reflFadeFig" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#reflGrad)" transform="translate(0,1) scale(1,-1)" /></mask>
+          <filter id="heroGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="9" /></filter>
+          <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" /></filter>
+          <filter id="reflBlur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" /></filter>
+          <filter id="coneBlur" x="-30%" y="-10%" width="160%" height="120%"><feGaussianBlur stdDeviation="18" /></filter>
+          <filter id="hazeBlur" x="-50%" y="-200%" width="200%" height="500%"><feGaussianBlur stdDeviation="60" /></filter>
         </defs>
         <rect width={width} height={height} fill="url(#bg)" />
-        {/* отражение на полу (глянец): зеркальная копия мира под линией пола */}
-        <g mask="url(#reflMask)"><g transform={`translate(0,${2 * ty}) scale(1,-1)`}>{W}</g></g>
         {W}
-        <rect width={width} height={height} fill="url(#spot)" />
-        <rect y={height * 0.72} width={width} height={height * 0.28} fill="url(#fog)" />
-        {/* дождь */}
-        {rain > 0 ? <g opacity={0.35 * rain}>{Array.from({ length: 90 }, (_, i) => {
-          const x = ((i * 137.5) % width) + ((f * 3) % 40);
-          const y = ((i * 263 + f * 58) % (height + 200)) - 100;
-          return <line key={i} x1={x} y1={y} x2={x - 10} y2={y + 46} stroke="#b8c4d6" strokeWidth={2} />;
+        <rect y={height * 0.74} width={width} height={height * 0.26} fill="url(#fog)" />
+        {rain > 0 ? <g opacity={0.3 * rain}>{Array.from({ length: 110 }, (_, i) => {
+          const x = ((i * 137.5) % width) + ((f * 1.5) % 40);
+          const y = ((i * 263 + f * 32) % (height + 200)) - 100;
+          return <line key={i} x1={x} y1={y} x2={x - 8} y2={y + 42} stroke="#c3cddb" strokeWidth={2} />;
         })}</g> : null}
+        <rect width={width} height={height} fill="url(#vig)" />
       </svg>
 
-      {/* счётчик дней */}
-      {t > 1.6 && kOut < 0.5 ? <AbsoluteFill style={{ alignItems: "center", paddingTop: 200 }}>
-        <div style={{ fontFamily: MONO, fontWeight: 800, fontSize: 40, letterSpacing: 10, color: day >= 30 ? COL.ghost : "#ffffffb0", opacity: 1 - kOut * 2 }}>DAY {day}</div>
+      {/* подписи над героями */}
+      {showLabels ? <>
+        <div style={{ position: "absolute", left: lM[0], top: lM[1], transform: "translate(-50%,-100%)", fontFamily: MONO, fontWeight: 800, fontSize: 24, letterSpacing: 7,
+          color: grey > 0.5 ? "#7b7b7b" : "#ff8a3d", whiteSpace: "nowrap" }}>MOTIVATION</div>
+        <div style={{ position: "absolute", left: lD[0], top: lD[1], transform: "translate(-50%,-100%)", fontFamily: MONO, fontWeight: 800, fontSize: 24, letterSpacing: 7,
+          color: t > 14.6 ? COL.ghost : "#efefec", whiteSpace: "nowrap" }}>DISCIPLINE</div>
+      </> : null}
+
+      {/* тема сверху (~16 %) + счётчик дней */}
+      {t < 15.6 ? <AbsoluteFill style={{ alignItems: "center", paddingTop: 290, opacity: 1 - clamp01((t - 15.2) / 0.4) }}>
+        <div style={{ fontFamily: MONO, fontWeight: 500, fontSize: 30, letterSpacing: 9, color: "#ffffffd8" }}>MOTIVATION VS DISCIPLINE</div>
+        {t > 1.6 ? <div style={{ fontFamily: MONO, fontWeight: 500, fontSize: 24, letterSpacing: 8, color: day >= 30 ? COL.ghost : "#ffffff80", marginTop: 14 }}>DAY {day}</div> : null}
       </AbsoluteFill> : null}
 
-      {/* заголовок */}
-      {titleO > 0 ? <AbsoluteFill style={{ alignItems: "center", paddingTop: 170, opacity: titleO }}>
-        <div style={{ fontFamily: PUNCH, fontSize: 104, color: "#ff8a3d", transform: `translateY(${(1 - sp(0.1)) * 40}px)` }}>MOTIVATION</div>
-        <div style={{ fontFamily: SERIF, fontSize: 56, color: "#ffffff90", margin: "-6px 0" }}>vs</div>
-        <div style={{ fontFamily: PUNCH, fontSize: 104, color: "#f1f1ee", transform: `translateY(${(1 - sp(0.45)) * 40}px)`, opacity: sp(0.45) }}>DISCIPLINE</div>
+      {/* мораль */}
+      {t > 16.1 ? <AbsoluteFill style={{ alignItems: "center", paddingTop: 290 }}>
+        <div style={{ fontFamily: MONO, fontWeight: 800, fontSize: 40, letterSpacing: 6, color: "#e6e6e3", minHeight: 52 }}>{m1}</div>
+        <div style={{ fontFamily: MONO, fontWeight: 800, fontSize: 40, letterSpacing: 6, color: COL.ghost, marginTop: 14, textShadow: `0 0 24px ${COL.ghost}99` }}>{m2}</div>
       </AbsoluteFill> : null}
 
-      {/* финальные фразы */}
-      {t > 16.2 ? <AbsoluteFill style={{ alignItems: "center", paddingTop: 250 }}>
-        <div style={{ fontFamily: SERIF, fontSize: 78, color: "#d9d9d6", opacity: fin1, transform: `translateY(${(1 - fin1) * 30}px)` }}>Motivation starts it.</div>
-        <div style={{ fontFamily: SERIF, fontSize: 78, color: COL.ghost, opacity: fin2, transform: `translateY(${(1 - fin2) * 30}px)`, textShadow: `0 0 30px ${COL.ghost}88`, marginTop: 10 }}>Discipline finishes it.</div>
-      </AbsoluteFill> : null}
-
-      <Grain amount={0.1} />
-      <Audio src={staticFile("music.wav")} volume={(fr) => interpolate(fr, [0, 10, durationInFrames - 20, durationInFrames], [0, 0.8, 0.8, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
+      <Grain amount={0.06} />
+      <AbsoluteFill style={{ background: "#fff", opacity: flashO }} />
+      <AbsoluteFill style={{ background: "#000", opacity: Math.max(dipO, fadeIn, fadeOut) }} />
+      <Audio src={staticFile("music.wav")} volume={(fr) => interpolate(fr, [0, 10, durationInFrames - 40, durationInFrames], [0, 0.8, 0.8, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />
     </AbsoluteFill>
   );
 };
