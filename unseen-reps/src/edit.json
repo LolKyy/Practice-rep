@@ -1,0 +1,18 @@
+{
+  "music": null,
+  "musicStart": 0,
+  "musicVolume": 1,
+  "bpm": 128,
+  "useBeats": true,
+  "grade": "bw",
+  "segments": [
+    { "src": null, "beats": 2, "text": "Do it", "style": "serif", "fx": "zoom blur" },
+    { "src": null, "beats": 2, "text": "even if", "style": "serif", "fx": "punch shake" },
+    { "src": null, "beats": 2, "text": "it hurts.", "style": "serif", "fx": "zoom rgb", "accent": true },
+    { "src": null, "beats": 1, "text": "NO ONE", "style": "punch", "fx": "punch flash" },
+    { "src": null, "beats": 1, "text": "IS COMING", "style": "punch", "fx": "punch shake" },
+    { "src": null, "beats": 2, "text": "TO SAVE YOU", "style": "punch", "fx": "push", "accent": true },
+    { "src": null, "beats": 2, "text": "REP 1 OF 365", "style": "mono", "fx": "zoom" }
+  ],
+  "outro": ["One day", "or day one."]
+}
