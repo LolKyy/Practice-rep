@@ -7,6 +7,10 @@ import { CanvasArt } from "./engine/CanvasArt";
 import { Sema, Extra, EraBackground } from "./components/scenes";
 import { stars } from "./components/ep01art";
 import { shawarma } from "./StyleFrames";
+import { Stage, Plane } from "./engine/stage";
+import { seaSky, wave, frigate, lemonCrate } from "./components/ep02art";
+import { pistoletov, pirate, deck, sails } from "./StyleFrames2";
+
 setVivid(true);
 const VIV: React.CSSProperties = { filter: "saturate(1.4) contrast(1.08) brightness(1.04)" };
 const strip = (s: string, bg: string, fg: string, rot: number, size: number): React.CSSProperties => ({ fontFamily: "Montserrat", fontWeight: 900, fontSize: size, lineHeight: 1, padding: "18px 30px 14px", background: bg, color: fg,
@@ -28,5 +32,28 @@ export const Ep01Cover: React.FC = () => (
     </AbsoluteFill>
     <CanvasArt draw={(g) => { g.save(); g.translate(540, 1640); g.rotate(0.03); g.shadowColor = "rgba(60,36,12,0.35)"; g.shadowBlur = 14; g.shadowOffsetX = 6; g.shadowOffsetY = 10;
       cut(g, rrectP(-330, -50, 660, 100, 14), "#2E3A57", { seed: 995, edge: 2.5, tear: 0.5 }); g.shadowColor = "transparent"; inkText(g, "ПОПАЛ В ЭПОХУ", 0, 2, 48, "#FBF7EC"); g.restore(); }} />
+  </AbsoluteFill>
+);
+
+// ---------------------------------------------------------------- «Доставка на абордаж». Безопасная зона TikTok:
+// центр 3:4 (y 240…1680) — сетка профиля; справа (x > 900) и снизу (y > 1500) в ленте — кнопки и подпись.
+export const Ep02Cover: React.FC = () => (
+  <AbsoluteFill style={VIV}>
+    <Stage cam={[[0, 0, 40, 1.0]]} bg="#FFE29A" light="gold" rays={0.4}>
+      <Plane z={40} draw={seaSky("gold")} dyn shadow={0} />
+      <Plane z={18} draw={wave(1000, 12, "#3FA7D6", 0, 0.6, 2)} dyn shadow={0.1} />
+      <Plane z={14} draw={frigate({ x: 860, y: 1000, s: 0.42, flag: "pist" })} dyn />
+      <Plane z={12} draw={sails} />
+      <Plane z={6.5} draw={deck} />
+      <Extra spec={pirate(93, "#E07B39")} x={110} y={1520} s={3.4} z={5.8} pose={() => ({ emo: "smile", aR: [2.5, 0.4], look: [1, 0] })} />
+      <Extra spec={pistoletov} x={360} y={1640} s={4.6} z={5.1} pose={() => ({ emo: "smile", aL: [1.45, 1.65], aR: [1.45, 1.65], look: [0.3, 0], talk: 0.8 })} />
+      <Sema outfit="casual" x={700} s={4.1} y={1640} pose={() => ({ emo: "smile", bag: true, aR: [1.2, 0.9], holdR: lemonCrate, look: [-1, 0], t: 0.4 })} />
+    </Stage>
+    <AbsoluteFill style={{ alignItems: "center", paddingTop: 300, paddingRight: 150, gap: 12, filter: "drop-shadow(0 0 4px #F6F1E4) drop-shadow(10px 14px 10px rgba(60,36,12,0.45))" }}>
+      <span style={strip("", "#FBF7EC", PAL.ink, -2, 70)}>ДОСТАВКА</span>
+      <span style={strip("", PAL.scarf, "#FBF7EC", 1.5, 88)}>НА АБОРДАЖ</span>
+    </AbsoluteFill>
+    <CanvasArt draw={(g) => { g.save(); g.translate(500, 1440); g.rotate(0.03); g.shadowColor = "rgba(60,36,12,0.35)"; g.shadowBlur = 14; g.shadowOffsetX = 6; g.shadowOffsetY = 10;
+      cut(g, rrectP(-250, -46, 500, 92, 14), "#2E3A57", { seed: 995, edge: 2.5, tear: 0.5 }); g.shadowColor = "transparent"; inkText(g, "ПОПАЛ В ЭПОХУ", 0, 2, 46, "#FBF7EC"); g.restore(); }} />
   </AbsoluteFill>
 );
