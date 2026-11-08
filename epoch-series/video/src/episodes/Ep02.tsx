@@ -93,7 +93,10 @@ const FadeZoom: React.FC<{ dur: number; xf: number; children: React.ReactNode }>
 const CanvasArtless: React.FC<{ render: (t: number) => React.ReactNode }> = ({ render }) => { const t = useCurrentFrame() / FPS; return <>{render(t)}</>; };
 
 // ---------------------------------------------------------------- музыка: громкость песни по времени ролика
-const songVol = (fr: number) => { const t = fr / FPS; return interpolate(t, [0, TQ - 1.3, TQ, TQ + CH_LEN, TQ + CH_LEN + FADE], [0.05, 0.05, 0.62, 0.62, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }); };
+// Решение пользователя: до встречи двух фрегатов песни НЕ слышно; со встречи — фон тише прежнего (0,03 ≈ −30 дБ);
+// припев — в 2 раза тише прежнего (0,31 вместо 0,62).
+const BED = 0.03, PEAK = 0.31, BED_IN = S[14].s - 0.3;
+const songVol = (fr: number) => { const t = fr / FPS; return interpolate(t, [0, BED_IN, BED_IN + 1.2, TQ - 1.3, TQ, TQ + CH_LEN, TQ + CH_LEN + FADE], [0, 0, BED, BED, PEAK, PEAK, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }); };
 
 export const Ep02: React.FC = () => (
   <AbsoluteFill style={{ background: "#FFD43B" }}>
