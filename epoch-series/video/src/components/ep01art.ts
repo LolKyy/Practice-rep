@@ -5,9 +5,9 @@ const star = (g: G, x: number, y: number, r: number, c: string, seed: number) =>
 export const stars = (g: G, x: number, y: number, n: number, r: number, gap: number, seed = 930) => { for (let i = 0; i < n; i++) star(g, x + i * gap, y, r, "#FFB400", seed + i); };
 
 // ---------------------------------------------------------------- экран курьерского приложения (заказ)
-export type AppOpts = { title?: string; rows?: [string, string][]; addr?: string; date?: string; client?: string; press?: number; finger?: number; unknown?: boolean };
+export type AppOpts = { title?: string; rows?: [string, string][]; addr?: string; date?: string; client?: string; press?: number; finger?: number; unknown?: boolean; avatar?: "caesar" | "pistoletov" };
 export const appScreen = (g: G, t: number, o: AppOpts = {}) => {
-  const { title = "НОВЫЙ ЗАКАЗ!", rows = [["Шаурма", "× 1"], ["Салат «Цезарь»", "× 1"]], addr = "Рим, Сенат", date = "15 марта 44 г. до н.э.", client = "Юлий Цезарь", press = 0, finger = 1, unknown = false } = o;
+  const { title = "НОВЫЙ ЗАКАЗ!", rows = [["Шаурма", "× 1"], ["Салат «Цезарь»", "× 1"]], addr = "Рим, Сенат", date = "15 марта 44 г. до н.э.", client = "Юлий Цезарь", press = 0, finger = 1, unknown = false, avatar = "caesar" } = o;
   cut(g, rectP(-20, -20, 1120, 1960), "#FFD43B", { tear: 0, noEdge: true, sort: "water", grain: 0.4 });
   for (let i = 0; i < 9; i++) cut(g, ellP(100 + (i % 3) * 440, 150 + Math.floor(i / 3) * 700, 120, 120, 30), "#FFC21A", { seed: 900 + i, edge: 1, grain: 0.2 });
   g.save(); g.translate(540, 640); g.scale(0.86, 0.86); g.rotate(-0.05 + Math.sin(t * 1.3) * 0.006);
@@ -16,13 +16,20 @@ export const appScreen = (g: G, t: number, o: AppOpts = {}) => {
   cut(g, rrectP(-300, -600, 600, 200, 46), "#FFC928", { seed: 912, edge: 0, tear: 0, noEdge: true, grain: 0.2 });
   inkText(g, title, 0, -500, 64, PAL.ink);
   rows.forEach(([a, b], i) => { const y = -340 + i * 100; cut(g, rrectP(-260, y - 40, 520, 80, 16), "#F4F1EA", { seed: 913 + i, edge: 1.4, tear: 0.3 }); inkText(g, a, -230, y, 40, PAL.ink, "Montserrat", 900, "left"); inkText(g, b, 230, y, 40, PAL.scarf, "Montserrat", 900, "right"); });
-  text(g, "АДРЕС:", -260, -100, 30, "#8a8070", "Montserrat", 900, "left"); inkText(g, addr, -260, -50, unknown ? 90 : 52, unknown ? PAL.scarf : PAL.ink, "Montserrat", 900, "left");
-  if (date) text(g, date, -260, 10, 36, PAL.scarf, "Montserrat", 900, "left");
+  text(g, "АДРЕС:", -260, -100, 30, "#8a8070", "Montserrat", 900, "left");
+  const al = addr.split("\n"); al.forEach((l, i) => inkText(g, l, -260, -50 + i * 54, unknown ? 90 : 52, unknown ? PAL.scarf : PAL.ink, "Montserrat", 900, "left")); // «\n» — перенос строки
+  if (date) text(g, date, -260, 10 + (al.length - 1) * 48, al.length > 1 ? 30 : 36, PAL.scarf, "Montserrat", 900, "left");
   if (!unknown) {
+    if (avatar === "pistoletov") { // аватар: Пистолетов — треуголка и широкая улыбка
+      cut(g, ellP(-200, 158, 66, 66, 30), "#E8B48E", { seed: 920, edge: 2 }); fillP(g, ellP(-200, 112, 58, 22, 20), "#5A3A24");
+      fillP(g, ellP(-222, 148, 6, 8, 8), PAL.ink); fillP(g, ellP(-178, 148, 6, 8, 8), PAL.ink); strokeP(g, [[-232, 132], [-212, 129]], "#5A3A24", 4); strokeP(g, [[-188, 129], [-168, 132]], "#5A3A24", 4);
+      cut(g, [[-232, 172], [-168, 172], [-176, 190], [-200, 198], [-224, 190]], "#7A2A22", { seed: 922, edge: 0.8 }); fillP(g, rectP(-224, 172, 48, 7), "#FFFFFF"); fillP(g, ellP(-238, 168, 9, 6, 8), "#F09A8A", 0.6); fillP(g, ellP(-162, 168, 9, 6, 8), "#F09A8A", 0.6);
+      cut(g, [[-282, 114], [-242, 80], [-200, 92], [-158, 80], [-118, 114], [-200, 104]], "#1E1A17", { seed: 923, sort: "felt", rim: 0.6 }); strokeP(g, [[-282, 114], [-200, 104], [-118, 114]], "#D9B04A", 3);
+    } else {
     cut(g, ellP(-200, 150, 70, 70, 30), "#F0D2A8", { seed: 920, edge: 2 });
     for (let i = 0; i < 7; i++) { const a = Math.PI * 1.05 + i * 0.15; g.save(); g.translate(-200 + Math.cos(a) * 66, 150 + Math.sin(a) * 66); g.rotate(a + 1.2); cut(g, ellP(0, 0, 8, 18, 10), "#5E9A2E", { seed: 921 + i, edge: 1 }); g.restore(); }
-    fillP(g, ellP(-222, 145, 6, 8, 8), PAL.ink); fillP(g, ellP(-178, 145, 6, 8, 8), PAL.ink); strokeP(g, [[-212, 180], [-188, 180]], PAL.ink, 4);
-    text(g, "КЛИЕНТ", -100, 115, 28, "#8a8070", "Montserrat", 900, "left"); inkText(g, client, -100, 165, 46, PAL.ink, "Montserrat", 900, "left");
+    fillP(g, ellP(-222, 145, 6, 8, 8), PAL.ink); fillP(g, ellP(-178, 145, 6, 8, 8), PAL.ink); strokeP(g, [[-212, 180], [-188, 180]], PAL.ink, 4); }
+    text(g, "КЛИЕНТ", -100, 115, 28, "#8a8070", "Montserrat", 900, "left"); inkText(g, client, -100, 165, client.length > 12 ? 38 : 46, PAL.ink, "Montserrat", 900, "left");
     stars(g, -95, 215, 5, 16, 38);
   } else { cut(g, ellP(-200, 150, 70, 70, 30), "#E6E1D6", { seed: 920, edge: 2 }); inkText(g, "?", -200, 150, 90, "#8a8070"); text(g, "КЛИЕНТ", -100, 115, 28, "#8a8070", "Montserrat", 900, "left"); inkText(g, "???", -100, 165, 46, PAL.ink, "Montserrat", 900, "left"); }
   const pr = Math.min(1, press); g.save(); g.translate(0, 355); g.scale(1 - pr * 0.06, 1 - pr * 0.08);
