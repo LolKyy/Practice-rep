@@ -4,6 +4,7 @@ import { Sheet } from "./Sheet";
 import { Showcase, SHOWCASE_DUR } from "./Showcase";
 import { Frame1, Frame2, Frame3 } from "./StyleFrames";
 import { Ep01, EP01_DUR } from "./episodes/Ep01";
+import { Ep02, EP02_DUR } from "./episodes/Ep02";
 import { Ep01Cover } from "./Cover";
 import { P2Frame1, P2Frame2, P2Frame3, P2Frame4, P2Frame5, P2FlyIn } from "./StyleFrames2";
 // Каждая серия регистрируется дважды: <id> (финал 1080×1920) и <id>-draft (черновик 720×1280).
@@ -13,6 +14,7 @@ const Draft = (C: React.FC): React.FC => () => (
 const EPISODES: { id: string; C: React.FC; dur: number }[] = [
   { id: "Showcase", C: Showcase, dur: SHOWCASE_DUR },
   { id: "Ep01", C: Ep01, dur: EP01_DUR },
+  { id: "Ep02", C: Ep02, dur: EP02_DUR },
 ];
 export const Root: React.FC = () => (<>
   {EPISODES.map(({ id, C, dur }) => (

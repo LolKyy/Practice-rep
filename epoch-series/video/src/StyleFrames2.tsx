@@ -17,10 +17,10 @@ const sub = (s: string): Word[] => s.split(" ").map((w) => ({ w, s: 0, e: 99 }))
 const VIV: React.CSSProperties = { filter: "saturate(1.35) contrast(1.06) brightness(1.04)" };
 export const blackbeard = { seed: 91, hat: "tricorn" as const, bigBeard: true, tunic: "#2B2D3A", hair: "#1A1614", skin: "#D9AE86" };
 export const pistoletov = { seed: 92, hat: "tricorn" as const, vest: "#7A6A55", tunic: "#E8B48E", skin: "#E8B48E", hair: "#5A3A24" };
-const pirate = (seed: number, c: string) => ({ seed, hat: "bandana" as const, tunic: c, skin: "#C99B72", beard: seed % 2 ? "#3A2A1E" : undefined });
-const deck = (g: any) => { cut(g, rectP(-400, 1200, 1880, 1000), "#B07A48", { tear: 0, sort: "kraft", noEdge: true }); for (let x = -380; x < 1500; x += 120) strokeP(g, [[x, 1200], [x - 60, 2200]], "rgba(70,40,20,0.35)", 3);
+export const pirate = (seed: number, c: string) => ({ seed, hat: "bandana" as const, tunic: c, skin: "#C99B72", beard: seed % 2 ? "#3A2A1E" : undefined });
+export const deck = (g: any) => { cut(g, rectP(-400, 1200, 1880, 1000), "#B07A48", { tear: 0, sort: "kraft", noEdge: true }); for (let x = -380; x < 1500; x += 120) strokeP(g, [[x, 1200], [x - 60, 2200]], "rgba(70,40,20,0.35)", 3);
   cut(g, rectP(-400, 1080, 1880, 40), "#7A4E2E", { seed: 900, sort: "kraft" }); for (let x = -360; x < 1500; x += 90) cut(g, rrectP(x, 1110, 22, 100, 8), "#8A5A34", { seed: 901 + x }); };
-const sails = (g: any) => { cut(g, rectP(520, -400, 24, 1500), "#5A3A24", { seed: 910 }); cut(g, [[300, 80], [760, 80], [790, 560], [270, 560]], "#F4ECD8", { seed: 911, sort: "water", rim: 0.5, tear: 0.8 }); };
+export const sails = (g: any) => { cut(g, rectP(520, -400, 24, 1500), "#5A3A24", { seed: 910 }); cut(g, [[300, 80], [760, 80], [790, 560], [270, 560]], "#F4ECD8", { seed: 911, sort: "water", rim: 0.5, tear: 0.8 }); };
 
 // 1 — НАССАУ: Чёрная Борода тянется к коробу
 export const P2Frame1: React.FC = () => (
