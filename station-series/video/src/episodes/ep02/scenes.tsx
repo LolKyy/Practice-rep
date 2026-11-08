@@ -97,7 +97,7 @@ const FrozenGlass: React.FC<{ id: string; reveal: number; sil?: boolean }> = ({ 
 };
 
 /** Зал капсул: ряды уходят вдаль, синий аварийный свет. */
-const PodHall: React.FC<{ id: string; t: number }> = ({ id, t }) => {
+export const PodHall: React.FC<{ id: string; t: number }> = ({ id, t }) => {
   const VP = { x: 540, y: 820 };
   return (
     <g>

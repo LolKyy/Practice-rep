@@ -28,13 +28,45 @@ export type Look = {
   boots: string;
   hair: string;
   hairStyle: "buzz" | "bob" | "helmet" | "none";
-  extras?: ("stubble" | "scar" | "earpiece" | "scanner" | "tablet" | "number" | "commission" | "crystals" | "veins" | "frost" | "icicles" | "blanket" | "freckles")[];
+  extras?: ("stubble" | "scar" | "earpiece" | "scanner" | "tablet" | "number" | "commission" | "crystals" | "veins" | "frost" | "icicles" | "blanket" | "freckles" | "barcode" | "whitefingers")[];
   number?: string;
   eyes?: string;
   glowEyes?: boolean; // бельма стылых
 };
 
 export const LOOKS: Record<string, Look> = {
+  /** Вадим Кречет, 45 — главарь бунта: высокий, спокойный, штрихкод на виске. */
+  vadim: {
+    skin: "#C29A80",
+    suit: "#3C4146",
+    suitDark: "#23272B",
+    boots: "#151719",
+    hair: "#2A2420",
+    hairStyle: "buzz",
+    extras: ["barcode", "stubble", "number"],
+    number: "1-007",
+  },
+  /** Гоша Кречет, 29 — худой, нервный, в трёх одеялах, кончики пальцев белые. */
+  gosha: {
+    skin: "#D2B8A6",
+    suit: "#C8642E",
+    suitDark: "#7A3A1C",
+    boots: "#1C1E21",
+    hair: "#3A2C24",
+    hairStyle: "buzz",
+    extras: ["blanket", "whitefingers"],
+  },
+  /** Рыжий, замерзающий (иней поверх). */
+  ryzhyFrozen: {
+    skin: "#CDEBF7",
+    suit: "#A9D6EA",
+    suitDark: "#6FA6C2",
+    boots: "#7FB2CB",
+    hair: "#B8E0F2",
+    hairStyle: "buzz",
+    extras: ["frost", "icicles"],
+    eyes: "#7FB2CB",
+  },
   /** Рыжий — заключённый блока 2 (серия 2): оранжевая роба, рыжий, веснушки. */
   ryzhy: {
     skin: "#E2B49A",
@@ -369,6 +401,15 @@ export const Person: React.FC<PersonProps> = ({
         </g>
       </g>
 
+      {ex.has("blanket") && !sil ? (
+        <g transform={torsoTf}>
+          <path d="M -170 -330 C -120 -390 120 -390 170 -330 L 190 40 C 120 70 -120 70 -190 40 Z" fill="#5E5A4E" stroke={INK} strokeWidth={10} />
+          <path d="M -150 -300 C -60 -340 60 -340 150 -300 L 160 -40 C 60 -10 -60 -10 -160 -40 Z" fill="#7A6E58" stroke={INK} strokeWidth={6} />
+          <path d="M -120 -280 C -40 -300 40 -300 120 -280 L 110 -150 C 40 -130 -40 -130 -110 -150 Z" fill="#4E5A66" stroke={INK} strokeWidth={5} />
+          <path d="M -140 -200 L 150 -190 M -150 -100 L 160 -110" stroke="#3E3A30" strokeWidth={4} opacity={0.6} />
+        </g>
+      ) : null}
+
       {/* шея */}
       <path d={neckPart.d} fill={neckPart.fill} />
       {!sil ? <path d={neckPart.d} fill="#020611" opacity={0.35} /> : null}
@@ -408,6 +449,13 @@ export const Person: React.FC<PersonProps> = ({
             <path d={`M ${fx} -4 L ${fx + 9} 28 L ${fx - 4} 32`} stroke="#3A2E28" strokeWidth={3} fill="none" opacity={0.6} />
             <path d={`M ${-38 + fx} 4 q 14 6 28 0 M ${12 + fx} 4 q 14 6 28 0`} stroke="#3A2E28" strokeWidth={2.5} fill="none" opacity={0.45} />
             <g transform={`translate(${fx} 0)`}>{mouth}</g>
+            {ex.has("barcode") ? (
+              <g transform={`translate(${-50 + fx} -40)`}>
+                {[0, 3, 5, 9, 11, 14, 17, 19].map((x, i) => (
+                  <rect key={i} x={x} y={0} width={i % 3 ? 1.6 : 2.6} height={16} fill="#1E2A33" opacity={0.85} />
+                ))}
+              </g>
+            ) : null}
             {ex.has("freckles") ? (
               <g fill="#B0603A" opacity={0.7}>
                 {[[-34, 14], [-26, 20], [-40, 22], [-20, 12], [30, 14], [38, 20], [24, 21], [44, 12], [6, 6]].map(([fx2, fy], i) => (
@@ -481,6 +529,13 @@ export const Person: React.FC<PersonProps> = ({
           {[...legs, ...arms].map((p, i) => (
             <path key={i} d={p.d} fill="#F2FBFF" opacity={0.15} />
           ))}
+        </g>
+      ) : null}
+
+      {ex.has("whitefingers") && !sil ? (
+        <g fill="#F2FAFF">
+          <circle cx={handL.x} cy={handL.y} r={14} opacity={0.9} />
+          <circle cx={handR.x} cy={handR.y} r={14} opacity={0.9} />
         </g>
       ) : null}
 

@@ -1,0 +1,214 @@
+{
+ "duration": 100.317,
+ "scenes": [
+  {
+   "id": "hook",
+   "start": 0.0,
+   "end": 5.793
+  },
+  {
+   "id": "drain",
+   "start": 5.793,
+   "end": 13.578
+  },
+  {
+   "id": "run",
+   "start": 13.578,
+   "end": 23.832
+  },
+  {
+   "id": "knife",
+   "start": 23.832,
+   "end": 36.365
+  },
+  {
+   "id": "canteen",
+   "start": 36.365,
+   "end": 44.059
+  },
+  {
+   "id": "vadim",
+   "start": 44.059,
+   "end": 63.534
+  },
+  {
+   "id": "deal",
+   "start": 63.534,
+   "end": 72.371
+  },
+  {
+   "id": "gosha",
+   "start": 72.371,
+   "end": 88.282
+  },
+  {
+   "id": "cliff",
+   "start": 88.282,
+   "end": 100.317
+  }
+ ],
+ "lines": [
+  {
+   "id": "01",
+   "scene": "hook",
+   "role": "narr",
+   "start": 0.255,
+   "end": 5.793,
+   "file": "episodes/ep03/voice/fx/01_narr.mp3",
+   "text": "На сканере Рыжий был оранжевой точкой. Потом точка стала голубой. А он всё ещё стоял."
+  },
+  {
+   "id": "02",
+   "scene": "drain",
+   "role": "narr",
+   "start": 6.133,
+   "end": 13.578,
+   "file": "episodes/ep03/voice/fx/02_narr.mp3",
+   "text": "Брат обнял его. Тепло ушло из Рыжего за пять секунд — будто его выпили. Теперь в зале на одну ледяную статую больше."
+  },
+  {
+   "id": "03",
+   "scene": "run",
+   "role": "narr",
+   "start": 13.918,
+   "end": 20.527,
+   "file": "episodes/ep03/voice/fx/03_narr.mp3",
+   "text": "Ты — Глеб Северин. Заключённый, которого послали за дочерью председателя на падающую тюрьму. И сейчас ты бежишь."
+  },
+  {
+   "id": "04",
+   "scene": "run",
+   "role": "narr",
+   "start": 20.697,
+   "end": 23.832,
+   "file": "episodes/ep03/voice/fx/04_narr.mp3",
+   "text": "Глаз у этой твари нет. Но она точно знает, где ты."
+  },
+  {
+   "id": "05",
+   "scene": "knife",
+   "role": "vadim",
+   "start": 24.597,
+   "end": 27.026,
+   "file": "episodes/ep03/voice/fx/05_vadim.mp3",
+   "text": "Руку. Дай руку, говорю."
+  },
+  {
+   "id": "06",
+   "scene": "knife",
+   "role": "gleb",
+   "start": 27.281,
+   "end": 29.684,
+   "file": "episodes/ep03/voice/fx/06_gleb.mp3",
+   "text": "Обычно сначала знакомятся."
+  },
+  {
+   "id": "07",
+   "scene": "knife",
+   "role": "narr",
+   "start": 29.939,
+   "end": 36.365,
+   "file": "episodes/ep03/voice/fx/07_narr.mp3",
+   "text": "Тебя не обыскивают. Тебя щупают за руку. Тёплая — значит, живой. Здесь так проверяют."
+  },
+  {
+   "id": "08",
+   "scene": "canteen",
+   "role": "narr",
+   "start": 36.875,
+   "end": 44.059,
+   "file": "episodes/ep03/voice/fx/08_narr.mp3",
+   "text": "Столовая третьей палубы. Сорок человек жмутся к самодельным обогревателям. Над входом краской: не пожимай холодную руку."
+  },
+  {
+   "id": "09",
+   "scene": "vadim",
+   "role": "narr",
+   "start": 44.399,
+   "end": 49.754,
+   "file": "episodes/ep03/voice/fx/09_narr.mp3",
+   "text": "Их главарь — Вадим Кречет. Штрихкод на виске, голос спокойный, как у врача."
+  },
+  {
+   "id": "10",
+   "scene": "vadim",
+   "role": "vadim",
+   "start": 50.009,
+   "end": 57.872,
+   "file": "episodes/ep03/voice/fx/10_vadim.mp3",
+   "text": "Да, станцию взяли мы. И Блок Ноль вскрыли тоже мы. А твоя Земля до сих пор думает, что тут просто бунт."
+  },
+  {
+   "id": "11",
+   "scene": "vadim",
+   "role": "narr",
+   "start": 58.127,
+   "end": 63.534,
+   "file": "episodes/ep03/voice/fx/11_narr.mp3",
+   "text": "Дочь председателя они не тронули. Она сама ушла вниз — в лаборатории, за какими-то файлами."
+  },
+  {
+   "id": "12",
+   "scene": "deal",
+   "role": "vadim",
+   "start": 63.959,
+   "end": 72.371,
+   "file": "episodes/ep03/voice/fx/12_vadim.mp3",
+   "text": "Проведёшь нас вниз — заберём твой контейнер и улетим. Только у реактора сидят Кочегары Шрама. Стылые хотя бы не врут."
+  },
+  {
+   "id": "13",
+   "scene": "gosha",
+   "role": "narr",
+   "start": 72.881,
+   "end": 78.837,
+   "file": "episodes/ep03/voice/fx/13_narr.mp3",
+   "text": "Его младший брат Гоша кутается в три одеяла. Вдруг он наклоняет голову к стене — будто слушает."
+  },
+  {
+   "id": "14",
+   "scene": "gosha",
+   "role": "gosha",
+   "start": 79.177,
+   "end": 80.431,
+   "file": "episodes/ep03/voice/fx/14_gosha.mp3",
+   "text": "Идут."
+  },
+  {
+   "id": "15",
+   "scene": "gosha",
+   "role": "narr",
+   "start": 80.941,
+   "end": 84.415,
+   "file": "episodes/ep03/voice/fx/15_narr.mp3",
+   "text": "Все замолкают. Через две секунды пищит твой сканер."
+  },
+  {
+   "id": "16",
+   "scene": "gosha",
+   "role": "vadim",
+   "start": 85.095,
+   "end": 88.282,
+   "file": "episodes/ep03/voice/fx/16_vadim.mp3",
+   "text": "Он так с самого бунта. Слышит их раньше приборов."
+  },
+  {
+   "id": "17",
+   "scene": "cliff",
+   "role": "narr",
+   "start": 88.877,
+   "end": 94.284,
+   "file": "episodes/ep03/voice/fx/17_narr.mp3",
+   "text": "На прощание Гоша протягивает тебе руку. Ты пожимаешь её — и замираешь. Она ледяная."
+  },
+  {
+   "id": "18",
+   "scene": "cliff",
+   "role": "gosha",
+   "start": 94.794,
+   "end": 95.917,
+   "file": "episodes/ep03/voice/fx/18_gosha.mp3",
+   "text": "Брату не говори."
+  }
+ ]
+}

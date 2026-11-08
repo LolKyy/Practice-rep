@@ -1,0 +1,1512 @@
+{
+ "audio": "episodes/ep03/voice.mp3",
+ "language": "ru",
+ "duration": 100.317,
+ "words": [
+  {
+   "word": "На",
+   "start": 0.255,
+   "end": 0.375,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "сканере",
+   "start": 0.375,
+   "end": 0.815,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "Рыжий",
+   "start": 0.815,
+   "end": 1.135,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "был",
+   "start": 1.135,
+   "end": 1.315,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "оранжевой",
+   "start": 1.315,
+   "end": 1.815,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "точкой.",
+   "start": 1.815,
+   "end": 2.255,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "Потом",
+   "start": 2.775,
+   "end": 3.035,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "точка",
+   "start": 3.035,
+   "end": 3.375,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "стала",
+   "start": 3.375,
+   "end": 3.575,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "голубой.",
+   "start": 3.575,
+   "end": 4.095,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "А",
+   "start": 4.555,
+   "end": 4.755,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "он",
+   "start": 4.755,
+   "end": 4.895,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "всё",
+   "start": 4.895,
+   "end": 5.075,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "ещё",
+   "start": 5.075,
+   "end": 5.215,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "стоял.",
+   "start": 5.215,
+   "end": 5.655,
+   "line": "01",
+   "role": "narr"
+  },
+  {
+   "word": "Брат",
+   "start": 6.133,
+   "end": 6.413,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "обнял",
+   "start": 6.413,
+   "end": 6.813,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "его.",
+   "start": 6.813,
+   "end": 6.973,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "Тепло",
+   "start": 7.613,
+   "end": 7.913,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "ушло",
+   "start": 7.913,
+   "end": 8.253,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "из",
+   "start": 8.253,
+   "end": 8.413,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "Рыжего",
+   "start": 8.413,
+   "end": 8.733,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "за",
+   "start": 8.733,
+   "end": 8.853,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "пять",
+   "start": 8.853,
+   "end": 9.033,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "секунд",
+   "start": 9.033,
+   "end": 9.493,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "будто",
+   "start": 9.813,
+   "end": 10.093,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "его",
+   "start": 10.093,
+   "end": 10.333,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "выпили.",
+   "start": 10.333,
+   "end": 10.753,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "Теперь",
+   "start": 11.313,
+   "end": 11.553,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "в",
+   "start": 11.553,
+   "end": 11.753,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "зале",
+   "start": 11.753,
+   "end": 11.933,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "на",
+   "start": 11.933,
+   "end": 12.073,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "одну",
+   "start": 12.073,
+   "end": 12.273,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "ледяную",
+   "start": 12.273,
+   "end": 12.693,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "статую",
+   "start": 12.693,
+   "end": 13.053,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "больше.",
+   "start": 13.053,
+   "end": 13.273,
+   "line": "02",
+   "role": "narr"
+  },
+  {
+   "word": "Ты",
+   "start": 13.918,
+   "end": 14.098,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "Глеб",
+   "start": 14.258,
+   "end": 14.438,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "Северин.",
+   "start": 14.438,
+   "end": 14.858,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "Заключённый,",
+   "start": 15.438,
+   "end": 15.998,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "которого",
+   "start": 16.018,
+   "end": 16.238,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "послали",
+   "start": 16.238,
+   "end": 16.758,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "за",
+   "start": 16.758,
+   "end": 16.878,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "дочерью",
+   "start": 16.878,
+   "end": 17.258,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "председателя",
+   "start": 17.258,
+   "end": 17.818,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "на",
+   "start": 17.818,
+   "end": 17.998,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "падающую",
+   "start": 17.998,
+   "end": 18.478,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "тюрьму.",
+   "start": 18.478,
+   "end": 18.858,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "И",
+   "start": 19.298,
+   "end": 19.478,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "сейчас",
+   "start": 19.478,
+   "end": 19.758,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "ты",
+   "start": 19.758,
+   "end": 20.018,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "бежишь.",
+   "start": 20.018,
+   "end": 20.378,
+   "line": "03",
+   "role": "narr"
+  },
+  {
+   "word": "Глаз",
+   "start": 20.697,
+   "end": 21.037,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "у",
+   "start": 21.037,
+   "end": 21.137,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "этой",
+   "start": 21.137,
+   "end": 21.237,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "твари",
+   "start": 21.237,
+   "end": 21.557,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "нет.",
+   "start": 21.557,
+   "end": 21.797,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "Но",
+   "start": 22.037,
+   "end": 22.357,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "она",
+   "start": 22.357,
+   "end": 22.497,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "точно",
+   "start": 22.497,
+   "end": 22.797,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "знает,",
+   "start": 22.797,
+   "end": 23.197,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "где",
+   "start": 23.197,
+   "end": 23.437,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "ты.",
+   "start": 23.437,
+   "end": 23.577,
+   "line": "04",
+   "role": "narr"
+  },
+  {
+   "word": "Руку.",
+   "start": 24.597,
+   "end": 25.077,
+   "line": "05",
+   "role": "vadim"
+  },
+  {
+   "word": "Дай",
+   "start": 25.557,
+   "end": 25.977,
+   "line": "05",
+   "role": "vadim"
+  },
+  {
+   "word": "руку,",
+   "start": 25.977,
+   "end": 26.397,
+   "line": "05",
+   "role": "vadim"
+  },
+  {
+   "word": "говорю.",
+   "start": 26.437,
+   "end": 26.657,
+   "line": "05",
+   "role": "vadim"
+  },
+  {
+   "word": "Обычно",
+   "start": 27.281,
+   "end": 27.741,
+   "line": "06",
+   "role": "gleb"
+  },
+  {
+   "word": "сначала",
+   "start": 27.741,
+   "end": 28.081,
+   "line": "06",
+   "role": "gleb"
+  },
+  {
+   "word": "знакомятся.",
+   "start": 28.081,
+   "end": 28.921,
+   "line": "06",
+   "role": "gleb"
+  },
+  {
+   "word": "Тебя",
+   "start": 29.939,
+   "end": 30.279,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "не",
+   "start": 30.279,
+   "end": 30.439,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "обыскивают.",
+   "start": 30.439,
+   "end": 31.119,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "Тебя",
+   "start": 31.479,
+   "end": 31.919,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "щупают",
+   "start": 31.919,
+   "end": 32.379,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "за",
+   "start": 32.379,
+   "end": 32.539,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "руку.",
+   "start": 32.539,
+   "end": 32.839,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "Тёплая",
+   "start": 33.339,
+   "end": 33.819,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "значит,",
+   "start": 33.959,
+   "end": 34.219,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "живой.",
+   "start": 34.379,
+   "end": 34.699,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "Здесь",
+   "start": 35.179,
+   "end": 35.419,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "так",
+   "start": 35.419,
+   "end": 35.659,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "проверяют.",
+   "start": 35.659,
+   "end": 36.199,
+   "line": "07",
+   "role": "narr"
+  },
+  {
+   "word": "Столовая",
+   "start": 36.875,
+   "end": 37.375,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "третьей",
+   "start": 37.375,
+   "end": 37.755,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "палубы.",
+   "start": 37.755,
+   "end": 38.215,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "Сорок",
+   "start": 38.675,
+   "end": 39.015,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "человек",
+   "start": 39.015,
+   "end": 39.315,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "жмутся",
+   "start": 39.315,
+   "end": 39.735,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "к",
+   "start": 39.735,
+   "end": 39.775,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "самодельным",
+   "start": 39.775,
+   "end": 40.235,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "обогревателям.",
+   "start": 40.235,
+   "end": 40.915,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "Над",
+   "start": 41.415,
+   "end": 41.555,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "входом",
+   "start": 41.555,
+   "end": 41.915,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "краской:",
+   "start": 41.915,
+   "end": 42.335,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "не",
+   "start": 42.335,
+   "end": 42.735,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "пожимай",
+   "start": 42.735,
+   "end": 43.135,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "холодную",
+   "start": 43.135,
+   "end": 43.615,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "руку.",
+   "start": 43.615,
+   "end": 43.895,
+   "line": "08",
+   "role": "narr"
+  },
+  {
+   "word": "Их",
+   "start": 44.399,
+   "end": 44.619,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "главарь",
+   "start": 44.619,
+   "end": 45.279,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "Вадим",
+   "start": 45.279,
+   "end": 45.559,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "Кречет.",
+   "start": 45.559,
+   "end": 45.999,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "Штрихкод",
+   "start": 46.519,
+   "end": 46.999,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "на",
+   "start": 46.999,
+   "end": 47.139,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "виске,",
+   "start": 47.139,
+   "end": 47.479,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "голос",
+   "start": 47.779,
+   "end": 47.979,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "спокойный,",
+   "start": 47.979,
+   "end": 48.559,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "как",
+   "start": 48.619,
+   "end": 48.739,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "у",
+   "start": 48.739,
+   "end": 48.859,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "врача.",
+   "start": 48.859,
+   "end": 49.219,
+   "line": "09",
+   "role": "narr"
+  },
+  {
+   "word": "Да,",
+   "start": 50.009,
+   "end": 50.289,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "станцию",
+   "start": 50.469,
+   "end": 50.909,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "взяли",
+   "start": 50.909,
+   "end": 51.289,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "мы.",
+   "start": 51.289,
+   "end": 51.489,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "И",
+   "start": 52.049,
+   "end": 52.269,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "Блок",
+   "start": 52.269,
+   "end": 52.629,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "Ноль",
+   "start": 52.629,
+   "end": 52.989,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "вскрыли",
+   "start": 52.989,
+   "end": 53.489,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "тоже",
+   "start": 53.489,
+   "end": 53.769,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "мы.",
+   "start": 53.769,
+   "end": 54.089,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "А",
+   "start": 54.609,
+   "end": 54.709,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "твоя",
+   "start": 54.709,
+   "end": 55.009,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "Земля",
+   "start": 55.009,
+   "end": 55.309,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "до",
+   "start": 55.309,
+   "end": 55.449,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "сих",
+   "start": 55.449,
+   "end": 55.609,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "пор",
+   "start": 55.609,
+   "end": 55.849,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "думает,",
+   "start": 55.849,
+   "end": 56.209,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "что",
+   "start": 56.289,
+   "end": 56.409,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "тут",
+   "start": 56.409,
+   "end": 56.609,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "просто",
+   "start": 56.609,
+   "end": 56.929,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "бунт.",
+   "start": 56.929,
+   "end": 57.529,
+   "line": "10",
+   "role": "vadim"
+  },
+  {
+   "word": "Дочь",
+   "start": 58.127,
+   "end": 58.387,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "председателя",
+   "start": 58.387,
+   "end": 59.047,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "они",
+   "start": 59.047,
+   "end": 59.267,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "не",
+   "start": 59.267,
+   "end": 59.447,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "тронули.",
+   "start": 59.447,
+   "end": 59.867,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "Она",
+   "start": 60.227,
+   "end": 60.527,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "сама",
+   "start": 60.527,
+   "end": 60.787,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "ушла",
+   "start": 60.787,
+   "end": 61.147,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "вниз",
+   "start": 61.147,
+   "end": 61.347,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "в",
+   "start": 61.827,
+   "end": 61.887,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "лаборатории,",
+   "start": 61.887,
+   "end": 62.407,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "за",
+   "start": 62.487,
+   "end": 62.567,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "какими-то",
+   "start": 62.567,
+   "end": 62.967,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "файлами.",
+   "start": 62.967,
+   "end": 63.407,
+   "line": "11",
+   "role": "narr"
+  },
+  {
+   "word": "Проведёшь",
+   "start": 63.959,
+   "end": 64.479,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "нас",
+   "start": 64.479,
+   "end": 64.619,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "вниз",
+   "start": 64.619,
+   "end": 64.959,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "заберём",
+   "start": 65.419,
+   "end": 65.919,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "твой",
+   "start": 65.919,
+   "end": 66.119,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "контейнер",
+   "start": 66.119,
+   "end": 66.719,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "и",
+   "start": 66.719,
+   "end": 66.859,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "улетим.",
+   "start": 66.859,
+   "end": 67.379,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "Только",
+   "start": 67.879,
+   "end": 68.119,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "у",
+   "start": 68.119,
+   "end": 68.299,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "реактора",
+   "start": 68.299,
+   "end": 68.699,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "сидят",
+   "start": 68.699,
+   "end": 69.079,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "Кочегары",
+   "start": 69.079,
+   "end": 69.579,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "Шрама.",
+   "start": 69.579,
+   "end": 70.119,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "Стылые",
+   "start": 70.559,
+   "end": 71.059,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "хотя",
+   "start": 71.059,
+   "end": 71.219,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "бы",
+   "start": 71.219,
+   "end": 71.439,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "не",
+   "start": 71.439,
+   "end": 71.579,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "врут.",
+   "start": 71.579,
+   "end": 71.819,
+   "line": "12",
+   "role": "vadim"
+  },
+  {
+   "word": "Его",
+   "start": 72.881,
+   "end": 73.061,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "младший",
+   "start": 73.061,
+   "end": 73.481,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "брат",
+   "start": 73.481,
+   "end": 73.681,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "Гоша",
+   "start": 73.681,
+   "end": 74.141,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "кутается",
+   "start": 74.141,
+   "end": 74.561,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "в",
+   "start": 74.561,
+   "end": 74.701,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "три",
+   "start": 74.701,
+   "end": 74.861,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "одеяла.",
+   "start": 74.861,
+   "end": 75.341,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "Вдруг",
+   "start": 75.881,
+   "end": 76.161,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "он",
+   "start": 76.161,
+   "end": 76.301,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "наклоняет",
+   "start": 76.301,
+   "end": 76.761,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "голову",
+   "start": 76.761,
+   "end": 77.141,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "к",
+   "start": 77.141,
+   "end": 77.201,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "стене",
+   "start": 77.201,
+   "end": 77.641,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "будто",
+   "start": 77.941,
+   "end": 78.121,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "слушает.",
+   "start": 78.121,
+   "end": 78.721,
+   "line": "13",
+   "role": "narr"
+  },
+  {
+   "word": "Идут.",
+   "start": 79.177,
+   "end": 79.637,
+   "line": "14",
+   "role": "gosha"
+  },
+  {
+   "word": "Все",
+   "start": 80.941,
+   "end": 81.129,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "замолкают.",
+   "start": 81.129,
+   "end": 81.695,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "Через",
+   "start": 81.695,
+   "end": 82.009,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "две",
+   "start": 82.009,
+   "end": 82.198,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "секунды",
+   "start": 82.198,
+   "end": 82.638,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "пищит",
+   "start": 82.638,
+   "end": 82.952,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "твой",
+   "start": 82.952,
+   "end": 83.203,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "сканер.",
+   "start": 83.203,
+   "end": 83.581,
+   "line": "15",
+   "role": "narr"
+  },
+  {
+   "word": "Он",
+   "start": 85.095,
+   "end": 85.295,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "так",
+   "start": 85.295,
+   "end": 85.495,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "с",
+   "start": 85.495,
+   "end": 85.655,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "самого",
+   "start": 85.655,
+   "end": 85.875,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "бунта.",
+   "start": 85.875,
+   "end": 86.435,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "Слышит",
+   "start": 86.815,
+   "end": 87.255,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "их",
+   "start": 87.255,
+   "end": 87.375,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "раньше",
+   "start": 87.375,
+   "end": 87.615,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "приборов.",
+   "start": 87.615,
+   "end": 88.135,
+   "line": "16",
+   "role": "vadim"
+  },
+  {
+   "word": "На",
+   "start": 88.877,
+   "end": 88.997,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "прощание",
+   "start": 88.997,
+   "end": 89.477,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "Гоша",
+   "start": 89.477,
+   "end": 89.857,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "протягивает",
+   "start": 89.857,
+   "end": 90.337,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "тебе",
+   "start": 90.337,
+   "end": 90.537,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "руку.",
+   "start": 90.537,
+   "end": 90.897,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "Ты",
+   "start": 91.417,
+   "end": 91.537,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "пожимаешь",
+   "start": 91.537,
+   "end": 91.997,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "её",
+   "start": 91.997,
+   "end": 92.217,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "и",
+   "start": 92.217,
+   "end": 92.437,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "замираешь.",
+   "start": 92.437,
+   "end": 92.977,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "Она",
+   "start": 93.437,
+   "end": 93.657,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "ледяная.",
+   "start": 93.657,
+   "end": 94.117,
+   "line": "17",
+   "role": "narr"
+  },
+  {
+   "word": "Брату",
+   "start": 94.794,
+   "end": 95.154,
+   "line": "18",
+   "role": "gosha"
+  },
+  {
+   "word": "не",
+   "start": 95.154,
+   "end": 95.234,
+   "line": "18",
+   "role": "gosha"
+  },
+  {
+   "word": "говори.",
+   "start": 95.234,
+   "end": 95.714,
+   "line": "18",
+   "role": "gosha"
+  }
+ ]
+}

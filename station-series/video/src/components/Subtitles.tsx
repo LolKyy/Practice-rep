@@ -17,6 +17,8 @@ export type SubtitlesProps = {
   centerY?: number;
   fontSize?: number;
   accent?: string;
+  /** Максимум символов в группе (спокойный режим — ~14). */
+  maxChars?: number;
 };
 
 const norm = (w: string) => w.toLowerCase().replace(/[^\p{L}\p{N}-]/gu, "");
@@ -24,7 +26,7 @@ const norm = (w: string) => w.toLowerCase().replace(/[^\p{L}\p{N}-]/gu, "");
 type Group = { words: TimedWord[]; start: number; end: number; key: number };
 
 /** Режем поток слов на группы по 2–4 слова: по знакам препинания, паузам и лимиту. */
-export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] = []): Group[] => {
+export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] = [], maxChars = 22): Group[] => {
   const kw = new Set(keywords.map(norm));
   const groups: Group[] = [];
   let cur: TimedWord[] = [];
@@ -45,7 +47,7 @@ export const groupWords = (words: TimedWord[], maxWords = 4, keywords: string[] 
     const punct = /[.!?…,:;—]$/.test(w.word.trim());
     const gap = next ? next.start - w.end : 0;
     const chars = cur.reduce((n, x) => n + x.word.length + 1, 0) + (next ? next.word.length : 0);
-    const long = cur.length >= maxWords || chars > 22; // одна строка (макс. две) при 84 px
+    const long = cur.length >= maxWords || chars > maxChars; // одна строка (макс. две) при 84 px
     // не оставляем одинокое слово, если можно подождать
     // не оставляем предлог/союз висеть в конце строки — он уйдёт в следующую группу
     const dangling = !punct && next && cur.length > 1 && SHORT.has(norm(w.word));
@@ -68,11 +70,12 @@ export const Subtitles: React.FC<SubtitlesProps> = ({
   centerY = 1290, // 62–72% высоты кадра (библия «ХАРОН», раздел 12)
   fontSize = 84,
   accent = COLORS.accent,
+  maxChars = 22,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps - offset;
-  const groups = useMemo(() => groupWords(words, maxWords, keywords), [words, maxWords, keywords]);
+  const groups = useMemo(() => groupWords(words, maxWords, keywords, maxChars), [words, maxWords, keywords, maxChars]);
 
   // группа держится до старта следующей (но не дольше 0.6 с после последнего слова)
   const idx = groups.findIndex((g, i) => {
