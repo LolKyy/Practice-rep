@@ -54,3 +54,21 @@ export const cannonball = (x: number, y: number, r = 26) => (g: G) => { cut(g, e
 export const smokePuffs = (x: number, y: number, n = 5, seed = 1) => (g: G, t: number) => { const r = rng(seed); for (let i = 0; i < n; i++) { const u = (t * 0.35 + r()) % 1; fillP(g, ellP(x + (r() - 0.5) * 300 + u * 80, y - u * 260, 70 + u * 110, 60 + u * 90, 20), "#E9E4DA", 0.75 * (1 - u)); } };
 export const sabre = (g: G) => { g.save(); g.rotate(Math.PI); cut(g, [[-3, 6], [4, 6], [8, 44], [2, 56], [-3, 40]], "#D5DBE0", { seed: 880, edge: 0.7, rim: 0.8 }); cut(g, ellP(0, 4, 10, 6, 12), "#D9B04A", { seed: 881, edge: 0.6 }); cut(g, rrectP(-3, -12, 6, 14, 2), "#6A4426", { seed: 882 }); g.restore(); };
 export { rivet };
+
+// ---------------------------------------------------------------- МРАЧНЫЕ ПЛАНЫ
+// трюм: тёмные доски, гамаки, бочки; фонарь со светом
+export const hold = (g: G) => {
+  cut(g, rectP(-400, -400, 1880, 2700), "#2B1F17", { tear: 0, noEdge: true, sort: "kraft", grain: 0.6 });
+  for (let x = -380; x < 1500; x += 140) strokeP(g, [[x, -400], [x + 30, 2300]], "rgba(0,0,0,0.45)", 4);
+  for (let i = 0; i < 3; i++) { const y = 380 + i * 200; cut(g, rectP(-400, y, 1880, 40), "#3A2A1E", { seed: 950 + i, sort: "kraft" }); } // балки
+  for (const [x, y] of [[180, 820], [700, 760]] as Pt[]) { const P: Pt[] = []; for (let k = 0; k <= 12; k++) P.push([x - 170 + k * 28, y + Math.sin((k / 12) * Math.PI) * 90]); for (let k = 12; k >= 0; k--) P.push([x - 170 + k * 28, y + Math.sin((k / 12) * Math.PI) * 60 - 20]); cut(g, P, "#8C7A5A", { seed: 960 + x, sort: "felt" }); strokeP(g, [[x - 170, y - 10], [x - 200, y - 200]], "#6A5A40", 2); strokeP(g, [[x + 170, y - 10], [x + 200, y - 200]], "#6A5A40", 2); }
+  for (const x of [80, 960]) { cut(g, rrectP(x - 90, 1150, 180, 230, 40), "#5A3A24", { seed: 970 + x, sort: "kraft", rim: 0.3 }); for (const yy of [1190, 1340]) strokeP(g, [[x - 88, yy], [x + 88, yy]], "#2A1E16", 6); }
+  cut(g, rectP(-400, 1340, 1880, 900), "#3A2A1E", { tear: 0.5, sort: "kraft" });
+};
+export const lanternGlow = (x: number, y: number) => (g: G, t: number) => { const f = 1 + Math.sin(t * 9) * 0.04 + Math.sin(t * 23) * 0.02;
+  const gr = g.createRadialGradient(x, y, 10, x, y, 620 * f); gr.addColorStop(0, "rgba(255,190,90,0.55)"); gr.addColorStop(0.4, "rgba(255,150,60,0.18)"); gr.addColorStop(1, "rgba(255,150,60,0)"); g.fillStyle = gr; g.fillRect(-400, -400, 1880, 2700);
+  strokeP(g, [[x, -400], [x, y - 60]], "#1A1410", 3); cut(g, rrectP(x - 34, y - 60, 68, 100, 10), "#2A2A2E", { seed: 980, edge: 1 }); fillP(g, rrectP(x - 24, y - 46, 48, 72, 8), "#FFC45A"); fillP(g, ellP(x, y - 10, 9, 16 * f, 10), "#FFF3C2"); };
+export const rat = (x: number, y: number) => (g: G, t: number) => { const dx = Math.sin(t * 1.3) * 40; g.save(); g.translate(x + dx, y); cut(g, ellP(0, 0, 34, 18, 16), "#5E5852", { seed: 990, sort: "felt" }); cut(g, ellP(30, -6, 14, 11, 12), "#5E5852", { seed: 991 }); fillP(g, ellP(36, -9, 2.5, 2.5, 6), "#FF4040"); strokeP(g, [[-32, 4], [-70, 18 + Math.sin(t * 6) * 6]], "#C9A0A0", 3); g.restore(); };
+// виселица-силуэт на фоне заката
+export const gallows = (x: number, y: number) => (g: G) => { const c = "#1C1418"; cut(g, rectP(x - 10, y - 420, 20, 420), c, { seed: 995, edge: 1 }); cut(g, rectP(x - 10, y - 420, 200, 18), c, { seed: 996, edge: 1 }); cut(g, [[x + 6, y - 340], [x + 80, y - 408], [x + 90, y - 400], [x + 16, y - 330]], c, { seed: 997, edge: 0.8 });
+  strokeP(g, [[x + 170, y - 404], [x + 170, y - 280]], c, 3); strokeP(g, [[x + 155, y - 280], [x + 170, y - 262], [x + 185, y - 280], [x + 170, y - 296], [x + 155, y - 280]], c, 3, true); cut(g, rectP(x - 80, y - 4, 330, 24), c, { seed: 998, edge: 1 }); };

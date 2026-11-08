@@ -8,7 +8,10 @@ import { CanvasArt } from "./engine/CanvasArt";
 import { Sema, Extra } from "./components/scenes";
 import { Subtitles, Tag, Marks, FactCallout, Word } from "./components/overlays";
 import { stars } from "./components/ep01art";
-import { seaSky, wave, harbor, dock, frigate, tentacles, octoEye, lemonCrate, smokePuffs, sabre, cannonball } from "./components/ep02art";
+import { seaSky, wave, harbor, dock, frigate, tentacles, octoEye, lemonCrate, smokePuffs, sabre, cannonball, hold, lanternGlow, rat, gallows } from "./components/ep02art";
+import { useCurrentFrame, interpolate } from "remotion";
+import { extra, sema } from "./engine/puppets";
+import { FPS, eio } from "./engine/stage";
 setVivid(true);
 const sub = (s: string): Word[] => s.split(" ").map((w) => ({ w, s: 0, e: 99 }));
 const VIV: React.CSSProperties = { filter: "saturate(1.35) contrast(1.06) brightness(1.04)" };
@@ -69,8 +72,66 @@ export const P2Frame3: React.FC = () => (
       <Extra spec={pistoletov} x={370} y={1620} s={5} z={5.1} pose={() => ({ emo: "smile", aL: [1.45, 1.65], aR: [1.45, 1.65], look: [0.3, 0], talk: 0.8 })} />
       <Sema outfit="casual" x={790} s={4.3} y={1630} pose={() => ({ emo: "smile", bag: true, aR: [1.2, 0.9], holdR: lemonCrate, look: [-1, 0], t: 0.4 })} />
     </Stage>
-    <CanvasArt draw={(g) => { g.save(); g.translate(540, 330); g.rotate(-0.04); cut(g, rrectP(-380, -90, 760, 180, 30), "#FFFFFF", { seed: 960, edge: 3, tear: 0.5 }); stars(g, -280, -10, 5, 56, 140, 961); text(g, "чаевые: 1 пиастр", 0, 62, 34, "#8a8070", "Montserrat", 900); g.restore(); }} />
+    <CanvasArt draw={(g) => { g.save(); g.translate(540, 330); g.rotate(-0.04); cut(g, rrectP(-380, -90, 760, 180, 30), "#FFFFFF", { seed: 960, edge: 3, tear: 0.5 }); stars(g, -280, -10, 5, 56, 140, 961); text(g, "чаевые: 1 дублон", 0, 62, 34, "#8a8070", "Montserrat", 900); g.restore(); }} />
 
     <Subtitles words={sub("КАПИТАН ПИСТОЛЕТОВ.")} keywords={["ПИСТОЛЕТОВ"]} />
   </AbsoluteFill>
 );
+
+// 4 — МРАЧНО: трюм, цинга. Темнота, фонарь, крысы.
+export const P2Frame4: React.FC = () => (
+  <AbsoluteFill style={{ filter: "saturate(1.05) contrast(1.12) brightness(0.95)" }}>
+    <Stage cam={[[0, 0, 0, 1.0], [2, 0, -30, 1.05]]} bg="#1A120C" light="night">
+      <Plane z={12} draw={hold} shadow={0} />
+      <Extra spec={pirate(95, "#6E6658")} x={210} y={1480} s={4} z={5.6} pose={() => ({ emo: "tired", lean: 0.18, tilt: 0.35, aL: [0.2, 0.2], aR: [0.4, 1.0] })} />
+      <Extra spec={{ ...pirate(96, "#5E6A70"), hat: "none" as const, hair: "#3A2A1E" }} x={880} y={1480} s={4} z={5.6} pose={() => ({ emo: "fear", lean: -0.12, look: [-1, 0], aR: [0.3, 0.2] })} />
+      <Sema outfit="casual" x={540} s={4.4} y={1600} z={5} pose={() => ({ emo: "fear", bag: true, aL: [0.4, 0.3], aR: [0.4, 0.3], look: [-1, 0.3], t: 0.4 })} />
+      <Plane z={4.6} dyn draw={rat(760, 1700)} />
+      <Plane z={4} dyn draw={lanternGlow(560, 520)} shadow={0} />
+    </Stage>
+    <AbsoluteFill style={{ background: "radial-gradient(ellipse 70% 55% at 52% 35%, rgba(0,0,0,0) 30%, rgba(8,4,2,0.75) 100%)" }} />
+    <FactCallout text={"ЦИНГА:\nВЫПАДАЮТ ЗУБЫ"} x={300} y={330} to={[230, 860]} />
+    <Subtitles words={sub("ГЛАВНЫЙ ВРАГ ПИРАТА — ЦИНГА.")} keywords={["ЦИНГА"]} />
+  </AbsoluteFill>
+);
+// 5 — МРАЧНО: Нассау в сумерках, виселица, Чёрная Борода в дыму
+export const P2Frame5: React.FC = () => (
+  <AbsoluteFill style={{ filter: "saturate(1.15) contrast(1.1)" }}>
+    <Stage cam={[[0, 0, 0, 1.08], [2, 0, -40, 1.14]]} bg="#3A2A3E" light="dusk">
+      <Plane z={40} draw={(g, t) => { const gr = g.createLinearGradient(0, -200, 0, 1200); gr.addColorStop(0, "#2A2238"); gr.addColorStop(0.6, "#8A3A3A"); gr.addColorStop(1, "#E07A4A"); cut(g, rectP(-400, -400, 1880, 2700), gr as any, { tear: 0, noEdge: true, sort: "water" }); }} shadow={0} />
+      <Plane z={18} draw={wave(1000, 10, "#2A3A5A", 0, 0.6, 2)} dyn shadow={0} />
+      <Plane z={14} draw={gallows(760, 1010)} shadow={0} />
+      <Plane z={10} draw={harbor} />
+      <Plane z={6} draw={dock} />
+      <Plane z={5.6} dyn draw={smokePuffs(330, 900, 7, 9)} shadow={0} />
+      <Extra spec={blackbeard} x={330} y={1580} s={5} z={5.2} pose={(t) => ({ emo: "calm", aR: [0.3, 0.2], holdL: sabre, aL: [0.5, 0.5], look: [1, 0.2], t: t + 0.5 })} />
+      <Sema outfit="casual" x={820} s={4.3} y={1600} pose={() => ({ emo: "fear", bag: true, aL: [0.3, 0.2], aR: [0.3, 0.2], look: [-1, 0], t: 0.4 })} />
+    </Stage>
+    <AbsoluteFill style={{ background: "radial-gradient(ellipse 75% 60% at 45% 40%, rgba(0,0,0,0) 35%, rgba(10,4,8,0.7) 100%)", mixBlendMode: "multiply" }} />
+    <FactCallout text={"1718: В НАССАУ\nВЕШАЮТ ПИРАТОВ"} x={700} y={330} to={[800, 640]} rot={0.05} />
+    <Subtitles words={sub("ТУТ ПОЯВЛЯЕТСЯ ЧЁРНАЯ БОРОДА.")} keywords={["ЧЁРНАЯ"]} />
+  </AbsoluteFill>
+);
+// ПРОЛЁТ: общий план фрегата в море → камера плавно летит к палубе → основной план (палуба, Пистолетов)
+const FLY = 3.4, XF = 0.6;
+export const P2FlyIn: React.FC = () => {
+  const t = useCurrentFrame() / FPS; const u = eio(t / FLY);
+  const S = 0.5 * Math.pow(2.9 / 0.5, u); // экспоненциальный зум — ощущение «полёта»
+  const fx = -40 * u, fy = -260 + 170 * u;
+  const deckOp = interpolate(t, [FLY - XF, FLY], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return (
+    <AbsoluteFill style={VIV}>
+      <CanvasArt draw={(g, tt) => {
+        seaSky("gold")(g, tt);
+        g.save(); g.translate(540, 960); g.scale(Math.pow(S, 0.35), Math.pow(S, 0.35)); g.translate(-540, -960); wave(1180, 14, "#3FA7D6", 0, 0.6, 2)(g, tt); g.restore();
+        g.save(); g.translate(540, 1080); g.scale(S, S); g.translate(-fx, -fy);
+        frigate({ x: 0, y: 0, s: 1, flag: "pist" })(g, tt);
+        g.save(); g.translate(-90, -42 + Math.sin(tt * 1.4) * 8); g.scale(0.62, 0.62); extra(g, pistoletov, { emo: "smile", aL: [1.45, 1.65], aR: [1.45, 1.65], t: tt }); g.restore();
+        g.save(); g.translate(60, -42 + Math.sin(tt * 1.4) * 8); g.scale(0.58, 0.58); sema(g, "casual", { emo: "smile", bag: true, t: tt }); g.restore();
+        g.restore();
+        g.save(); g.translate(540, 960); g.scale(Math.pow(S, 0.8), Math.pow(S, 0.8)); g.translate(-540, -960); wave(1380, 22, "#2F8FC4", 2, 1, 4)(g, tt); g.restore();
+      }} />
+      <AbsoluteFill style={{ opacity: deckOp, transform: `scale(${1.25 - 0.25 * eio((t - FLY + XF) / 1.6)})` }}><P2Frame3 /></AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
