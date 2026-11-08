@@ -94,8 +94,8 @@ const CanvasArtless: React.FC<{ render: (t: number) => React.ReactNode }> = ({ r
 
 // ---------------------------------------------------------------- музыка: громкость песни по времени ролика
 // Решение пользователя: до встречи двух фрегатов песни НЕ слышно; со встречи — фон тише прежнего (0,03 ≈ −30 дБ);
-// припев — в 2 раза тише прежнего (0,31 вместо 0,62).
-const BED = 0.03, PEAK = 0.31, BED_IN = S[14].s - 0.3;
+// припев — тише прежнего ~в 2–3 раза (0,2 вместо 0,62): по громкости ≈ как голос. Финальный звук сводится tools/mix-music.py (линейная нормализация).
+const BED = 0.03, PEAK = 0.2, BED_IN = S[14].s - 0.3;
 const songVol = (fr: number) => { const t = fr / FPS; return interpolate(t, [0, BED_IN, BED_IN + 1.2, TQ - 1.3, TQ, TQ + CH_LEN, TQ + CH_LEN + FADE], [0, 0, BED, BED, PEAK, PEAK, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }); };
 
 export const Ep02: React.FC = () => (
