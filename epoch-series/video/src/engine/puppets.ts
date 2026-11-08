@@ -236,7 +236,7 @@ export const sema = (g: G, outfit: Outfit, p: Pose) => {
 };
 
 // ---------------------------------------------------------------- МАССОВКА (та же база, другие накладки)
-export type ExtraSpec = { bald?: boolean; toga?: boolean; skin?: string; tunic?: string; hat?: "none" | "galea" | "laurel" | "hood" | "cap"; beard?: string; hair?: string; armor?: boolean; scale?: number; seed?: number; cloak?: string };
+export type ExtraSpec = { bald?: boolean; toga?: boolean; skin?: string; tunic?: string; hat?: "none" | "galea" | "laurel" | "hood" | "cap" | "tricorn" | "bandana"; vest?: string; bigBeard?: boolean; beard?: string; hair?: string; armor?: boolean; scale?: number; seed?: number; cloak?: string };
 export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   const t = p.t ?? 0; const skin = x.skin ?? "#D9AE86"; const tunic = x.tunic ?? "#B9A27A"; const sd = x.seed ?? 1; const r = rng(sd);
   const tw = 48 + r() * 10, hipY = -78, shY = hipY - 54; const hr = 25 + r() * 3;
@@ -248,6 +248,11 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   if (x.toga) { const tg: Pt[] = [[-tw / 2 - 4, shY + 2], [-tw / 2 + 10, shY - 4], [tw / 2 + 10, hipY + 30], [tw / 2 - 12, hipY + 30]];
     cut(g, tg, "#FBF8F0", { seed: sd + 11, sort: "felt", rim: 0.5 }); strokeP(g, [[-tw / 2 + 4, shY - 2], [tw / 2 + 2, hipY + 28]], "#7B2D8E", 5); }
   if (x.armor) for (let i = 0; i < 5; i++) cut(g, rrectP(-tw / 2 - 2, shY + 6 + i * 9.5, tw + 4, 10, 2.5), i % 2 ? "#AEB6BE" : "#C3CAD1", { seed: sd + 20 + i, edge: 0.6, tear: 0.2 });
+  if (x.vest) { // распахнутый жилет поверх (голого) торса: грудь и пресс карандашом
+    strokeP(g, [[-tw * 0.32, shY + 22], [-4, shY + 26]], "rgba(120,70,40,0.45)", 1.6); strokeP(g, [[4, shY + 26], [tw * 0.32, shY + 22]], "rgba(120,70,40,0.45)", 1.6);
+    for (let i = 0; i < 3; i++) strokeP(g, [[-7, shY + 34 + i * 9], [7, shY + 34 + i * 9]], "rgba(120,70,40,0.3)", 1.2); strokeP(g, [[0, shY + 30], [0, hipY - 4]], "rgba(120,70,40,0.3)", 1.2);
+    for (const s2 of [-1, 1]) cut(g, [[s2 * tw / 2 + s2 * 2, shY - 2], [s2 * tw * 0.2, shY - 2], [s2 * tw * 0.3, hipY + 4], [s2 * tw / 2 + s2 * 8, hipY + 4]], x.vest, { seed: sd + 35 + s2, sort: "felt", rim: 0.4 });
+  }
   cut(g, rrectP(-tw / 2 - 1, hipY - 2, tw + 2, 6, 2), "#6A4426", { seed: sd + 30, sort: "kraft" });
   arm(g, -tw / 2 + 2, shY + 5, -1, p.aL ?? [0.1, 0.1], 28, 26, 12, tunic, null, skin, sd + 40, p.holdL);
   g.save(); g.translate(0, shY - 10 - hr * 0.78); g.rotate(p.tilt ?? 0);
@@ -260,6 +265,14 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
     fillP(g, ellP(-hr * 0.3, -hr * 0.62, hr * 0.28, hr * 0.14, 16), "#FFFFFF", 0.85); }
   else if (x.hair) cut(g, [...ellP(0, -2, hr * 1.04, hr * 1.0, 30, Math.PI * 1.02, Math.PI * 1.98), [hr * 0.5, -hr * 0.5], [-hr * 0.5, -hr * 0.5]], x.hair, { seed: sd + 54, sort: "kraft", edge: 0.8 });
   face(g, { hr, skin, skinD: "#000", glasses: false, brow: x.hair ?? "#2A1E16", beard: x.beard }, p);
+  if (x.bigBeard) { // Чёрная Борода: длинная борода с косичками и тлеющими фитилями
+    const bc = x.beard ?? "#1A1614"; cut(g, [[-hr * 0.95, hr * 0.15], [-hr * 0.9, hr * 1.1], [-hr * 0.5, hr * 2.3], [0, hr * 2.6], [hr * 0.5, hr * 2.3], [hr * 0.9, hr * 1.1], [hr * 0.95, hr * 0.15], [hr * 0.55, hr * 0.62], [0, hr * 0.7], [-hr * 0.55, hr * 0.62]], bc, { seed: sd + 90, sort: "felt", edge: 1 });
+    
+    for (const k of [-0.5, 0, 0.5]) { strokeP(g, [[k * hr, hr * 1.4], [k * hr * 1.1, hr * 2.4]], "rgba(255,255,255,0.18)", 1.5); cut(g, rrectP(k * hr * 1.1 - 3, hr * 2.4, 6, 8, 2), "#C8352B", { seed: sd + 91, edge: 0.4 }); }
+    const tt = p.t ?? 0; for (const [fx, fy] of [[-hr * 0.9, hr * 0.6], [hr * 0.95, hr * 0.5], [-hr * 0.6, hr * 1.8], [hr * 0.7, hr * 1.7]] as Pt[]) {
+      strokeP(g, [[fx, fy], [fx * 1.25, fy - hr * 0.35]], "#8A6A40", 2); fillP(g, ellP(fx * 1.25, fy - hr * 0.35, 2.5, 2.5, 8), "#FF7A1A");
+      for (let i = 0; i < 3; i++) { const u = (tt * 0.8 + i / 3 + fx * 0.01) % 1; fillP(g, ellP(fx * 1.25 + Math.sin(u * 6 + fx) * 6, fy - hr * 0.4 - u * hr * 1.6, 4 + u * 9, 4 + u * 8, 10), "#9A948C", 0.5 * (1 - u)); } }
+  }
   if (x.hat === "galea") {
     const dome = [...ellP(0, -hr * 0.12, hr * 1.1, hr * 1.02, 30, Math.PI, Math.PI * 2), [hr * 1.12, -hr * 0.05], [-hr * 1.12, -hr * 0.05]] as Pt[];
     cut(g, dome, "#B79143", { seed: sd + 60, edge: 0.9, rim: 0.6 }); cut(g, rrectP(-hr * 1.16, -hr * 0.2, hr * 2.32, 5, 2), "#94742F", { seed: sd + 61, edge: 0.7 });
@@ -268,6 +281,9 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   } else if (x.hat === "laurel") {
     for (let i = 0; i < 9; i++) { const a = Math.PI * 1.05 + (i / 8) * Math.PI * 0.9; g.save(); g.translate(Math.cos(a) * hr * 0.98, Math.sin(a) * hr * 0.9 - 4); g.rotate(a + 1.2); cut(g, ellP(0, 0, 3, 7, 12), "#6E8A3A", { seed: sd + 70 + i, edge: 0.5 }); g.restore(); }
   } else if (x.hat === "hood") cut(g, [...ellP(0, -hr * 0.42, hr * 1.14, hr * 0.78, 24, Math.PI, Math.PI * 2)], x.cloak ?? "#7A6A55", { seed: sd + 82, sort: "felt" }); // козырёк над лбом, лицо открыто
+  else if (x.hat === "tricorn") { cut(g, [[-hr * 1.75, -hr * 0.35], [-hr * 0.9, -hr * 1.55], [0, -hr * 1.15], [hr * 0.9, -hr * 1.55], [hr * 1.75, -hr * 0.35], [0, -hr * 0.62]], "#1E1A17", { seed: sd + 83, sort: "felt", rim: 0.6 });
+    strokeP(g, [[-hr * 1.75, -hr * 0.35], [0, -hr * 0.62], [hr * 1.75, -hr * 0.35]], "#D9B04A", 2.4); }
+  else if (x.hat === "bandana") { cut(g, [...ellP(0, -hr * 0.3, hr * 1.05, hr * 0.85, 24, Math.PI, Math.PI * 2), [hr * 1.05, -hr * 0.2], [-hr * 1.05, -hr * 0.2]], "#C8352B", { seed: sd + 84, sort: "felt" }); cut(g, [[hr * 0.9, -hr * 0.4], [hr * 1.6, -hr * 0.1], [hr * 1.4, hr * 0.3]], "#C8352B", { seed: sd + 85, sort: "felt" }); }
   else if (x.hat === "cap") cut(g, [...ellP(0, -hr * 0.3, hr * 0.9, hr * 0.8, 24, Math.PI, Math.PI * 2), [hr * 0.9, -hr * 0.2], [-hr * 0.9, -hr * 0.2]], "#8C5A3A", { seed: sd + 81, sort: "felt" });
   g.restore();
   arm(g, tw / 2 - 2, shY + 5, 1, p.aR ?? [0.1, 0.1], 28, 26, 12, tunic, null, skin, sd + 44, p.holdR, p.holdR ? "fist" : "open");
