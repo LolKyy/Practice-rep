@@ -23,9 +23,20 @@ def tts(n, text):
             "voice_settings": {"stability": STAB, "similarity_boost": 0.8}, "seed": int(os.environ.get(f"SEED_{n + 1}", "1"))}
     f = cache / f"chunk{n + 1}_{hashlib.sha1(json.dumps([VOICE, body], ensure_ascii=False).encode()).hexdigest()[:12]}.json"
     if not f.exists():
-        req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE}/with-timestamps?output_format=mp3_44100_128",
+        # потоковый эндпоинт: длинный текст генерируется >30 с, а прокси облака рвёт «молчащий» запрос через 30 с (502).
+        # Поток отдаёт куски {audio_base64, alignment} по мере готовности — склеиваем в один ответ того же формата, что и без потока.
+        req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE}/stream/with-timestamps?output_format=mp3_44100_128",
             json.dumps(body).encode(), {"Content-Type": "application/json", "xi-api-key": os.environ.get("ELEVEN_API_KEY", "proxy")})
-        f.write_bytes(urllib.request.urlopen(req, timeout=300).read()); print("  сгенерирован", f.name)
+        audio, ch, cs, ce = b"", [], [], []
+        with urllib.request.urlopen(req, timeout=600) as resp:
+            for line in resp:
+                line = line.strip()
+                if not line: continue
+                j = json.loads(line); audio += base64.b64decode(j.get("audio_base64") or "")
+                al = j.get("alignment")
+                if al: ch += al["characters"]; cs += al["character_start_times_seconds"]; ce += al["character_end_times_seconds"]
+        f.write_text(json.dumps({"audio_base64": base64.b64encode(audio).decode(), "alignment": {"characters": ch, "character_start_times_seconds": cs, "character_end_times_seconds": ce}}))
+        print("  сгенерирован (поток)", f.name)
     return json.loads(f.read_text())
 out, words, t, wi = bytearray(b"\0\0" * int(LEAD * SR)), [], LEAD, 0
 for n, c in enumerate(chunks):
