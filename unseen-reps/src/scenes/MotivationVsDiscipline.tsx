@@ -9,25 +9,25 @@ export const MVD_FPS = 60;
 export const MVD_TOTAL = Math.round(21 * MVD_FPS);
 
 // ------------------------------------------------------------------ мир: лестница
-const SW = 60, SH = 34, N = 32;                        // ширина/высота ступени, число ступеней
-const stepTop = (k: number) => -k * SH;
-const stepX = (k: number) => k * SW + SW * 0.55;
-type P = [number, number];
-const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-const lerpP = (a: P, b: P, k: number): P => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
-const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
-const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
-const keys = (t: number, k: [number, number][]) => {
+export const SW = 60, SH = 34, N = 32;                        // ширина/высота ступени, число ступеней
+export const stepTop = (k: number) => -k * SH;
+export const stepX = (k: number) => k * SW + SW * 0.55;
+export type P = [number, number];
+export const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
+export const lerpP = (a: P, b: P, k: number): P => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+export const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+export const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
+export const keys = (t: number, k: [number, number][]) => {
   if (t <= k[0][0]) return k[0][1];
   for (let i = 1; i < k.length; i++) if (t <= k[i][0]) return lerp(k[i - 1][1], k[i][1], ease((t - k[i - 1][0]) / (k[i][0] - k[i - 1][0])));
   return k[k.length - 1][1];
 };
 
 // ------------------------------------------------------------------ скелет
-const L1 = 76, L2 = 74, TORSO = 118, HEAD = 34, UA = 68, FA = 64, HIP_H = 98;
-type Skel = { hip: P; neck: P; head: P; kA: P; fA: P; kB: P; fB: P; eA: P; hA: P; eB: P; hB: P; face: number };
+export const L1 = 76, L2 = 74, TORSO = 118, HEAD = 34, UA = 68, FA = 64, HIP_H = 98;
+export type Skel = { hip: P; neck: P; head: P; kA: P; fA: P; kB: P; fB: P; eA: P; hA: P; eB: P; hB: P; face: number };
 
-const ik = (hip: P, foot: P, face: number): P => {
+export const ik = (hip: P, foot: P, face: number): P => {
   const dx = foot[0] - hip[0], dy = foot[1] - hip[1];
   const d = Math.min(Math.hypot(dx, dy), L1 + L2 - 0.5);
   const a = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d))));
@@ -36,19 +36,19 @@ const ik = (hip: P, foot: P, face: number): P => {
   return [hip[0] + Math.cos(ang) * L1, hip[1] + Math.sin(ang) * L1];
 };
 /** Рука: угол от вертикали вниз (вперёд = по направлению взгляда), сгиб локтя вперёд. */
-const arm = (sh: P, ang: number, bend: number, face: number): [P, P] => {
+export const arm = (sh: P, ang: number, bend: number, face: number): [P, P] => {
   const e: P = [sh[0] + Math.sin(ang) * face * UA, sh[1] + Math.cos(ang) * UA];
   const a2 = ang + bend;
   return [e, [e[0] + Math.sin(a2) * face * FA, e[1] + Math.cos(a2) * FA]];
 };
-const upper = (hip: P, lean: number, nod: number, face: number) => {
+export const upper = (hip: P, lean: number, nod: number, face: number) => {
   const neck: P = [hip[0] + Math.sin(lean) * face * TORSO, hip[1] - Math.cos(lean) * TORSO];
   const head: P = [neck[0] + Math.sin(lean + nod) * face * (HEAD + 10), neck[1] - Math.cos(lean + nod) * (HEAD + 10)];
   return { neck, head };
 };
 
 /** Подъём по лестнице: s — положение в ступенях (дробное). run — бег. */
-const climb = (s: number, run: boolean, tired = 0): Skel => {
+export const climb = (s: number, run: boolean, tired = 0): Skel => {
   const face = 1;
   const foot = (o: number): P => {
     const u = Math.max(0, (s - o) / 2), n = Math.floor(u), f = u - n;
@@ -71,7 +71,7 @@ const climb = (s: number, run: boolean, tired = 0): Skel => {
   return { hip, neck, head, kA: ik(hip, fA, face), fA, kB: ik(hip, fB, face), fB, eA, hA, eB, hB, face };
 };
 /** Сидит на ступени k лицом вниз по лестнице, голова опущена. */
-const sitting = (k: number): Skel => {
+export const sitting = (k: number): Skel => {
   const face = -1;
   const hip: P = [k * SW + SW * 0.35, stepTop(k) - 16];
   const fA: P = [stepX(k - 2) - 6, stepTop(k - 2)], fB: P = [stepX(k - 2) + 14, stepTop(k - 2)];
@@ -82,7 +82,7 @@ const sitting = (k: number): Skel => {
   return { hip, neck, head, kA: ik(hip, fA, face), fA, kB: ik(hip, fB, face), fB, eA, hA, eB, hB, face };
 };
 /** Стоит на площадке (вершина). */
-const standing = (x: number, y: number, chin = 0): Skel => {
+export const standing = (x: number, y: number, chin = 0): Skel => {
   const face = 1;
   const hip: P = [x, y - HIP_H - 46];
   const fA: P = [x - 14, y], fB: P = [x + 14, y];
@@ -92,7 +92,7 @@ const standing = (x: number, y: number, chin = 0): Skel => {
   const [eB, hB] = arm([sh[0] + 6, sh[1]], 0.08, 0.1, face);
   return { hip, neck, head, kA: ik(hip, fA, face), fA, kB: ik(hip, fB, face), fB, eA, hA, eB, hB, face };
 };
-const mixSkel = (a: Skel, b: Skel, k: number): Skel => {
+export const mixSkel = (a: Skel, b: Skel, k: number): Skel => {
   const o: any = { face: k < 0.5 ? a.face : b.face };
   for (const key of Object.keys(a)) if (key !== "face") o[key] = lerpP((a as any)[key], (b as any)[key], k);
   return o as Skel;
@@ -100,8 +100,8 @@ const mixSkel = (a: Skel, b: Skel, k: number): Skel => {
 
 
 // ------------------------------------------------------------------ фигура: тонкий тёмный контур + белое тело + ореол
-const OUT = "#14151a";
-const Body: React.FC<{ s: Skel; color: string; back: string; outline?: boolean }> = ({ s, color, back, outline = true }) => {
+export const OUT = "#14151a";
+export const Body: React.FC<{ s: Skel; color: string; back: string; outline?: boolean }> = ({ s, color, back, outline = true }) => {
   const seg = (a: P, b: P, c: string, w: number, k: string) => (
     <g key={k}>
       {outline ? <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={OUT} strokeWidth={w + 7} strokeLinecap="round" /> : null}
@@ -119,7 +119,7 @@ const Body: React.FC<{ s: Skel; color: string; back: string; outline?: boolean }
     <circle cx={s.head[0]} cy={s.head[1]} r={HEAD} fill={color} />
   </g>);
 };
-const Figure: React.FC<{ s: Skel; color?: string; back?: string; glow?: number; glowColor?: string; refl?: number }> =
+export const Figure: React.FC<{ s: Skel; color?: string; back?: string; glow?: number; glowColor?: string; refl?: number }> =
   ({ s, color = "#f4f4f1", back = "#a9a9a6", glow = 0.55, glowColor = "#ffffff", refl = 0 }) => {
     const floorY = Math.max(s.fA[1], s.fB[1]);
     return (<g>
@@ -134,7 +134,7 @@ const Figure: React.FC<{ s: Skel; color?: string; back?: string; glow?: number; 
   };
 
 /** Огонь мотивации над головой. size 0..1. */
-const Flame: React.FC<{ at: P; size: number; t: number }> = ({ at, size, t }) => {
+export const Flame: React.FC<{ at: P; size: number; t: number }> = ({ at, size, t }) => {
   if (size <= 0.01) return null;
   const w = Math.sin(t * 23) * 4 + Math.sin(t * 37) * 3;
   const h = (70 + Math.sin(t * 17) * 8) * size, r = 26 * size;
@@ -147,7 +147,7 @@ const Flame: React.FC<{ at: P; size: number; t: number }> = ({ at, size, t }) =>
     <path d={d2} fill="#ffd36a" />
   </g>);
 };
-const Smoke: React.FC<{ at: P; t: number }> = ({ at, t }) => {
+export const Smoke: React.FC<{ at: P; t: number }> = ({ at, t }) => {
   if (t < 0 || t > 2.4) return null;
   return (<g filter="url(#reflBlur)">{[0, 1, 2, 3, 4, 5].map((i) => {
     const k = clamp01((t - i * 0.1) / 2);
@@ -157,7 +157,7 @@ const Smoke: React.FC<{ at: P; t: number }> = ({ at, t }) => {
 };
 
 // ------------------------------------------------------------------ лестница (светлые грани ступеней, тёмные подступенки)
-const Stairs: React.FC = () => {
+export const Stairs: React.FC = () => {
   const pts: string[] = ["-3000,0"];
   for (let k = 0; k <= N; k++) pts.push(`${k * SW},${stepTop(k)}`, `${(k + 1) * SW},${stepTop(k)}`);
   pts.push(`${(N + 1) * SW + 2400},${stepTop(N)}`, `${(N + 1) * SW + 2400},1400`, "-3000,1400");
@@ -175,7 +175,7 @@ const Stairs: React.FC = () => {
 };
 
 /** Конус света сверху с пятном на ступени (в мировых координатах). */
-const Cone: React.FC<{ x: number; floor: number; h?: number; w?: number; o?: number; color?: string }> = ({ x, floor, h = 900, w = 360, o = 1, color = "#ffffff" }) => (
+export const Cone: React.FC<{ x: number; floor: number; h?: number; w?: number; o?: number; color?: string }> = ({ x, floor, h = 900, w = 360, o = 1, color = "#ffffff" }) => (
   <g opacity={o}>
     <polygon points={`${x - 22},${floor - h} ${x + 22},${floor - h} ${x + w / 2},${floor} ${x - w / 2},${floor}`} fill="url(#coneGrad)" filter="url(#coneBlur)" style={{ mixBlendMode: "screen" }} />
     <ellipse cx={x} cy={floor + 2} rx={w * 0.55} ry={26} fill={color} opacity={0.16} filter="url(#coneBlur)" />
