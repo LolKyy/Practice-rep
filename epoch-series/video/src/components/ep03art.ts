@@ -54,7 +54,7 @@ export const drakkar = (x: number, y: number, s: number, tiltCam = 0.25, sail = 
   if (sail > 0) { cut(g, rectP(-8, -40 - deckH - 440 * sail, 16, 440 * sail), "#5A3A24", { seed: seed + 2 });
     const sw = 300 * sail, sh = 300 * sail, sy = -40 - deckH - 420 * sail; g.save(); g.beginPath(); g.rect(-sw / 2, sy, sw, sh); g.clip();
     for (let k = 0; k < 6; k++) fillP(g, rectP(-sw / 2 + k * sw / 6, sy, sw / 6, sh), k % 2 ? "#C8352B" : "#F2E6CF"); g.restore(); strokeP(g, [[-sw / 2, sy], [sw / 2, sy]], "#5A3A24", 6); }
-  cut(g, [[-360, -40], [-300, 40], [300, 40], [360, -40], [420, -150], [440, -120], [400, -30], [330, 70], [-330, 70], [-400, -30], [-440, -120], [-420, -150]], "#6A4426", { seed: seed + 3, sort: "kraft", rim: 0.5 }); // корпус
+  cut(g, [[-420, -150], [-380, -60], [-350, -40], [350, -40], [380, -60], [420, -150], [440, -120], [400, -20], [330, 70], [-330, 70], [-400, -20], [-440, -120]], "#6A4426", { seed: seed + 3, sort: "kraft", rim: 0.5 }); // корпус (контур без самопересечений — иначе середина «прозрачная»)
   for (let k = 0; k < 4; k++) strokeP(g, [[-340 + k * 6, -30 + k * 22], [340 - k * 6, -30 + k * 22]], "rgba(30,20,10,0.4)", 2); // клинкерные доски
   for (let k = -4; k <= 4; k++) { const cx = k * 70; cut(g, ellP(cx, -32, 30, 30, 20), ["#C8352B", "#F2C14E", "#2E5A8A"][(k + 9) % 3], { seed: seed + 10 + k, sort: "felt", edge: 1 }); fillP(g, ellP(cx, -32, 8, 8, 10), "#9C9C9C"); }
   cut(g, [[420, -150], [470, -210], [500, -200], [470, -170], [450, -140]], "#6A4426", { seed: seed + 4, sort: "kraft" }); fillP(g, ellP(478, -196, 4, 4, 8), "#F2C14E"); // голова дракона

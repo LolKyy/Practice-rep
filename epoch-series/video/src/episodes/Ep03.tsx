@@ -220,10 +220,11 @@ export const Ep03: React.FC = () => (
         <Plane z={24} draw={peaks(1000, 420, "#9FB8CC", "#F4FAFC", 41)} blurK={3} />
         <Plane z={10} draw={iceField} blurK={3} />
         <Plane z={6} dyn draw={greenSign} x={-150} />
-        <Sema outfit="casual" x={900} s={3.4} y={1720} z={5} pose={(t) => bagPose({ emo: t > wt(15, 8) ? "facepalm" : "shock", aR: t > wt(15, 8) ? [2.6, 1.9] : [0.3, 0.3], t })} />
+        <Sema outfit="casual" x={900} s={3.4} y={1720} z={5} pose={(t) => bagPose({ emo: t > wt(15, 21) ? "facepalm" : "shock", aR: t > wt(15, 21) ? [2.6, 1.9] : [0.3, 0.3], t })} />
         <Plane z={3} dyn draw={snowfall(20, 12, 200, 71, 0.9)} shadow={0} />
       </Stage>
-      <Sticker s="МАРКЕТИНГ" x={540} y={320} at={wt(15, 8)} size={66} bg={PAL.scarf} color="#FBF7EC" />
+      <Sticker s={"ЛЕТОМ ЗЕЛЕНЕЛИ\nТОЛЬКО ЛУГА"} x={540} y={560} at={wt(15, 5)} size={40} bg="#6FA84E" color="#FBF7EC" rot={0.03} />
+      <Sticker s="МАРКЕТИНГ" x={540} y={320} at={wt(15, 21)} size={66} bg={PAL.scarf} color="#FBF7EC" />
     </Fold></Sequence>
     {/* 17. Мрачно: работорговля (без насилия) */}
     <Sequence {...shot(16)}><Fold v={DARK}>
