@@ -5,6 +5,7 @@ import { Showcase, SHOWCASE_DUR } from "./Showcase";
 import { Frame1, Frame2, Frame3 } from "./StyleFrames";
 import { Ep01, EP01_DUR } from "./episodes/Ep01";
 import { Ep02, EP02_DUR } from "./episodes/Ep02";
+import { Ep03, EP03_DUR } from "./episodes/Ep03";
 import { Ep01Cover, Ep02Cover } from "./Cover";
 import { V3Establish, V3Map, V3Horns, V3Leif } from "./StyleFrames3";
 import { P2Frame1, P2Frame2, P2Frame3, P2Frame4, P2Frame5, P2FlyIn } from "./StyleFrames2";
@@ -16,6 +17,7 @@ const EPISODES: { id: string; C: React.FC; dur: number }[] = [
   { id: "Showcase", C: Showcase, dur: SHOWCASE_DUR },
   { id: "Ep01", C: Ep01, dur: EP01_DUR },
   { id: "Ep02", C: Ep02, dur: EP02_DUR },
+  { id: "Ep03", C: Ep03, dur: EP03_DUR },
 ];
 export const Root: React.FC = () => (<>
   {EPISODES.map(({ id, C, dur }) => (

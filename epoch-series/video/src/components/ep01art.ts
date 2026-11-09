@@ -5,7 +5,7 @@ const star = (g: G, x: number, y: number, r: number, c: string, seed: number) =>
 export const stars = (g: G, x: number, y: number, n: number, r: number, gap: number, seed = 930) => { for (let i = 0; i < n; i++) star(g, x + i * gap, y, r, "#FFB400", seed + i); };
 
 // ---------------------------------------------------------------- экран курьерского приложения (заказ)
-export type AppOpts = { title?: string; rows?: [string, string][]; addr?: string; date?: string; client?: string; press?: number; finger?: number; unknown?: boolean; avatar?: "caesar" | "pistoletov" };
+export type AppOpts = { title?: string; rows?: [string, string][]; addr?: string; date?: string; client?: string; press?: number; finger?: number; unknown?: boolean; avatar?: "caesar" | "pistoletov" | "leif" };
 export const appScreen = (g: G, t: number, o: AppOpts = {}) => {
   const { title = "НОВЫЙ ЗАКАЗ!", rows = [["Шаурма", "× 1"], ["Салат «Цезарь»", "× 1"]], addr = "Рим, Сенат", date = "15 марта 44 г. до н.э.", client = "Юлий Цезарь", press = 0, finger = 1, unknown = false, avatar = "caesar" } = o;
   cut(g, rectP(-20, -20, 1120, 1960), "#FFD43B", { tear: 0, noEdge: true, sort: "water", grain: 0.4 });
@@ -20,7 +20,11 @@ export const appScreen = (g: G, t: number, o: AppOpts = {}) => {
   const al = addr.split("\n"); al.forEach((l, i) => inkText(g, l, -260, -50 + i * 54, unknown ? 90 : 52, unknown ? PAL.scarf : PAL.ink, "Montserrat", 900, "left")); // «\n» — перенос строки
   if (date) text(g, date, -260, 10 + (al.length - 1) * 48, al.length > 1 ? 30 : 36, PAL.scarf, "Montserrat", 900, "left");
   if (!unknown) {
-    if (avatar === "pistoletov") { // аватар: Пистолетов — треуголка и широкая улыбка
+    if (avatar === "leif") { // аватар: Лейф — рыжая борода, усы, мех
+      cut(g, ellP(-200, 150, 66, 66, 30), "#E8C2A0", { seed: 920, edge: 2 }); fillP(g, ellP(-200, 102, 56, 20, 20), "#B5562E");
+      cut(g, [[-258, 150], [-245, 205], [-200, 228], [-155, 205], [-142, 150], [-170, 176], [-230, 176]], "#B5562E", { seed: 924, sort: "felt", edge: 1 });
+      fillP(g, ellP(-222, 140, 6, 8, 8), PAL.ink); fillP(g, ellP(-178, 140, 6, 8, 8), PAL.ink); for (const k of [-1, 1]) cut(g, [[-200, 168], [-200 + k * 30, 164], [-200 + k * 46, 182], [-200 + k * 22, 176]], "#9A4422", { seed: 925 + k });
+    } else     if (avatar === "pistoletov") { // аватар: Пистолетов — треуголка и широкая улыбка
       cut(g, ellP(-200, 158, 66, 66, 30), "#E8B48E", { seed: 920, edge: 2 }); fillP(g, ellP(-200, 112, 58, 22, 20), "#5A3A24");
       fillP(g, ellP(-222, 148, 6, 8, 8), PAL.ink); fillP(g, ellP(-178, 148, 6, 8, 8), PAL.ink); strokeP(g, [[-232, 132], [-212, 129]], "#5A3A24", 4); strokeP(g, [[-188, 129], [-168, 132]], "#5A3A24", 4);
       cut(g, [[-232, 172], [-168, 172], [-176, 190], [-200, 198], [-224, 190]], "#7A2A22", { seed: 922, edge: 0.8 }); fillP(g, rectP(-224, 172, 48, 7), "#FFFFFF"); fillP(g, ellP(-238, 168, 9, 6, 8), "#F09A8A", 0.6); fillP(g, ellP(-162, 168, 9, 6, 8), "#F09A8A", 0.6);

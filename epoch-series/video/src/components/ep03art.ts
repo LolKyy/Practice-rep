@@ -114,3 +114,49 @@ export const fence = (x0: number, x1: number, y: number) => (g: G) => { for (let
 export const forgeGlow = (x: number, y: number) => (g: G, t: number) => { const f = 1 + Math.sin(t * 11) * 0.08; const gr = g.createRadialGradient(x, y, 4, x, y, 140 * f); gr.addColorStop(0, "rgba(255,170,70,0.85)"); gr.addColorStop(1, "rgba(255,120,40,0)"); g.fillStyle = gr; g.fillRect(x - 160, y - 160, 320, 320);
   cut(g, rrectP(x - 40, y - 10, 80, 50, 8), "#5A5A5E", { seed: 1550, edge: 1 }); for (let i = 0; i < 4; i++) { const u = (t * 1.5 + i / 4) % 1; fillP(g, ellP(x + Math.sin(i * 3 + t * 4) * 20, y - 20 - u * 90, 3, 3, 6), "#FFC45A", 1 - u); } };
 export const boathouse = (x: number, y: number, s = 1) => (g: G) => { g.save(); g.translate(x, y); g.scale(s, s); cut(g, [[-160, 0], [160, 0], [140, -90], [0, -170], [-140, -90]], "#5E7A4A", { seed: 1560, sort: "felt", tear: 1.2, rim: 0.3 }); cut(g, [[-90, 0], [90, 0], [70, -70], [0, -110], [-70, -70]], "#2A1E16", { seed: 1561, edge: 1 }); g.restore(); };
+
+// ---------------------------------------------------------------- ИНТЕРЬЕР длинного дома: деревянные стены, скамьи вдоль стен, очаг в центре, щиты, котёл
+export const hallInterior = (g: G) => {
+  cut(g, rectP(-400, -400, 1880, 2700), "#3A2A1E", { tear: 0, noEdge: true, sort: "kraft", grain: 0.6 });
+  for (let x = -380; x < 1500; x += 90) cut(g, rectP(x, -400, 84, 1700), x % 180 ? "#5A3E28" : "#4E3624", { seed: 1700 + x, sort: "kraft", edge: 1 }); // доски стен
+  for (const x of [120, 540, 960]) cut(g, rectP(x - 22, -400, 44, 1800), "#2A1E14", { seed: 1710 + x, sort: "kraft" }); // столбы
+  strokeP(g, [[-400, 260], [1480, 260]], "#2A1E14", 30); // балка
+  for (let i = 0; i < 4; i++) { const x = 60 + i * 300; cut(g, ellP(x, 520, 70, 70, 24), ["#C8352B", "#F2C14E", "#2E5A8A", "#5E7A4A"][i], { seed: 1720 + i, sort: "felt", rim: 0.3 }); fillP(g, ellP(x, 520, 18, 18, 12), "#9C9C9C"); } // щиты на стене
+  cut(g, rectP(-400, 1180, 1880, 70), "#6A4A30", { seed: 1730, sort: "kraft" }); cut(g, rectP(-400, 1250, 1880, 1100), "#4A3A2A", { seed: 1731, sort: "kraft", tear: 0.4 }); // скамьи и пол
+};
+export const hearth = (x: number, y: number, s = 1) => (g: G, t: number) => { g.save(); g.translate(x, y); g.scale(s, s);
+  const gr = g.createRadialGradient(0, -60, 10, 0, -60, 520); gr.addColorStop(0, "rgba(255,170,70,0.6)"); gr.addColorStop(1, "rgba(255,120,40,0)"); g.fillStyle = gr; g.fillRect(-600, -600, 1200, 900);
+  cut(g, rrectP(-220, -30, 440, 60, 20), "#6E6A66", { seed: 1740, sort: "kraft", edge: 1.4 }); for (let i = 0; i < 5; i++) cut(g, rrectP(-120 + i * 50, -50, 40, 24, 8), "#5A3A24", { seed: 1741 + i, sort: "kraft" });
+  for (let i = 0; i < 6; i++) { const f = 1 + Math.sin(t * 10 + i * 2) * 0.2; g.save(); g.translate(-100 + i * 40, -40); cut(g, [[-24, 0], [-8, -90 * f], [0, -140 * f], [8, -80 * f], [24, 0]], "#F25C1E", { seed: 1750 + i, edge: 1.5, tear: 1 }); cut(g, [[-12, 0], [0, -70 * f], [12, 0]], "#FFC93C", { seed: 1760 + i, edge: 1 }); g.restore(); }
+  strokeP(g, [[-150, -230], [150, -230]], "#2A1E14", 6); strokeP(g, [[0, -230], [0, -170]], "#2A1E14", 4); cut(g, [[-70, -170], [70, -170], [56, -90], [-56, -90]], "#3A3A3E", { seed: 1770, edge: 1, rim: 0.5 }); // котёл
+  for (let i = 0; i < 3; i++) { const u = (t * 0.6 + i / 3) % 1; fillP(g, ellP(Math.sin(u * 6 + i) * 20, -180 - u * 160, 18 + u * 30, 14 + u * 24, 12), "#E9E4DA", 0.5 * (1 - u)); } g.restore(); };
+export const cow = (x: number, y: number, s = 1, seed = 1) => (g: G, t: number) => { g.save(); g.translate(x, y); g.scale(s, s); const chew = Math.sin(t * 5 + seed) * 3;
+  cut(g, rrectP(-120, -150, 240, 110, 46), "#8A5A34", { seed, sort: "felt", rim: 0.4 }); fillP(g, ellP(-40, -110, 30, 22, 14), "#F2E6CF", 0.9); fillP(g, ellP(50, -90, 24, 18, 14), "#F2E6CF", 0.9);
+  for (const k of [-90, -50, 50, 90]) cut(g, rrectP(k - 10, -50, 20, 60, 6), "#6A4426", { seed: seed + k, sort: "kraft" });
+  g.save(); g.translate(130, -130); cut(g, rrectP(-10, -30, 80, 70, 26), "#8A5A34", { seed: seed + 5, sort: "felt" }); cut(g, rrectP(30, 10 + chew, 44, 34, 14), "#E9B8A8", { seed: seed + 6 }); fillP(g, ellP(24, -6, 5, 5, 8), PAL.ink); cut(g, [[0, -30], [-14, -54], [8, -36]], "#F2E6CF", { seed: seed + 7 }); g.restore();
+  strokeP(g, [[-120, -120], [-150, -60 + Math.sin(t * 3) * 10]], "#6A4426", 5); g.restore(); };
+// крупно: гребень, пинцет, ложечка для ушей (на ткани)
+export const groomingKit = (g: G, t: number) => { cut(g, rectP(-400, -400, 1880, 2700), "#7A5A3E", { tear: 0, noEdge: true, sort: "felt", grain: 0.6 });
+  g.save(); g.translate(540, 760); g.rotate(-0.12 + Math.sin(t) * 0.02); cut(g, rrectP(-300, -80, 600, 90, 20), "#E9DCC0", { seed: 1800, sort: "kraft", rim: 0.5 }); for (let i = 0; i < 30; i++) cut(g, rectP(-280 + i * 19, 6, 9, 110), "#E9DCC0", { seed: 1801 + i, edge: 0.6 }); for (const xx of [-150, 0, 150]) fillP(g, ellP(xx, -36, 14, 14, 10), "#9C7A4A"); g.restore();
+  g.save(); g.translate(330, 1140); g.rotate(0.5); cut(g, [[-10, 0], [10, 0], [26, 300], [16, 300], [0, 40], [-16, 300], [-26, 300]], "#C9A24B", { seed: 1830, edge: 1, rim: 0.8 }); g.restore();
+  g.save(); g.translate(760, 1120); g.rotate(-0.4); cut(g, rrectP(-6, 0, 12, 280, 5), "#B0B6BA", { seed: 1840, edge: 0.8, rim: 0.8 }); cut(g, ellP(0, 290, 16, 22, 12), "#B0B6BA", { seed: 1841, edge: 0.8 }); g.restore(); };
+export const stewPot = (g: G, t: number) => { cut(g, rectP(-400, -400, 1880, 2700), "#2A1E14", { tear: 0, noEdge: true, sort: "kraft" }); const gr = g.createRadialGradient(540, 1300, 20, 540, 1300, 700); gr.addColorStop(0, "rgba(255,150,60,0.5)"); gr.addColorStop(1, "rgba(255,120,40,0)"); g.fillStyle = gr; g.fillRect(-400, 300, 1880, 1800);
+  cut(g, ellP(540, 820, 400, 110, 40), "#3A3A3E", { seed: 1850, edge: 2, rim: 0.6 }); cut(g, ellP(540, 830, 360, 90, 40), "#8A6A3A", { seed: 1851, sort: "water" });
+  const r = rng(9); for (let i = 0; i < 14; i++) { const a = r() * 6.28, rr = r() * 300; fillP(g, ellP(540 + Math.cos(a) * rr + Math.sin(t * 2 + i) * 6, 830 + Math.sin(a) * rr * 0.22, 14 + r() * 14, 9 + r() * 8, 10), ["#C9A24B", "#6FA84E", "#B05A3A", "#E9DCC0"][i % 4]); }
+  for (let i = 0; i < 4; i++) { const u = (t * 0.5 + i / 4) % 1; fillP(g, ellP(400 + i * 90 + Math.sin(u * 5) * 20, 700 - u * 380, 40 + u * 60, 30 + u * 50, 14), "#E9E4DA", 0.45 * (1 - u)); }
+  cut(g, [[180, 830], [900, 830], [860, 1400], [220, 1400]], "#2E2E32", { seed: 1852, edge: 2, rim: 0.4 }); };
+export const keysProp = (g: G) => { g.save(); strokeP(g, [[0, 0], [0, 26]], "#8A6A40", 2); for (let i = 0; i < 3; i++) { g.save(); g.translate(-8 + i * 8, 26); g.rotate(-0.2 + i * 0.2); cut(g, rrectP(-2, 0, 4, 22, 1.5), "#C9A24B", { seed: 1860 + i, edge: 0.5 }); cut(g, rectP(0, 16, 6, 3), "#C9A24B", { seed: 1863 + i }); g.restore(); } g.restore(); };
+export const popcornBucket = (g: G) => { g.save(); cut(g, [[-16, -18], [16, -18], [12, 16], [-12, 16]], "#FFFFFF", { seed: 1870, edge: 0.8 }); for (let i = -2; i <= 2; i++) fillP(g, rectP(i * 6 - 2, -18, 3, 34), PAL.scarf, 0.9); for (let i = 0; i < 9; i++) fillP(g, ellP(-12 + (i % 5) * 6, -20 - Math.floor(i / 5) * 6, 5, 4, 8), "#FFF3C2"); g.restore(); };
+// крупно: рот с дырками в зубах (мрачно-смешно)
+export const badTeeth = (g: G, t: number) => { cut(g, rectP(-400, -400, 1880, 2700), "#E8C2A0", { tear: 0, noEdge: true, sort: "water" }); fillP(g, ellP(540, 300, 600, 260, 30), "#C9A24B");
+  cut(g, ellP(540, 860, 360, 200, 40), "#7A2A22", { seed: 1880, edge: 2 }); for (let i = 0; i < 8; i++) { if (i === 2 || i === 5) continue; cut(g, rrectP(300 + i * 62, 700 + Math.abs(i - 3.5) * 8, 52, 96, 12), i === 6 ? "#C9B07A" : "#F4EEDC", { seed: 1881 + i, edge: 1 }); }
+  for (let i = 0; i < 7; i++) { if (i === 3) continue; cut(g, rrectP(320 + i * 64, 930, 52, 80, 12), "#EDE4CA", { seed: 1890 + i, edge: 1 }); }
+  for (const s of [-1, 1]) cut(g, [[540, 640], [540 + s * 280, 610], [540 + s * 420, 700], [540 + s * 260, 680]], "#C9A24B", { seed: 1895 + s, sort: "felt" }); };
+// работорговля (мрачно, без насилия): силуэты за частоколом, цепь
+export const slaveMarket = (g: G, t: number) => { cut(g, rectP(-400, -400, 1880, 2700), "#2A2632", { tear: 0, noEdge: true, sort: "water" }); fillP(g, ellP(540, 700, 900, 500, 30), "#4A4058", 0.6);
+  for (let i = 0; i < 6; i++) { const x = 160 + i * 150; fillP(g, ellP(x, 900, 30, 34, 16), "#14111A"); fillP(g, rrectP(x - 48, 930, 96, 340, 30), "#14111A"); }
+  for (let x = -380; x < 1500; x += 70) cut(g, [[x, 1450], [x + 30, 1100], [x + 60, 1450]], "#3A2E24", { seed: 1900 + x, sort: "kraft", edge: 1 });
+  for (let i = 0; i < 18; i++) strokeP(g, ellP(120 + i * 48, 1500 + Math.sin(i) * 6, 20, 12, 12), "#7A7880", 6, true); };
+// «Зелёная земля»: указатель с травой на фоне льдов
+export const greenSign = (g: G, t: number) => { g.save(); g.translate(540, 1180); g.rotate(Math.sin(t * 2) * 0.02); cut(g, rectP(-14, -40, 28, 400), "#5A3A24", { seed: 1910, sort: "kraft" }); cut(g, rrectP(-300, -260, 600, 220, 20), "#6FA84E", { seed: 1911, sort: "felt", rim: 0.5, tear: 1 }); text(g, "ЗЕЛЁНАЯ ЗЕМЛЯ", 0, -150, 58, "#FBF7EC", "Montserrat", 900); for (let i = 0; i < 12; i++) cut(g, [[-300 + i * 50, -40], [-290 + i * 50, -90], [-280 + i * 50, -40]], "#4E8A3C", { seed: 1912 + i }); g.restore(); };
+export const iceField = (g: G) => { cut(g, rectP(-400, 1000, 1880, 1400), "#EAF4F8", { tear: 1, sort: "water" }); for (let i = 0; i < 9; i++) { const r = rng(i + 70); const x = r() * 1500 - 200, y = 1060 + r() * 300; cut(g, [[x, y], [x + 80, y - 130 - r() * 80], [x + 170, y]], "#CFE6F0", { seed: 1920 + i, sort: "water", edge: 1.5, rim: 0.5 }); } };
