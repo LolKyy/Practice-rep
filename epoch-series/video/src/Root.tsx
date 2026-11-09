@@ -6,7 +6,7 @@ import { Frame1, Frame2, Frame3 } from "./StyleFrames";
 import { Ep01, EP01_DUR } from "./episodes/Ep01";
 import { Ep02, EP02_DUR } from "./episodes/Ep02";
 import { Ep03, EP03_DUR } from "./episodes/Ep03";
-import { Ep01Cover, Ep02Cover } from "./Cover";
+import { Ep01Cover, Ep02Cover, Ep03Cover } from "./Cover";
 import { V3Establish, V3Map, V3Horns, V3Leif } from "./StyleFrames3";
 import { P2Frame1, P2Frame2, P2Frame3, P2Frame4, P2Frame5, P2FlyIn } from "./StyleFrames2";
 // Каждая серия регистрируется дважды: <id> (финал 1080×1920) и <id>-draft (черновик 720×1280).
@@ -39,6 +39,7 @@ export const Root: React.FC = () => (<>
   <Composition id="Ep3Map" component={V3Map} durationInFrames={120} fps={30} width={1080} height={1920} />
   <Composition id="Ep3Horns" component={V3Horns} durationInFrames={90} fps={30} width={1080} height={1920} />
   <Composition id="Ep3Leif" component={V3Leif} durationInFrames={90} fps={30} width={1080} height={1920} />
+  <Still id="Ep03Cover" component={Ep03Cover} width={1080} height={1920} />
   <Still id="Ep02Cover" component={Ep02Cover} width={1080} height={1920} />
   <Still id="Ep01Cover" component={Ep01Cover} width={1080} height={1920} />
   <Still id="HeroSheet" component={Sheet} width={2400} height={1600} />
