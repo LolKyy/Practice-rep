@@ -19,14 +19,14 @@ export const Camera = {
 // pose(t) — функция времени; words — для липсинка (рот по «громкости» слов), x,y — ступни в кадре, s — масштаб (см → px)
 export const Sema: React.FC<{ outfit: Outfit; pose: (t: number) => Pose; x?: number; y?: number; s?: number; z?: number; words?: Word[]; popOrder?: number; clip?: (g: G) => void; dy?: (t: number) => number }> =
   ({ outfit, pose, x = 540, y = 1560, s = 5.4, z = 5, words = [], popOrder = 5, clip, dy }) => (
-    <Plane z={z} dyn popOrder={popOrder} rim={0.5} shadow={0.42} draw={(g, t) => {
+    <Plane z={z} dyn popOrder={popOrder} rim={0.5} shadow={0.42} blurK={0} draw={(g, t) => {
       const p = pose(t); const talk = p.talk ?? talkFromWords(t, words);
       if (clip) clip(g);
       g.save(); g.translate(x, y + (dy ? dy(t) : 0)); g.scale(s, s); sema(g, outfit, { blink: blinkAt(t, 1), ...p, talk, t }); g.restore();
     }} />
   );
 export const Extra: React.FC<{ spec: ExtraSpec; pose: (t: number) => Pose; x: number; y: number; s?: number; z?: number; popOrder?: number }> = ({ spec, pose, x, y, s = 5, z = 5.2, popOrder = 4 }) => (
-  <Plane z={z} dyn popOrder={popOrder} rim={0.3} draw={(g, t) => { g.save(); g.translate(x, y); g.scale(s, s); extra(g, spec, { blink: blinkAt(t, spec.seed ?? 3), ...pose(t), t }); g.restore(); }} />
+  <Plane z={z} dyn popOrder={popOrder} rim={0.3} blurK={0} draw={(g, t) => { g.save(); g.translate(x, y); g.scale(s, s); extra(g, spec, { blink: blinkAt(t, spec.seed ?? 3), ...pose(t), t }); g.restore(); }} />
 );
 
 // ---------------------------------------------------------------- Room: бумажная комната Сёмы (диван, лампа, окно с городом)
