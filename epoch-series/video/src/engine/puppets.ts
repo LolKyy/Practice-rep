@@ -236,17 +236,19 @@ export const sema = (g: G, outfit: Outfit, p: Pose) => {
 };
 
 // ---------------------------------------------------------------- МАССОВКА (та же база, другие накладки)
-export type ExtraSpec = { bald?: boolean; toga?: boolean; skin?: string; tunic?: string; hat?: "none" | "galea" | "laurel" | "hood" | "cap" | "tricorn" | "bandana"; vest?: string; bigBeard?: boolean; beard?: string; hair?: string; armor?: boolean; scale?: number; seed?: number; cloak?: string };
+export type ExtraSpec = { bald?: boolean; toga?: boolean; skin?: string; tunic?: string; hat?: "none" | "galea" | "laurel" | "hood" | "cap" | "tricorn" | "bandana" | "nasal" | "horns"; vest?: string; bigBeard?: boolean; fur?: string; trim?: string; legWraps?: string; pants?: string; mustache?: string; brooch?: boolean; beard?: string; hair?: string; armor?: boolean; scale?: number; seed?: number; cloak?: string };
 export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   const t = p.t ?? 0; const skin = x.skin ?? "#D9AE86"; const tunic = x.tunic ?? "#B9A27A"; const sd = x.seed ?? 1; const r = rng(sd);
   const tw = 48 + r() * 10, hipY = -78, shY = hipY - 54; const hr = 25 + r() * 3;
   g.save(); g.scale(x.scale ?? 1, x.scale ?? 1); if ((p.facing ?? 1) < 0) g.scale(-1, 1); g.rotate((p.lean ?? 0) + Math.sin(t * 2 + sd) * 0.01);
   if (x.cloak) cut(g, [[-tw / 2 - 4, shY], [tw / 2 + 4, shY], [tw / 2 + 12, hipY + 30], [-tw / 2 - 12, hipY + 30]], x.cloak, { seed: sd + 3, sort: "felt" });
-  for (const s of [-1, 1]) { cut(g, rrectP(s * tw * 0.2 - 7, hipY + 8, 14, 62, 5), skin, { seed: sd + s, edge: 0.7 }); cut(g, rrectP(s * tw * 0.2 - 10 + s * 3, -11, 22, 11, 4), "#6E4426", { seed: sd + 5 + s, sort: "kraft" }); }
+  for (const s of [-1, 1]) { cut(g, rrectP(s * tw * 0.2 - 7, hipY + 8, 14, 62, 5), x.pants ?? skin, { seed: sd + s, edge: 0.7 });
+    if (x.legWraps) { cut(g, rrectP(s * tw * 0.2 - 8, hipY + 36, 16, 34, 4), x.legWraps, { seed: sd + 7 + s, sort: "felt", edge: 0.6 }); for (let k = 0; k < 4; k++) strokeP(g, [[s * tw * 0.2 - 8, hipY + 40 + k * 8], [s * tw * 0.2 + 8, hipY + 36 + k * 8]], "rgba(40,25,15,0.4)", 1.2); } cut(g, rrectP(s * tw * 0.2 - 10 + s * 3, -11, 22, 11, 4), "#6E4426", { seed: sd + 5 + s, sort: "kraft" }); }
   const body: Pt[] = [[-tw / 2, shY], [tw / 2, shY], [tw / 2 + 8, hipY + 26], [-tw / 2 - 8, hipY + 26]];
   cut(g, body, tunic, { seed: sd + 10, sort: "felt", rim: 0.4 });
   if (x.toga) { const tg: Pt[] = [[-tw / 2 - 4, shY + 2], [-tw / 2 + 10, shY - 4], [tw / 2 + 10, hipY + 30], [tw / 2 - 12, hipY + 30]];
     cut(g, tg, "#FBF8F0", { seed: sd + 11, sort: "felt", rim: 0.5 }); strokeP(g, [[-tw / 2 + 4, shY - 2], [tw / 2 + 2, hipY + 28]], "#7B2D8E", 5); }
+  if (x.trim) { cut(g, rectP(-tw / 2 - 8, hipY + 18, tw + 16, 8), x.trim, { seed: sd + 36, edge: 0.6 }); for (let k = -3; k <= 3; k++) fillP(g, [[k * 8 - 3, hipY + 26], [k * 8, hipY + 19], [k * 8 + 3, hipY + 26]], "rgba(255,240,200,0.6)"); cut(g, [[-7, shY], [7, shY], [0, shY + 14]], x.trim, { seed: sd + 37, edge: 0.5 }); }
   if (x.armor) for (let i = 0; i < 5; i++) cut(g, rrectP(-tw / 2 - 2, shY + 6 + i * 9.5, tw + 4, 10, 2.5), i % 2 ? "#AEB6BE" : "#C3CAD1", { seed: sd + 20 + i, edge: 0.6, tear: 0.2 });
   if (x.vest) { // распахнутый жилет поверх (голого) торса: грудь и пресс карандашом
     strokeP(g, [[-tw * 0.32, shY + 22], [-4, shY + 26]], "rgba(120,70,40,0.45)", 1.6); strokeP(g, [[4, shY + 26], [tw * 0.32, shY + 22]], "rgba(120,70,40,0.45)", 1.6);
@@ -255,6 +257,11 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   }
   cut(g, rrectP(-tw / 2 - 1, hipY - 2, tw + 2, 6, 2), "#6A4426", { seed: sd + 30, sort: "kraft" });
   arm(g, -tw / 2 + 2, shY + 5, -1, p.aL ?? [0.1, 0.1], 28, 26, 12, tunic, null, skin, sd + 40, p.holdL);
+  if (x.fur) { // меховой плащ-накидка: пушистый край по плечам
+    const F: Pt[] = []; for (let k = 0; k <= 22; k++) { const a = Math.PI + (k / 22) * Math.PI; const rr = 1 + (k % 2) * 0.12; F.push([Math.cos(a) * (tw * 0.78) * rr, shY + 4 + Math.sin(a) * 16 * rr]); }
+    for (let k = 22; k >= 0; k--) { const a = Math.PI + (k / 22) * Math.PI; F.push([Math.cos(a) * (tw * 0.7), shY + 22 + (k % 2) * 5]); }
+    cut(g, F, x.fur, { seed: sd + 38, sort: "felt", edge: 1.6, tear: 1.6, rim: 0.5 }); for (let k = 0; k < 9; k++) strokeP(g, [[-tw * 0.6 + k * tw * 0.15, shY + 8], [-tw * 0.62 + k * tw * 0.15, shY + 20]], "rgba(255,255,255,0.25)", 1.2);
+    if (x.brooch) { fillP(g, ellP(tw * 0.3, shY + 16, 6, 6, 12), "#D9B04A"); fillP(g, ellP(tw * 0.3, shY + 16, 2.5, 2.5, 8), "#8A6418"); } }
   g.save(); g.translate(0, shY - 10 - hr * 0.78); g.rotate(p.tilt ?? 0);
   cut(g, rectP(-6, hr * 0.6, 12, 10), skin, { seed: sd + 50, edge: 0.6 });
   for (const s of [-1, 1]) cut(g, ellP(s * hr * 0.97, 3, 4, 6, 14), skin, { seed: sd + 51 + s, edge: 0.6 });
@@ -265,6 +272,7 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
     fillP(g, ellP(-hr * 0.3, -hr * 0.62, hr * 0.28, hr * 0.14, 16), "#FFFFFF", 0.85); }
   else if (x.hair) cut(g, [...ellP(0, -2, hr * 1.04, hr * 1.0, 30, Math.PI * 1.02, Math.PI * 1.98), [hr * 0.5, -hr * 0.5], [-hr * 0.5, -hr * 0.5]], x.hair, { seed: sd + 54, sort: "kraft", edge: 0.8 });
   face(g, { hr, skin, skinD: "#000", glasses: false, brow: x.hair ?? "#2A1E16", beard: x.beard }, p);
+  if (x.mustache) for (const s2 of [-1, 1]) cut(g, [[0, hr * 0.32], [s2 * hr * 0.5, hr * 0.3], [s2 * hr * 0.85, hr * 0.62], [s2 * hr * 0.7, hr * 0.5], [s2 * hr * 0.35, hr * 0.46], [0, hr * 0.42]], x.mustache, { seed: sd + 95 + s2, sort: "felt", edge: 0.7 });
   if (x.bigBeard) { // Чёрная Борода: длинная борода с косичками и тлеющими фитилями
     const bc = x.beard ?? "#1A1614"; cut(g, [[-hr * 0.95, hr * 0.15], [-hr * 0.9, hr * 1.1], [-hr * 0.5, hr * 2.3], [0, hr * 2.6], [hr * 0.5, hr * 2.3], [hr * 0.9, hr * 1.1], [hr * 0.95, hr * 0.15], [hr * 0.55, hr * 0.62], [0, hr * 0.7], [-hr * 0.55, hr * 0.62]], bc, { seed: sd + 90, sort: "felt", edge: 1 });
     
@@ -284,6 +292,12 @@ export const extra = (g: G, x: ExtraSpec, p: Pose) => {
   else if (x.hat === "tricorn") { cut(g, [[-hr * 1.75, -hr * 0.35], [-hr * 0.9, -hr * 1.55], [0, -hr * 1.15], [hr * 0.9, -hr * 1.55], [hr * 1.75, -hr * 0.35], [0, -hr * 0.62]], "#1E1A17", { seed: sd + 83, sort: "felt", rim: 0.6 });
     strokeP(g, [[-hr * 1.75, -hr * 0.35], [0, -hr * 0.62], [hr * 1.75, -hr * 0.35]], "#D9B04A", 2.4); }
   else if (x.hat === "bandana") { cut(g, [...ellP(0, -hr * 0.3, hr * 1.05, hr * 0.85, 24, Math.PI, Math.PI * 2), [hr * 1.05, -hr * 0.2], [-hr * 1.05, -hr * 0.2]], "#C8352B", { seed: sd + 84, sort: "felt" }); cut(g, [[hr * 0.9, -hr * 0.4], [hr * 1.6, -hr * 0.1], [hr * 1.4, hr * 0.3]], "#C8352B", { seed: sd + 85, sort: "felt" }); }
+  else if (x.hat === "nasal") { // настоящий шлем эпохи викингов: железный купол + наносник, БЕЗ рогов
+    cut(g, [...ellP(0, -hr * 0.18, hr * 1.08, hr * 1.0, 30, Math.PI, Math.PI * 2), [hr * 1.1, -hr * 0.1], [-hr * 1.1, -hr * 0.1]] as Pt[], "#8E979E", { seed: sd + 86, edge: 0.9, rim: 0.7 });
+    cut(g, rrectP(-hr * 1.12, -hr * 0.22, hr * 2.24, 6, 2), "#6E767C", { seed: sd + 87, edge: 0.6 }); cut(g, rrectP(-3, -hr * 0.2, 6, hr * 0.62, 2), "#6E767C", { seed: sd + 88, edge: 0.6 }); strokeP(g, [[0, -hr * 1.15], [0, -hr * 0.22]], "#6E767C", 2.4); }
+  else if (x.hat === "horns") { // МИФ: рогатый шлем (образ XIX века)
+    cut(g, [...ellP(0, -hr * 0.18, hr * 1.08, hr * 1.0, 30, Math.PI, Math.PI * 2), [hr * 1.1, -hr * 0.1], [-hr * 1.1, -hr * 0.1]] as Pt[], "#8E979E", { seed: sd + 86, edge: 0.9, rim: 0.7 });
+    for (const s2 of [-1, 1]) cut(g, [[s2 * hr * 0.8, -hr * 0.55], [s2 * hr * 1.5, -hr * 1.1], [s2 * hr * 1.6, -hr * 1.9], [s2 * hr * 1.35, -hr * 1.2], [s2 * hr * 0.9, -hr * 0.85]], "#F2E6CF", { seed: sd + 89 + s2, edge: 0.8, rim: 0.6 }); }
   else if (x.hat === "cap") cut(g, [...ellP(0, -hr * 0.3, hr * 0.9, hr * 0.8, 24, Math.PI, Math.PI * 2), [hr * 0.9, -hr * 0.2], [-hr * 0.9, -hr * 0.2]], "#8C5A3A", { seed: sd + 81, sort: "felt" });
   g.restore();
   arm(g, tw / 2 - 2, shY + 5, 1, p.aR ?? [0.1, 0.1], 28, 26, 12, tunic, null, skin, sd + 44, p.holdR, p.holdR ? "fist" : "open");

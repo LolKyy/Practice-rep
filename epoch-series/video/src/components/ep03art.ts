@@ -72,3 +72,45 @@ export const tinyFolk = (x: number, y: number, s = 1, col = "#8A3A2A", seed = 1,
 export const birds = (g: G, t: number) => { for (let i = 0; i < 5; i++) { const x = ((i * 260 + t * 70) % 1600) - 200, y = 520 + i * 26 + Math.sin(t + i) * 12, w = Math.sin(t * 8 + i) * 8; strokeP(g, [[x - 18, y - w], [x, y], [x + 18, y - w]], "#1C2B3A", 3); } };
 export const runestone = (x: number, y: number, s = 1) => (g: G) => { g.save(); g.translate(x, y); g.scale(s, s); cut(g, [[-50, 0], [-60, -160], [-20, -230], [40, -220], [60, -150], [50, 0]], "#9AA0A6", { seed: 1300, sort: "kraft", rim: 0.4 });
   g.strokeStyle = "#C8352B"; g.lineWidth = 6; g.beginPath(); g.moveTo(-34, -30); g.bezierCurveTo(-60, -140, 40, -200, 30, -60); g.stroke(); text(g, "ᚱᚢᚾ", 0, -110, 34, "#3A2A1E"); g.restore(); };
+
+// ---------------------------------------------------------------- КАРТА МИРА ВИКИНГОВ (своя, «пергамент + Ёрмунганд в море»)
+// берег: каждую сторону делим на 8 частей и «изрезаем» шумом — фьорды и бухты вместо углов
+const coast = (pts: Pt[], seed: number, amp = 22): Pt[] => { const r = rng(seed); const out: Pt[] = []; pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+  for (let k = 0; k < 8; k++) { const u = k / 8; const n = (r() - 0.5) * 2 * amp + Math.sin(u * 9 + seed) * amp * 0.4; out.push([a[0] + dx * u - dy / L * n, a[1] + dy * u + dx / L * n]); } }); return out; };
+const land = (g: G, pts: Pt[], col: string, seed: number) => { cut(g, coast(pts, seed), col, { seed, sort: "kraft", tear: 1.2, edge: 2.4, rim: 0.3 }); };
+export const vikingMap = (route = 1) => (g: G, t: number) => {
+  cut(g, rectP(-400, -400, 1880, 2700), "#E9D2A4", { tear: 0, noEdge: true, sort: "kraft", grain: 0.6 });
+  cut(g, rrectP(40, 260, 1000, 1400, 30), "#C8C9C2", { seed: 1400, sort: "water", tear: 1.4, edge: 2.4 }); // море
+  for (let i = 0; i < 40; i++) { const r = rng(i + 50); const x = 80 + r() * 920, y = 300 + r() * 1320; strokeP(g, [[x, y], [x + 14, y - 5], [x + 28, y]], "rgba(90,90,90,0.35)", 2); } // рябь
+  // суши
+  land(g, [[60, 300], [380, 290], [330, 470], [220, 560], [120, 520], [60, 600]], "#F4F6F2", 1401); // Гренландия (лёд)
+  land(g, [[220, 560], [330, 470], [360, 640], [300, 820], [240, 760]], "#D9B47A", 1402);
+  land(g, [[60, 1050], [200, 1000], [260, 1120], [220, 1300], [90, 1420], [60, 1420]], "#D9B47A", 1403); // Винланд
+  land(g, [[470, 700], [600, 660], [640, 730], [560, 800], [470, 780]], "#D9B47A", 1404); // Исландия
+  land(g, [[820, 300], [1040, 290], [1040, 1000], [960, 960], [880, 800], [840, 620], [900, 520], [830, 420]], "#D9B47A", 1405); // Скандинавия
+  land(g, [[880, 1000], [960, 980], [980, 1080], [900, 1100]], "#D9B47A", 1406); // Дания
+  land(g, [[700, 980], [800, 960], [840, 1150], [810, 1300], [720, 1320], [690, 1150]], "#D9B47A", 1407); // Британия
+  land(g, [[600, 1150], [680, 1130], [690, 1240], [610, 1260]], "#D9B47A", 1408); // Ирландия
+  const lbl = (s: string, x: number, y: number, z = 30) => text(g, s, x, y, z, "#B23A2A", "Montserrat", 900);
+  lbl("ГРЕНЛАНДИЯ", 230, 420, 30); lbl("ВИНЛАНД", 150, 1200, 32); lbl("ИСЛАНДИЯ", 560, 740, 26); lbl("НОРВЕГИЯ", 930, 620, 28); lbl("ДАНИЯ", 930, 1045, 22); lbl("АНГЛИЯ", 770, 1180, 24);
+  // Ёрмунганд: тело ныряет в море и выныривает арками (кольца с узором)
+  for (let k = 0; k < 5; k++) { const cx = 380 + k * 140, cy = 1470 + Math.sin(k * 1.7 + t * 0.8) * 30; const P: Pt[] = []; const Q: Pt[] = [];
+    for (let a = 0; a <= 16; a++) { const u = a / 16, ang = Math.PI * (1 + u); P.push([cx + Math.cos(ang) * 60, cy + Math.sin(ang) * 70]); Q.unshift([cx + Math.cos(ang) * 34, cy + Math.sin(ang) * 46]); }
+    cut(g, [...P, ...Q], "#5E7A4A", { seed: 1410 + k, sort: "felt", edge: 1.8, rim: 0.4 }); for (let a = 2; a < 15; a += 3) { const ang = Math.PI * (1 + a / 16); fillP(g, ellP(cx + Math.cos(ang) * 47, cy + Math.sin(ang) * 58, 6, 6, 8), "#B23A2A"); } }
+  g.save(); g.translate(330, 1470 + Math.sin(t * 0.8) * 30); g.rotate(-0.25); g.scale(1.5, 1.5); cut(g, [[0, 0], [-90, -30], [-120, 0], [-90, 26]], "#5E7A4A", { seed: 1420, sort: "felt", edge: 1.6, rim: 0.4 }); fillP(g, ellP(-80, -8, 7, 6, 10), "#F2C14E"); strokeP(g, [[-120, 2], [-150, 10]], "#B23A2A", 3); g.restore();
+  text(g, "МИДГАРД", 540, 1600, 60, "#B23A2A", "Montserrat", 900);
+  // маршрут Норвегия → Исландия → Гренландия → Винланд
+  const R: Pt[] = [[900, 620], [720, 640], [560, 730], [420, 640], [300, 640], [260, 820], [200, 980], [160, 1150]]; const n = Math.max(2, Math.floor(R.length * Math.min(1, route)));
+  g.save(); g.setLineDash([18, 14]); strokeP(g, R.slice(0, n), "#B23A2A", 6); g.restore();
+  // рамка-узор
+  for (let i = 0; i < 2; i++) strokeP(g, rrectP(30 - i * 12, 250 - i * 12, 1020 + i * 24, 1420 + i * 24, 34), i ? "#3A2A1E" : "#8A6A40", 8, true);
+};
+// детали посёлка
+export const fishRack = (x: number, y: number, s = 1) => (g: G, t: number) => { g.save(); g.translate(x, y); g.scale(s, s); for (const k of [-70, 70]) cut(g, [[k - 50, 0], [k, -150], [k + 50, 0]], "#6A4A30", { seed: 1500 + k, sort: "kraft", edge: 1 }); strokeP(g, [[-90, -130], [90, -130]], "#5A3A24", 6);
+  for (let i = 0; i < 7; i++) { const sw = Math.sin(t * 2 + i) * 0.06; g.save(); g.translate(-75 + i * 25, -128); g.rotate(sw); cut(g, [[-7, 0], [7, 0], [9, 50], [0, 62], [-9, 50]], "#B9A88A", { seed: 1510 + i, edge: 0.8 }); g.restore(); } g.restore(); };
+export const woodpile = (x: number, y: number, s = 1) => (g: G) => { g.save(); g.translate(x, y); g.scale(s, s); for (let r = 0; r < 3; r++) for (let i = 0; i < 5 - r; i++) { cut(g, ellP(-80 + i * 40 + r * 20, -16 - r * 30, 20, 16, 14), "#9C6B3E", { seed: 1520 + r * 10 + i, sort: "kraft", edge: 1 }); fillP(g, ellP(-80 + i * 40 + r * 20, -16 - r * 30, 9, 7, 10), "#D9B47A"); } g.restore(); };
+export const barrels = (x: number, y: number, s = 1) => (g: G) => { g.save(); g.translate(x, y); g.scale(s, s); for (const k of [-40, 40]) { cut(g, rrectP(k - 30, -80, 60, 80, 14), "#8A5A34", { seed: 1530 + k, sort: "kraft", rim: 0.3 }); for (const yy of [-66, -16]) strokeP(g, [[k - 30, yy], [k + 30, yy]], "#3A2A1E", 4); } g.restore(); };
+export const fence = (x0: number, x1: number, y: number) => (g: G) => { for (let x = x0; x <= x1; x += 46) cut(g, rrectP(x - 5, y - 70, 10, 74, 3), "#7A5A3E", { seed: 1540 + x, sort: "kraft", edge: 0.8 }); strokeP(g, [[x0, y - 50], [x1, y - 50]], "#6A4A30", 5); strokeP(g, [[x0, y - 22], [x1, y - 22]], "#6A4A30", 5); };
+export const forgeGlow = (x: number, y: number) => (g: G, t: number) => { const f = 1 + Math.sin(t * 11) * 0.08; const gr = g.createRadialGradient(x, y, 4, x, y, 140 * f); gr.addColorStop(0, "rgba(255,170,70,0.85)"); gr.addColorStop(1, "rgba(255,120,40,0)"); g.fillStyle = gr; g.fillRect(x - 160, y - 160, 320, 320);
+  cut(g, rrectP(x - 40, y - 10, 80, 50, 8), "#5A5A5E", { seed: 1550, edge: 1 }); for (let i = 0; i < 4; i++) { const u = (t * 1.5 + i / 4) % 1; fillP(g, ellP(x + Math.sin(i * 3 + t * 4) * 20, y - 20 - u * 90, 3, 3, 6), "#FFC45A", 1 - u); } };
+export const boathouse = (x: number, y: number, s = 1) => (g: G) => { g.save(); g.translate(x, y); g.scale(s, s); cut(g, [[-160, 0], [160, 0], [140, -90], [0, -170], [-140, -90]], "#5E7A4A", { seed: 1560, sort: "felt", tear: 1.2, rim: 0.3 }); cut(g, [[-90, 0], [90, 0], [70, -70], [0, -110], [-70, -70]], "#2A1E16", { seed: 1561, edge: 1 }); g.restore(); };
