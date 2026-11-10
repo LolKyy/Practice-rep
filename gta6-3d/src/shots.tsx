@@ -69,7 +69,7 @@ export const SHOTS: Shot[] = [
 
   // ---------- 4. Часы 23:59
   S(P[2], t.p2twenty, (
-    <Scene3D t0={P[2]} light="night" bg="#0b0624" focus={[1.45, 0.88, -1.42]} dof={8}
+    <Scene3D t0={P[2]} light="night" bg="#0b0624" focus={[1.45, 0.88, -1.42]} dof={2}
       cam={cam([P[2], [1.15, 1.05, -0.6], [1.45, 0.88, -1.42], 48], [t.p2twenty, [1.38, 0.95, -0.95], [1.45, 0.88, -1.42], 44])}>
       <GamerRoom mon={{ kind: "play" }} clock={(s) => (Math.floor(s * 2) % 2 ? "23:59" : "23 59")} cal={calDraw("НОЯБРЬ 2026", "18")} />
       <Doodle a={hero([-0.3, 0, -0.6], [[0, "hype"]])} />
@@ -397,7 +397,7 @@ function Phone({ p, from, marks, heat, scale = 1 }: { p: V3; from: number; marks
   const sh = h > 0 ? Math.sin(sec * 60) * 0.01 * h : 0;
   return (<group position={[p[0] + sh, p[1], p[2]]} scale={scale}>
     <Box p={[0, 0, 0]} s={[0.4, 0.78, 0.05]} c={`rgb(${Math.round(30 + h * 180)},30,40)`} r={0.3} />
-    <Screen p={[0, 0, 0.027]} w={0.36} h={0.72} res={360} draw={(g, s, W, H) => {
+    <Screen p={[0, 0, 0.027]} w={0.36} h={0.72} res={720} draw={(g, s, W, H) => {
       drawBg(g, W, H, "#120a24", "#2a1458");
       let n = marks[0][1]; for (let i = 0; i < marks.length; i++) if (s >= marks[i][0]) { const nx = marks[i + 1] ? marks[i + 1][1] : marks[i][1]; n = marks[i][1] + (nx - marks[i][1]) * 0; }
       const cur = marks.filter((m) => s >= m[0]).pop(); const val = cur ? cur[1] : marks[0][1];

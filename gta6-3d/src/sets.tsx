@@ -58,7 +58,10 @@ export const calDraw = (top: string, big: string, circle = false, flipAt?: numbe
 };
 // цифровые часы
 export const clockDraw = (hhmm: (sec: number) => string, col = RED) => (g: CanvasRenderingContext2D, sec: number, W: number, H: number) => {
-  g.fillStyle = "#0b0b12"; g.fillRect(0, 0, W, H); g.shadowColor = col; g.shadowBlur = 24; fitText(g, hhmm(sec), W / 2, H / 2 + 4, W * 0.9, H * 0.75, col, "Oswald, " + FONT); g.shadowBlur = 0;
+  // чёткие цифры без свечения: тёмное табло, «выключенные» сегменты 88:88 и яркие цифры поверх
+  g.fillStyle = "#101014"; g.fillRect(0, 0, W, H); g.strokeStyle = "#2a2a33"; g.lineWidth = W * 0.02; g.strokeRect(0, 0, W, H);
+  fitText(g, "88:88", W / 2, H / 2 + 4, W * 0.86, H * 0.72, "#2a1416", "Oswald, " + FONT);
+  fitText(g, hhmm(sec), W / 2, H / 2 + 4, W * 0.86, H * 0.72, col, "Oswald, " + FONT);
 };
 
 // ------------------------------------------------------------------ частицы
@@ -125,11 +128,11 @@ export const GamerRoom: React.FC<{ mon: MonMode; cal?: (g: CanvasRenderingContex
     <Neon p={[0, 2.92, -1.93]} s={[5.8, 0.04, 0.04]} col={PINK} /><Neon p={[-2.93, 2.92, 0]} s={[0.04, 0.04, 3.8]} col={CYAN} />
     <Desk p={[0.75, 0, -1.55]} w={1.9} c="#2b2b36" />
     <Box p={[0.75, 1.32, -1.86]} s={[1.6, 0.94, 0.06]} c="#121218" />
-    <Screen p={[0.75, 1.32, -1.82]} w={1.5} h={0.84} draw={monitorDraw(mon)} res={640} />
+    <Screen p={[0.75, 1.32, -1.82]} w={1.5} h={0.84} draw={monitorDraw(mon)} res={1280} />
     <Box p={[0.75, 0.82, -1.35]} s={[0.8, 0.04, 0.22]} c="#1a1a22" />
     {[-0.15, 1.65].map((x) => <Box key={x} p={[x, 0.98, -1.7]} s={[0.24, 0.42, 0.24]} c="#1a1a22" />)}
     <Neon p={[0.75, 0.79, -1.2]} s={[1.9, 0.02, 0.02]} col={CYAN} k={1.6} />
-    {clock ? <Screen p={[1.45, 0.88, -1.42]} w={0.42} h={0.17} draw={clockDraw(clock)} res={256} /> : null}
+    {clock ? <Screen p={[1.45, 0.88, -1.42]} w={0.42} h={0.17} draw={clockDraw(clock)} res={1024} glow={0.85} /> : null}
     <Sign p={[-1.15, 1.95, -1.98]} w={0.8} h={1.05} text="VI" bg="#ff3fa4" fg="#ffffff" glow={0.5} sz={300} />
     <Sign p={[-2.0, 1.95, -1.98]} w={0.7} h={0.95} text="VICE" bg="#2fe0ff" fg="#1a1020" glow={0.4} sz={170} />
     {cal ? <Screen p={[2.15, 1.8, -1.97]} w={0.75} h={0.95} draw={cal} res={360} basic={false} glow={0.45} /> : null}
