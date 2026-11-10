@@ -290,7 +290,7 @@ export const StockFloor: React.FC<{ drop: (s: number) => number; stamps?: number
   <Screen p={[0, 1.75, -1.92]} w={4.4} h={2.15} res={1000} draw={(g, s, W, H) => {
     g.fillStyle = "#070a14"; g.fillRect(0, 0, W, H); g.strokeStyle = "#1a2440"; g.lineWidth = 2; for (let x = 0; x < W; x += 60) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); } for (let y = 0; y < H; y += 60) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
     if (stamps) {
-      stamps.forEach((t, i) => { g.save(); g.translate(W * (0.2 + i * 0.3), H * 0.45); drawLogoMini(g, i);
+      stamps.forEach((t, i) => { g.save(); g.translate(W * (0.3 + i * 0.2), H * 0.45); g.scale(0.62, 0.62); drawLogoMini(g, i);
         if (s >= t) { const k = clamp((s - t) / 0.12), sc = lerp(2.2, 1, k); g.rotate(-0.25); g.scale(sc, sc); g.globalAlpha = k; g.strokeStyle = RED; g.lineWidth = 9; rr(g, -140, -40, 280, 80, 10); g.stroke(); fitText(g, "ПЕРЕНОС", 0, 4, 250, 52, RED); }
         g.restore(); });
       fitText(g, "ПЕРЕНОСОВ: " + stamps.filter((t) => s >= t).length, W / 2, H * 0.9, W * 0.6, H * 0.11, RED); return; }

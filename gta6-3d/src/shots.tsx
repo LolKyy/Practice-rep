@@ -302,7 +302,7 @@ export const SHOTS: Shot[] = [
   // ---------- 35. «А тут — уже третий перенос»
   S(t.p9here - 0.1, P[10], (
     <Scene3D t0={t.p9here - 0.1} light="studio" bg="#0a0c14" focus={[0, 1.75, -1.92]} shakes={[[t.p9third, 1.2]]}
-      cam={cam([t.p9here - 0.1, [0, 1.75, 1.2], [0, 1.75, -1.92], 50], [P[10], [0, 1.75, 0.4], [0, 1.75, -1.92], 46])}>
+      cam={cam([t.p9here - 0.1, [0, 1.8, 1.4], [0, 1.85, -1.92], 52], [P[10], [0, 1.8, 0.9], [0, 1.85, -1.92], 50])}>
       <StockFloor drop={() => 1} stamps={[t.p9here - 0.6, t.p9here - 0.3, t.p9third]} />
     </Scene3D>)),
 
