@@ -235,11 +235,14 @@ export const HQ: React.FC = () => (<>
 </>);
 
 // Пункт охраны со стеной мониторов. count(sec) — сколько точек-фанатов на камерах
-export const Security: React.FC<{ count: (s: number) => number }> = ({ count }) => (<>
+export const Security: React.FC<{ count: (s: number) => number; total?: (s: number) => number }> = ({ count, total }) => (<>
   <Room wall="#1d2630" floor="#252d36" wain="#141a22" ceil="#11161c" />
   {Array.from({ length: 9 }, (_, i) => { const x = -1.6 + (i % 3) * 1.6, y = 2.35 - Math.floor(i / 3) * 0.78;
     return <group key={i}><Box p={[x, y, -1.94]} s={[1.5, 0.72, 0.08]} c="#0a0a0a" />
-      <Screen p={[x, y, -1.89]} w={1.4} h={0.64} res={360} draw={(g, s, W, H) => { g.fillStyle = "#16261c"; g.fillRect(0, 0, W, H);
+      <Screen p={[x, y, -1.89]} w={1.4} h={0.64} res={360} draw={(g, s, W, H) => {
+        if (total && i === 1) { g.fillStyle = "#0a0408"; g.fillRect(0, 0, W, H); fitText(g, "ЛЮДЕЙ У ОФИСА", W / 2, H * 0.2, W * 0.85, H * 0.18, "#fff");
+          g.shadowColor = RED; g.shadowBlur = 18; fitText(g, Math.round(total(s)).toLocaleString("ru-RU").replace(/,/g, " "), W / 2, H * 0.62, W * 0.92, H * 0.48, Math.floor(s * 6) % 2 ? RED : "#ff7070"); g.shadowBlur = 0; return; }
+        g.fillStyle = "#16261c"; g.fillRect(0, 0, W, H);
         g.fillStyle = "#2a3e30"; g.fillRect(0, H * 0.55, W, H * 0.45); const n = Math.floor(count(s) / 9 + (i % 4)); g.fillStyle = "#b8f0c0";
         for (let k = 0; k < Math.min(n, 220); k++) { const px = ((k * 73 + i * 31) % 100) / 100 * W, py = H * 0.6 + ((k * 37) % 40) / 100 * H; g.beginPath(); g.arc(px, py, 4, 0, 7); g.fill(); g.fillRect(px - 2, py, 4, 9); }
         g.fillStyle = "#fff"; g.font = `20px monospace`; g.textAlign = "left"; g.fillText(`CAM ${i + 1}  ● REC`, 10, 24);

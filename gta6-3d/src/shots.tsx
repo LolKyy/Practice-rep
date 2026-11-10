@@ -215,24 +215,23 @@ export const SHOTS: Shot[] = [
   S(t.p6guard, t.p6how, (
     <Scene3D t0={t.p6guard} light="night" bg="#11161c" focus={[0.3, 1.05, -0.35]}
       cam={cam([t.p6guard, [-1.4, 1.5, 2.2], [0, 1.6, -1.6], 58], [t.p6how, [-0.6, 1.4, 1.6], [0.1, 1.5, -1.5], 54])}>
-      <Security count={(s) => 40 + (s - t.p6guard) * 200} />
+      <Security count={(s) => 40 + (s - t.p6guard) * 200} total={(s) => 300 + (s - t.p6guard) * 900} />
       <Doodle a={{ pos: [0.3, 0, -0.35], seed: 9, look: GUARD, expr: [[0, "blank"], [t.p6guard + 0.8, "realize"]], scale: 1.15 }} />
     </Scene3D>)),
-  // ---------- 24. «Сколько их?» шёпотом
+  // ---------- 24. «Сколько их?» — камера на стену мониторов, счётчик людей крутится
   S(t.p6how, t.p6ok, (
-    <Scene3D t0={t.p6how} light="night" bg="#11161c" focus={[0.3, 1.05, -0.35]}
-      cam={cam([t.p6how, [0.6, 1.15, 0.9], [0.3, 1.1, -0.35], 44], [t.p6ok, [0.45, 1.12, 0.6], [0.3, 1.1, -0.35], 40])}>
-      <Security count={(s) => 400 + (s - t.p6how) * 900} />
-      <Doodle a={{ pos: [0.3, 0, -0.35], seed: 9, look: GUARD, expr: [[0, "nervous"]], scale: 1.15, talk: [[t.p6how, t.p6how + 0.7]], handF: [[0, -0.1, HEAD_Z - 0.2]] }} />
+    <Scene3D t0={t.p6how} light="night" bg="#11161c" focus={[0, 2.35, -1.89]} shakes={[[t.p6ok - 0.3, 0.6]]}
+      cam={cam([t.p6how, [0.9, 1.5, 0.8], [0, 2.0, -1.9], 52], [t.p6ok, [0.15, 2.1, -0.2], [0, 2.3, -1.9], 46])}>
+      <Security count={(s) => 400 + (s - t.p6how) * 1500} total={(s) => Math.pow(10, 3 + clamp((s - t.p6how) / Math.max(0.3, t.p6ok - t.p6how)) * 4.08)} />
+      <Doodle a={{ pos: [0.6, 0, -0.2], seed: 9, look: GUARD, expr: [[0, "nervous"]], scale: 1.15, talk: [[t.p6how, t.p6how + 0.7]], handF: [[0, -0.1, HEAD_Z - 0.2]] }} />
     </Scene3D>)),
-  // ---------- 25. «…Понятно.» — мониторы забиты людьми
+  // ---------- 25. «…Понятно.» — охранник устало, за ним 12 000 000
   S(t.p6ok, P[7], (
-    <Scene3D t0={t.p6ok} light="night" bg="#11161c" focus={[0.3, 1.05, -0.35]}
-      cam={cam([t.p6ok, [0.2, 1.6, 0.9], [0.0, 1.6, -1.9], 52], [P[7], [0.2, 1.3, 1.9], [0.0, 1.5, -1.9], 56])}>
-      <Security count={() => 3000} />
-      <Doodle a={{ pos: [0.3, 0, -0.35], seed: 9, look: GUARD, expr: [[0, "tired"]], scale: 1.15 }} />
+    <Scene3D t0={t.p6ok} light="night" bg="#11161c" focus={[0.3, 1.3, -0.35]}
+      cam={cam([t.p6ok, [0.3, 1.5, 1.3], [0.15, 1.75, -1.9], 54], [P[7], [0.3, 1.45, 1.8], [0.15, 1.75, -1.9], 56])}>
+      <Security count={() => 3000} total={() => 12000000} />
+      <Doodle a={{ pos: [0.3, 0, -0.35], seed: 9, look: GUARD, expr: [[0, "blank"], [t.p6ok + 0.15, "tired"]], scale: 1.15 }} />
     </Scene3D>)),
-
   // ---------- 26. GTA Online: пролёт по серверной
   S(P[7], t.p7plus, (
     <Scene3D t0={P[7]} light="storm" bg="#05070f" focus={[0, 1.2, -3]} dof={5}
