@@ -325,6 +325,7 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
     <spotLight position={[1.8, 5, 3]} angle={0.6} penumbra={0.6} intensity={45} decay={1} color="#a0e8ff" castShadow /></>);
 };
 
+export const CAM_DIST = 1.55, CAM_FOV = 6;
 export type Shake = [number, number, number?]; // [секунда, сила, длительность]
 export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; children: React.ReactNode }> =
   ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 6, fog, children }) => {
@@ -332,7 +333,9 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
     const { width, height } = useVideoConfig();
     const t = t0 + frame / FPS;
     const [, p, l, fov] = camAt(t, cam);
-    const pos = new THREE.Vector3(...p), look = new THREE.Vector3(...l);
+    // общий отъезд: камера дальше от цели в CAM_DIST раз и чуть шире угол — чтобы ничего не обрезалось
+    const look = new THREE.Vector3(...l);
+    const pos = new THREE.Vector3(...p).sub(look).multiplyScalar(CAM_DIST).add(look);
     pos.x += Math.sin(frame / 23) * 0.01; pos.y += Math.sin(frame / 17) * 0.007;
     for (const [ts, amp, d = 0.45] of shakes) {
       const u = t - ts; if (u < 0 || u > d) continue;
@@ -346,7 +349,7 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
         <ThreeCanvas width={width} height={height} shadows={{ type: THREE.PCFSoftShadowMap }}
           gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.3, antialias: false }} style={{ backgroundColor: bg }}>
           <ShotCtx.Provider value={{ t0, cam: pos }}>
-            <CamRig pos={pos} look={look} fov={fov ?? 60} roll={r} />
+            <CamRig pos={pos} look={look} fov={(fov ?? 60) + CAM_FOV} roll={r} />
             {fog ? <fog attach="fog" args={[fog, 8, 40]} /> : null}
             <Lights preset={light} />
             {children}
