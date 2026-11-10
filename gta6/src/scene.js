@@ -274,3 +274,65 @@ export function frame(t) {
     <g transform="translate(${sx},${sy}) translate(540,960) scale(${k}) translate(-540,-960)">${scene}</g>
     <rect width="${W}" height="${H}" fill="url(#vig)"/>${hud}${caption(t)}</svg>`;
 }
+
+// ---------- ЧЕРНОВИК v2: новые сцены (кадры на утверждение) ----------
+// субтитры как в наших роликах: 1–3 слова, внизу по центру, ключевое слово жёлтым
+function sub(words, key = -1) {
+  const size = 112;
+  return `<text x="520" y="1330" text-anchor="middle" font-family="Oswald" font-weight="700" font-size="${size}" stroke="${O}" stroke-width="20" stroke-linejoin="round" paint-order="stroke">${words.split(" ").map((w, i) => `<tspan fill="${i === key ? YEL : "#fff"}">${w}</tspan>`).join(" ")}</text>`;
+}
+const sticky = (x, y, rot, txt, col = YEL) => { const w = txt.length * 19 + 50; return `<g transform="translate(${x},${y}) rotate(${rot})">${R(-w / 2, -48, w, 96, col, 4, 'stroke-width="4"')}${T(0, 12, txt, 30, O, "Russo One")}</g>`; };
+const consoleBox = (x, y, s = 1) => `<g transform="translate(${x},${y}) scale(${s})">${R(-50, -70, 100, 120, "#F4F6FB", 10, 'stroke-width="4"')}<rect x="-12" y="-60" width="24" height="100" fill="#12081F"/>${T(0, 70, "КОНСОЛЬ", 18, O, "Russo One")}</g>`;
+function hudWrap(scene, hud = "") {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${scene}<rect width="${W}" height="${H}" fill="url(#vig)"/>${hud}</svg>`;
+}
+export const DRAFTS = {
+  // 23:59, F5, чек-лист «отпуск / чипсы / девушке»
+  "01_f5": () => {
+    let s = sunset(0, 0.55) + monitor(540, 760, 1.5, `${T(0, -20, "ЗАГРУЗКА…", 44, CYAN)}<rect x="-140" y="20" width="200" height="16" fill="${CYAN}"/>`);
+    s += sticky(170, 560, -8, "ОТПУСК ✓") + sticky(910, 600, 7, "ЧИПСЫ ✓", "#7CFFB2") + sticky(300, 1000, 5, "ДЕВУШКЕ: МЕНЯ НЕТ", PINK);
+    s += `<g transform="translate(780,1010) rotate(-6)">${R(-90, -70, 180, 140, "#E9E4F5", 16)}${T(0, 26, "F5", 80, O)}</g>` + T(820, 900, "×100", 56, YEL, "Russo One");
+    s += gamer({ x: 420, y: 1190, s: 0.9, back: true, shirt: PINK });
+    return hudWrap(s, dateCard(0, "19.11 · 23:59") + sub("ЖМЁШЬ F5", 1));
+  },
+  // утро: очередь на возврат консолей
+  "02_returns": () => {
+    let s = sunset(0, 0.45) + `${R(560, 560, 440, 120, RED, 10)}${T(780, 640, "ВОЗВРАТ ТОВАРА", 44, "#fff")}${R(600, 700, 360, 380, "#2B1B4A", 8)}${R(560, 1000, 440, 80, "#5B1A7A", 8)}`;
+    s += gamer({ x: 780, y: 1000, s: 0.55, face: "sad", shirt: "#3FB27F" }) + `<path d="M750 840 q-6 16 0 22 q6 -6 0 -22 Z" fill="#9FE3FF"/><path d="M810 840 q-6 16 0 22 q6 -6 0 -22 Z" fill="#9FE3FF"/>`;
+    for (let i = 0; i < 9; i++) { const x = 470 - i * 62, y = 1150 - (i % 2) * 10; s += tiny(x, y, 1.6 - i * 0.06, i, 0) + consoleBox(x + 38, y - 120, 0.7); }
+    return hudWrap(s, dateCard(0, "20.11 · 09:00") + sub("НА ВОЗВРАТ", 1));
+  },
+  // крупно плакаты в толпе
+  "03_signs": () => {
+    let s = sunset(0, 0.35);
+    const signs = ["МЫ ЖДАЛИ 13 ЛЕТ", "ОТДАВАЙТЕ GTA 6", "19.11 !!!", "Я ВЗЯЛ ОТПУСК"];
+    signs.forEach((txt, i) => { const x = 200 + i * 230; s += `<g transform="translate(${x},${640 + (i % 2) * 70}) rotate(${-6 + i * 4})">${R(-120, -60, 240, 120, "#fff", 6)}${(() => { const ws = txt.split(" "); const a = ws.slice(0, Math.ceil(ws.length / 2)).join(" "), b = ws.slice(Math.ceil(ws.length / 2)).join(" "); return b ? T(0, -2, a, 32, O, "Russo One") + T(0, 40, b, 32, RED, "Russo One") : T(0, 14, a, 36, O, "Russo One"); })()}</g><line x1="${x}" y1="${700 + (i % 2) * 70}" x2="${x}" y2="1000" stroke="${O}" stroke-width="10"/>`; });
+    for (let i = 0; i < 4; i++) s += `<g transform="translate(${200 + i * 230},1180) scale(2.2)">${tiny(0, 0, 1, i + 2, 0).replace(/^<g transform="[^"]*">/, "<g>")}</g>`;
+    return hudWrap(s, sub("13 ЛЕТ", 0));
+  },
+  // внутри: «бум-бум-бум», «кажется, им не понравилось»
+  "04_boom": () => {
+    let s = `<rect width="${W}" height="${H}" fill="#2B1B4A"/>${R(760, 560, 220, 520, "#6B4A38", 6)}${C(800, 830, 12, YEL)}`;
+    [["БУМ!", 860, 620, -12], ["БУМ!", 900, 760, 8], ["БУМ!", 840, 900, -4]].forEach(([w, x, y, r]) => { s += `<g transform="translate(${x},${y}) rotate(${r})">${TS(0, 0, w, 72, YEL)}</g>`; });
+    s += `${R(96, 1000, 640, 40, "#8B5A3C")}` + gamer({ x: 260, y: 1180, s: 0.72, face: "shock", shirt: "#3A3550", hair: "#555" }) + gamer({ x: 560, y: 1180, s: 0.72, face: "sad", shirt: "#2E2A44", hair: "#222" });
+    s += bubble(420, 600, "КАЖЕТСЯ, ИМ НЕ ПОНРАВИЛОСЬ", 32, 1);
+    return hudWrap(s, sub("БУМ. БУМ. БУМ.", 2));
+  },
+  // блогеры переименовывают каналы
+  "05_bloggers": () => {
+    let s = sunset(0, 0.55) + `<g transform="translate(540,800)">${R(-250, -380, 500, 760, "#2E2A44", 44)}<rect x="-225" y="-340" width="450" height="680" rx="24" fill="#F4F6FB"/>
+      ${C(0, -230, 70, PINK)}${T(0, -210, "▶", 56, "#fff")}
+      ${T(0, -110, "GTA 6 СКОРО", 44, "#8A8AA0", "Russo One")}<line x1="-150" y1="-125" x2="150" y2="-125" stroke="${RED}" stroke-width="8"/>
+      ${T(0, -40, "GTA 7 СКОРО", 52, O, "Russo One")}${T(0, 20, "2,4 млн подписчиков", 30, "#8A8AA0", "Rubik", "middle", 'font-weight="800"')}
+      ${R(-170, 70, 340, 80, RED, 40)}${T(0, 124, "ПЕРЕИМЕНОВАТЬ", 32, "#fff")}</g>`;
+    return hudWrap(s, sub("GTA 7 СКОРО", 1));
+  },
+  // кредит за PS5 закончится раньше
+  "06_credit": () => {
+    let s = sunset(0, 0.55);
+    s += `<g transform="translate(330,760) rotate(-4)">${R(-230, -170, 460, 340, "#fff", 20)}${T(0, -100, "КРЕДИТ ЗА КОНСОЛЬ", 30, O)}${T(0, -20, "последний платёж", 30, "#8A8AA0", "Rubik", "middle", 'font-weight="800"')}${T(0, 60, "МАЙ 2027", 64, "#3FB27F")}</g>`;
+    s += `<g transform="translate(770,900) rotate(5)">${R(-210, -150, 420, 300, "#fff", 20)}${T(0, -70, "GTA 6", 44, O)}${T(0, 30, "выход: ???", 52, RED)}</g>`;
+    s += TS(560, 1130, "VS", 90, YEL);
+    return hudWrap(s, sub("КРЕДИТ РАНЬШЕ", 0));
+  },
+};
