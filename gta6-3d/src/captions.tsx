@@ -54,7 +54,7 @@ export const Captions: React.FC = () => {
   const a = Math.min(1, u / 3);
   const size = c.text.length > 11 ? Math.max(62, Math.round(96 * 11 / c.text.length)) : 96;
   return (
-    <AbsoluteFill style={{ alignItems: "center", top: 1215, height: 200 }}>
+    <AbsoluteFill style={{ alignItems: "center", top: 1430, height: 200 }}>
       <div style={{
         fontFamily: "Rubik", fontWeight: 800, fontSize: size, letterSpacing: 1, color: c.red ? "#ff4848" : "#ffffff", whiteSpace: "nowrap",
         WebkitTextStroke: "14px #1a1020", paintOrder: "stroke fill", opacity: a, filter: `blur(${(1 - a) * 6}px)`,

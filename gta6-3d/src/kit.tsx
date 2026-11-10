@@ -311,14 +311,14 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
     "shadow-camera-left": -8, "shadow-camera-right": 8, "shadow-camera-top": 8, "shadow-camera-bottom": -8 } as any;
   if (preset === "day") return (<><hemisphereLight args={["#ffe0f0", "#4a3a6a", 1.0]} />
     <directionalLight position={[-4, 6, 3]} intensity={2.6} color="#ffd0a0" {...sh} /><directionalLight position={[4, 3, 6]} intensity={0.6} color="#c0d8ff" /></>);
-  if (preset === "night") return (<><hemisphereLight args={["#5a6fb0", "#0c1430", 0.6]} />
+  if (preset === "night") return (<><hemisphereLight args={["#8a9fe0", "#2c3460", 1.1]} />
     <directionalLight position={[-3, 5, 2]} intensity={1.2} color="#8d9dff" {...sh} /><pointLight position={[0.5, 1.8, 0.8]} intensity={8} decay={1.3} color="#ffc477" castShadow /></>);
   if (preset === "neon") return (<><hemisphereLight args={["#d0b8ff", "#2a1440", 0.8]} />
     <directionalLight position={[-2, 4, 4]} intensity={1.6} color="#ffd8f0" {...sh} />
     <pointLight position={[-2, 2.4, 0]} intensity={10} decay={1.3} color="#ff4fb8" /><pointLight position={[2.2, 2.2, 0.5]} intensity={10} decay={1.3} color="#30d8ff" /></>);
   if (preset === "office") return (<><hemisphereLight args={["#e8f0ff", "#4a4a5a", 1.0]} />
     <directionalLight position={[-3, 5, 3]} intensity={2.2} color="#fff0dd" {...sh} /><pointLight position={[0, 2.7, 0]} intensity={4} decay={1.4} color="#fff4e0" /></>);
-  if (preset === "storm") return (<><hemisphereLight args={["#8090b0", "#202030", 0.7]} />
+  if (preset === "storm") return (<><hemisphereLight args={["#a0b0d8", "#303048", 1.2]} />
     <directionalLight position={[-3, 6, 3]} intensity={1.2} color="#b0c0ff" {...sh} /></>);
   return (<><hemisphereLight args={["#cfd8ff", "#141a33", 0.7]} />
     <spotLight position={[-1.5, 5, 3]} angle={0.6} penumbra={0.6} intensity={50} decay={1} color="#ffd0c0" castShadow />
@@ -347,18 +347,18 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
     return (
       <ShotCtx.Provider value={{ t0, cam: pos }}>
         <ThreeCanvas width={width} height={height} shadows={{ type: THREE.PCFSoftShadowMap }}
-          gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.3, antialias: false }} style={{ backgroundColor: bg }}>
+          gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.55, antialias: false }} style={{ backgroundColor: bg }}>
           <ShotCtx.Provider value={{ t0, cam: pos }}>
             <CamRig pos={pos} look={look} fov={(fov ?? 60) + CAM_FOV} roll={r} />
             {fog ? <fog attach="fog" args={[fog, 8, 40]} /> : null}
             <Lights preset={light} />
             {children}
             <EffectComposer multisampling={4}>
-              <DepthOfField target={focus} focalLength={0.012} bokehScale={dof} height={1080} />
+              <DepthOfField target={focus} focalLength={0.05} bokehScale={dof * 0.3} height={1080} />
               <Bloom luminanceThreshold={0.95} intensity={0.45} mipmapBlur />
-              <ChromaticAberration offset={new THREE.Vector2(0.0018, 0.0012) as any} radialModulation={true} modulationOffset={0.35} />
-              <Noise opacity={0.06} blendFunction={BlendFunction.OVERLAY} />
-              <Vignette eskil={false} offset={0.25} darkness={0.5} />
+              <ChromaticAberration offset={new THREE.Vector2(0.0005, 0.0003) as any} radialModulation={true} modulationOffset={0.6} />
+              <Noise opacity={0.025} blendFunction={BlendFunction.OVERLAY} />
+              <Vignette eskil={false} offset={0.3} darkness={0.35} />
             </EffectComposer>
           </ShotCtx.Provider>
         </ThreeCanvas>

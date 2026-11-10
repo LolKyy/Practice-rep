@@ -7,4 +7,4 @@ if (process.platform === "win32" && fs.existsSync(CHROME)) {
   Config.setChromeMode("chrome-for-testing");
   Config.setBrowserExecutable(CHROME);
 }
-Config.setVideoBitrate("1800k");
+Config.setVideoBitrate("2200k");
