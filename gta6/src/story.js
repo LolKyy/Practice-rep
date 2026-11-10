@@ -26,7 +26,7 @@ const STAGE_CLIP = `<clipPath id="stage"><rect x="${SX}" y="${SY}" width="${SWD}
 const stage = (inner) => inner;
 
 // ---------- субтитры: 1–3 слова, автоподгон размера, 2 строки при нужде ----------
-const REDW = ["перенесли", "полночь", "интернет", "перенесла", "сотни", "онлайн", "очередь", "rockstar", "последний", "требуется", "сдался"];
+const REDW = ["перенесли", "полночь", "интернет", "перенесла", "сотни", "онлайн", "очередь", "rockstar", "последний", "требуется", "ждешь"];
 const CENSOR = { "блять": "бл*ть", "пиздец": "п*здец" };
 let GROUPS = [], RED_IDX = new Set();
 function buildGroups() {
@@ -288,7 +288,7 @@ SH[9] = (t) => {
 SH[10] = (t) => {
   if (t < DUR + 0.2) {
     let s = sunset(t, 0.4);
-    const signs = ["2027", "2030", "2040", "НЕ СДАЮСЬ"];
+    const signs = ["ЖДУ!", "2040", "ДА!!!", "УЖЕ НЕТ"];
     for (let i = 0; i < 4; i++) s += `<g transform="translate(${190 + i * 235},1170) scale(1.9)">${tiny(0, 0, 1, i + 2, t, 0, signs[i]).replace(/^<g transform="[^"]*">/, "<g>")}</g>`;
     return { s: stage(s) + at(540, 1560, pop(t, START[10] + 0.4), `<g transform="translate(540,1560)">${R(-330, -55, 660, 110, YEL, 55)}${T(0, 20, "ПИШИ В КОММЕНТЫ ↓", 50, O)}</g>`) };
   }
