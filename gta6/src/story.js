@@ -87,11 +87,18 @@ function postCard(x, y, txt, col, rot) {
 }
 const phoneBig = (x, y, s, inner, hot = 0) => `<g transform="translate(${x},${y}) scale(${s})">${R(-230, -420, 460, 840, hot ? `rgb(${46 + hot * 170},42,68)` : "#2E2A44", 50)}<rect x="-205" y="-380" width="410" height="760" rx="30" fill="#140C2A"/>${inner}</g>`;
 const appIcon = (x, y, col, sym) => `${R(x - 46, y - 46, 92, 92, col, 22, 'stroke-width="4"')}${T(x, y + 18, sym, 50, "#fff", "Russo One")}`;
+// надпись на коробке: длинное название — в две строки, размер под ширину плашки
+const titleFit = (title) => {
+  const i = title.lastIndexOf(" ");
+  const lines = title.length > 7 && i > 0 ? [title.slice(0, i), title.slice(i + 1)] : [title];
+  const fs = Math.min(lines.length > 1 ? 24 : 30, 128 / (Math.max(...lines.map((l) => l.length)) * 0.68));
+  return lines.length > 1 ? T(0, 6, lines[0], fs, O, "Russo One") + T(0, 6 + fs * 1.05, lines[1], fs, O, "Russo One") : T(0, 18, title, fs, O, "Russo One");
+};
 const gameBox = (x, y, s, col, title, face = "calm", walk = 0) => {
   const b = Math.abs(Math.sin(walk * 10)) * 10;
   const eyes = face === "sad" ? `<path d="M-30 -60 q10 8 20 0 M10 -60 q10 8 20 0" stroke="${O}" stroke-width="6" fill="none"/>` : `<circle cx="-20" cy="-60" r="9" fill="${O}"/><circle cx="20" cy="-60" r="9" fill="${O}"/>`;
   return `<g transform="translate(${x},${y - b}) scale(${s})"><line x1="-24" y1="80" x2="${-28 + Math.sin(walk * 10) * 12}" y2="130" stroke="${O}" stroke-width="10" stroke-linecap="round"/><line x1="24" y1="80" x2="${28 - Math.sin(walk * 10) * 12}" y2="130" stroke="${O}" stroke-width="10" stroke-linecap="round"/>
-    ${R(-75, -110, 150, 200, col, 10)}<rect x="-60" y="-20" width="120" height="60" fill="#fff" opacity=".9"/>${T(0, 18, title, title.length > 6 ? 22 : 30, O, "Russo One")}${eyes}</g>`;
+    ${R(-75, -110, 150, 200, col, 10)}<rect x="-68" y="-20" width="136" height="60" fill="#fff" opacity=".9"/>${titleFit(title)}${eyes}</g>`;
 };
 const tie = (x, y, s) => `<g transform="translate(${x},${y}) scale(${s})"><path d="M-14 -245 L0 -140 L14 -245 Z" fill="${RED}" stroke="${O}" stroke-width="4"/></g>`;
 const suit = (x, y, s, face = "calm") => gamer({ x, y, s, face, shirt: "#2E2A44", hair: "#3A3550" }) + tie(x, y, s);
@@ -220,7 +227,7 @@ SH[6] = (t, u) => {
   const gx = lerp(560, -160, easeInOut(u / 3.2));
   s += gameBox(gx, 980, 1.35, PINK, "GTA 6", "sad", u);
   if (u < 2.4) s += bub(Math.max(300, gx + 40), 560, "Я НЕ ВЫЙДУ", 46, -1, pop(t, START[6] + 0.2));
-  [["ГОНКИ 27", CYAN], ["ФЕРМА 3", "#3FB27F"], ["КОСМО-ОПС", ORG]].forEach(([tt, col], i) => {
+  [["HALF-LIFE 3", CYAN], ["RDR 3", "#3FB27F"], ["ВЕДЬМАК 4", ORG]].forEach(([tt, col], i) => {
     let x = 160 + i * 200;
     if (t >= tQ) x = lerp(x, 840, easeInOut((t - tQ - i * 0.25) / 0.8));
     s += gameBox(x, 1060, 1.0, col, tt, "calm", t >= tQ ? u * 1.5 : 0);
