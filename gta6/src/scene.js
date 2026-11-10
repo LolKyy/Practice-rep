@@ -77,7 +77,7 @@ function tiny(x, y, s, i, t = 0, kneel = 0, sign = "") {
   const sk = SKINS[i % SKINS.length], sh = SHIRTS[i % SHIRTS.length];
   const bob = Math.sin(t * 6 + i) * 6 * (1 - kneel);
   let g = `<path d="M-30 ${kneel * 40} L-26 -70 Q0 -84 26 -70 L30 ${kneel * 40} Z" fill="${sh}" stroke="${O}" stroke-width="4"/>${C(0, -100, 28, sk, 'stroke-width="4"')}<circle cx="-9" cy="-102" r="4" fill="${O}"/><circle cx="9" cy="-102" r="4" fill="${O}"/>`;
-  if (sign) g += `<line x1="26" y1="-60" x2="40" y2="-190" stroke="${O}" stroke-width="5"/><g transform="translate(40,-215) rotate(${-6 + (i % 3) * 6})">${R(-80, -36, 160, 64, "#fff", 4, 'stroke-width="4"')}${T(0, 10, sign, 22, O, "Russo One")}</g>`;
+  if (sign) g += `<line x1="26" y1="-60" x2="40" y2="-190" stroke="${O}" stroke-width="5"/><g transform="translate(40,-215) rotate(${-6 + (i % 3) * 6})">${R(-(sign.length * 8 + 20), -36, sign.length * 16 + 40, 64, "#fff", 4, 'stroke-width="4"')}${T(0, 10, sign, 22, O, "Russo One")}</g>`;
   return `<g transform="translate(${x},${y + bob + kneel * 30}) scale(${s})">${g}</g>`;
 }
 
