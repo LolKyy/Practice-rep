@@ -1,6 +1,9 @@
 import React from "react";
-import { AbsoluteFill, useCurrentFrame, staticFile, delayRender, continueRender } from "remotion";
-import { frame, FPS } from "./scene.js";
+import { AbsoluteFill, Audio, useCurrentFrame, staticFile, delayRender, continueRender } from "remotion";
+import words from "./words.json";
+import { frame, setData, FPS } from "./story.js";
+
+setData(words);
 
 // Шрифты лежат в public/fonts (OFL) — рендер не зависит от интернета.
 const FONTS: [string, string, string][] = [
@@ -15,5 +18,10 @@ Promise.all(FONTS.map(([fam, file, weight]) => new FontFace(fam, `url(${staticFi
 
 export const Gta6Delay: React.FC = () => {
   const f = useCurrentFrame();
-  return <AbsoluteFill style={{ backgroundColor: "#12081F" }} dangerouslySetInnerHTML={{ __html: frame(f / FPS) }} />;
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#12081F" }}>
+      <AbsoluteFill dangerouslySetInnerHTML={{ __html: frame(f / FPS) }} />
+      <Audio src={staticFile("audio.mp3")} />
+    </AbsoluteFill>
+  );
 };

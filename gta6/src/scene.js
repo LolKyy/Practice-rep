@@ -275,6 +275,8 @@ export function frame(t) {
     <rect width="${W}" height="${H}" fill="url(#vig)"/>${hud}${caption(t)}</svg>`;
 }
 
+export const LIB = { O, PINK, CYAN, YEL, RED, ORG, SW, SKINS, SHIRTS, clamp, lerp, easeOut, easeInOut, easeOutBack, pop, rnd, at, R, C, T, TS, neon, sunset, palm, DEFS, gamer, tiny, monitor, notif, post, bubble, building, smoke, wanted };
+
 // ---------- ЧЕРНОВИК v2: новые сцены (кадры на утверждение) ----------
 // субтитры как в наших роликах: 1–3 слова, внизу по центру, ключевое слово жёлтым
 function sub(words, key = -1) {
