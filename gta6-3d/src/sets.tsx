@@ -142,7 +142,7 @@ export const GamerRoom: React.FC<{ mon: MonMode; cal?: (g: CanvasRenderingContex
     <Box p={[2.0, 0.02, -0.4]} s={[1.4, 0.03, 1.0]} c="#ff7a2f" line={false} />
     {Array.from({ length: 6 }, (_, i) => <Box key={"c" + i} p={[-2.4 + (i % 3) * 0.18, 1.82, -1.6 + Math.floor(i / 3) * 0.05]} s={[0.12, 0.17, 0.02]} c={[PINK, CYAN, YEL][i % 3]} line={false} />)}
     {age >= 1 ? <><Web p={[-2.9, 2.6, -1.9]} s={1.0} rot={[0, Math.PI / 2, 0]} /><Web p={[2.85, 2.65, -1.95]} s={0.9} rot={[0, 0, Math.PI / 2]} /></> : null}
-    {age >= 2 ? <><Web p={[0.75, 1.9, -1.8]} s={0.7} rot={[0, 0, Math.PI]} /><Web p={[-1.2, 0.8, -0.9]} s={0.8} /></> : null}
+    {age >= 2 ? <><Web p={[1.37, 1.61, -1.78]} s={0.4} rot={[0, 0, -Math.PI / 2]} /><Web p={[-1.2, 0.8, -0.9]} s={0.8} /></> : null}
     <Lamp p={[0, 2.97, -0.4]} col="#ffd0f0" glow={1.2} />
   </>);
 
