@@ -365,3 +365,13 @@ protein30/audio_test/
 protein30/audio/*.wav
 protein30/audio/*.mp3
 protein30/out/
+brief_scenarist/*.zip
+swap1/audio/*.wav
+swap1/audio/*.mp3
+swap1/out/
+pvz1/audio/*.wav
+pvz1/audio/*.mp3
+pvz1/out/
+vasya1/audio/*.wav
+vasya1/audio/*.mp3
+vasya1/out/
