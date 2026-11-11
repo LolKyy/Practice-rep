@@ -8,7 +8,7 @@ import { SHOTS } from "./shots";
 import { Captions } from "./captions";
 
 const FONTS: [string, string, string][] = [["Rubik", "fonts/Rubik.ttf", "800"], ["Russo One", "fonts/RussoOne.ttf", "400"], ["Oswald", "fonts/Oswald.ttf", "700"]];
-const useFonts = () => {
+export const useFonts = () => {
   const [h] = useState(() => delayRender("fonts"));
   useEffect(() => {
     Promise.all(FONTS.map(([n, f, w]) => new FontFace(n, `url(${staticFile(f)})`, { weight: w }).load().then((ff) => (document.fonts as any).add(ff))))
