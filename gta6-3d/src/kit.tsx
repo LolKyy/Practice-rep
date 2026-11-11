@@ -86,8 +86,8 @@ export const Sign: React.FC<{ p: V3; w: number; h: number; text: string; bg: str
   };
 
 // «Живой» экран: canvas перерисовывается каждый кадр функцией draw(g, sec, W, H)
-export const Screen: React.FC<{ p: V3; w: number; h: number; draw: (g: CanvasRenderingContext2D, sec: number, W: number, H: number) => void; rot?: V3; glow?: number; res?: number; scale?: number; basic?: boolean }> =
-  ({ p, w, h, draw, rot = [0, 0, 0], glow = 0.9, res = 512, scale = 1, basic = true }) => {
+export const Screen: React.FC<{ p: V3; w: number; h: number; draw: (g: CanvasRenderingContext2D, sec: number, W: number, H: number) => void; rot?: V3; glow?: number; res?: number; scale?: number; basic?: boolean; transparent?: boolean }> =
+  ({ p, w, h, draw, rot = [0, 0, 0], glow = 0.9, res = 512, scale = 1, basic = true, transparent = false }) => {
     const sec = useSec();
     const W = res, H = Math.round((res * h) / w);
     const { cv, tex } = useMemo(() => {
@@ -96,7 +96,7 @@ export const Screen: React.FC<{ p: V3; w: number; h: number; draw: (g: CanvasRen
     }, [W, H]);
     const g = cv.getContext("2d")!; g.save(); draw(g, sec, W, H); g.restore(); tex.needsUpdate = true;
     return <mesh position={p} rotation={rot} scale={scale}><planeGeometry args={[w, h]} />
-      {basic ? <meshBasicMaterial map={tex} toneMapped={false} color={[glow, glow, glow]} /> : <meshStandardMaterial map={tex} emissive="#fff" emissiveMap={tex} emissiveIntensity={glow} />}</mesh>;
+      {basic ? <meshBasicMaterial map={tex} toneMapped={false} color={[glow, glow, glow]} transparent={transparent} depthWrite={!transparent} /> : <meshStandardMaterial map={tex} emissive="#fff" emissiveMap={tex} emissiveIntensity={glow} />}</mesh>;
   };
 
 // ------------------------------------------------------------------ реквизит

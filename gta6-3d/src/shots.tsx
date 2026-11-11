@@ -4,7 +4,7 @@ import words from "./words.json";
 import { setData, wt, ps, TOTAL } from "./timeline.js";
 setData(words);
 import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, REST_F, REST_B, HIP, HEAD_Z, CamKey, V3, popAt, bonkAt, useSec, fitText, clamp } from "./kit";
-import { Web, GamerRoom, ViceStreet, NewsStudio, TvWall, Office, HQ, Security, ServerRoom, StockFloor, GameBox, Smoke, Confetti, Bubble, monitorDraw, calDraw, drawBg, drawLogo, drawStamp, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
+import { SynthSunset, QuestionCard, Web, GamerRoom, ViceStreet, NewsStudio, TvWall, Office, HQ, Security, ServerRoom, StockFloor, GameBox, Smoke, Confetti, Bubble, monitorDraw, calDraw, drawBg, drawLogo, drawStamp, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
 import type { Look } from "./doodle";
 
 const ORGC = "#ff7a2f";
@@ -374,10 +374,11 @@ export const SHOTS: Shot[] = [
 
   // ---------- 45. Финал: «А ты ждёшь GTA 6?»
   S(P[12], END, (
-    <Scene3D t0={P[12]} light="day" bg="#2a1458" focus={[1.4, 3.1, -6.3]} fog="#b0368a" dof={3}
-      cam={cam([P[12], [0.6, 1.6, 1.0], [1.4, 2.9, -6.3], 52], [END, [0.2, 1.7, 3.6], [1.2, 2.6, -6.3], 56])}>
-      <ViceStreet board={monitorDraw({ kind: "final" })} />
-      {crowd(16, -3.2, 3.6, -2.8, 0.8, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["ЖДУ!", "2040", "ДА!!!", "УЖЕ НЕТ"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
+    <Scene3D t0={P[12]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]} dof={2}
+      cam={cam([P[12], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
+      <SynthSunset />
+      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} />
+      {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["ЖДУ!", "2040", "ДА!!!", "УЖЕ НЕТ"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
     </Scene3D>)),
 ];
 

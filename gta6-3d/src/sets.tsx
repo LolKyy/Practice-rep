@@ -311,3 +311,47 @@ const drawLogoMini = (g: CanvasRenderingContext2D, i: number) => {
   const gr = g.createLinearGradient(0, -100, 0, 60); gr.addColorStop(0, "#ffb347"); gr.addColorStop(1, PINK); g.fillStyle = gr; g.font = `900 150px ${FONT}`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("VI", 0, -20);
   fitText(g, ["ОСЕНЬ 2025", "МАЙ 2026", "НОЯБРЬ 2026"][i], 0, 100, 200, 34, "#fff");
 };
+
+// ------------------------------------------------------------------ финал: неоновый закат как в 2D-версии
+// небо с полосатым солнцем и силуэтами пальм, пол — тёмный с бегущей розовой сеткой
+const synthSky = (g: CanvasRenderingContext2D, W: number, H: number) => {
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#1A0B33"); gr.addColorStop(0.45, "#5B1A7A"); gr.addColorStop(0.8, "#E0457B"); gr.addColorStop(1, "#FF9A3C");
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#fff"; for (let i = 0; i < 70; i++) { g.globalAlpha = 0.3 + ((i * 37) % 7) / 10; g.fillRect((i * 97) % W, (i * 53) % (H * 0.4), 3, 3); } g.globalAlpha = 1;
+  const cx = W / 2, cy = H, r = H * 0.42;
+  const sg = g.createLinearGradient(0, cy - r, 0, cy); sg.addColorStop(0, "#FFE14D"); sg.addColorStop(1, "#FF3BD4");
+  g.save(); g.shadowColor = "#FF3BD4"; g.shadowBlur = 60; g.fillStyle = sg; g.beginPath(); g.arc(cx, cy, r, Math.PI, 0); g.fill(); g.restore();
+  g.fillStyle = "#2B1055"; for (let i = 0; i < 7; i++) g.fillRect(cx - r, cy - r * 0.48 + i * r * 0.075, r * 2, 4 + i * 3);
+  const palm = (x: number, y: number, sc: number, flip: boolean) => {
+    g.save(); g.translate(x, y); g.scale(flip ? -sc : sc, sc); g.fillStyle = "#12081F"; g.strokeStyle = "#12081F"; g.lineCap = "round";
+    g.beginPath(); g.moveTo(-14, 0); g.quadraticCurveTo(-30, -220, 0, -420); g.lineTo(14, -420); g.quadraticCurveTo(-6, -220, 14, 0); g.fill();
+    g.lineWidth = 26; for (const a of [-70, -35, 0, 30, 65, 100]) { const r1 = ((a - 90) * Math.PI) / 180; g.beginPath(); g.moveTo(0, -420);
+      g.quadraticCurveTo(Math.cos(r1) * 150, -420 + Math.sin(r1) * 150 - 40, Math.cos(r1) * 260, -420 + Math.sin(r1) * 260 + 60); g.stroke(); }
+    g.restore(); };
+  palm(W * 0.12, H, H / 520, false); palm(W * 0.88, H, H / 600, true); palm(W * 0.03, H, H / 700, true); palm(W * 0.97, H, H / 760, false);
+};
+export const SynthSunset: React.FC = () => {
+  const sky = useMemo(() => canvasTex(2048, 1024, (g) => synthSky(g, 2048, 1024)), []);
+  return (<>
+    <mesh position={[0, 7.5, -16]}><planeGeometry args={[40, 15]} /><meshBasicMaterial map={sky} toneMapped={false} fog={false} /></mesh>
+    <Screen p={[0, 0, -1]} rot={[-Math.PI / 2, 0, 0]} w={40} h={30} res={1024} glow={1} draw={(g, s, W, H) => {
+      g.fillStyle = "#1A0B33"; g.fillRect(0, 0, W, H); g.strokeStyle = "#ff3fa4"; g.globalAlpha = 0.8; g.lineWidth = 3;
+      for (let i = -20; i <= 20; i++) { const x = W / 2 + i * (W / 40); g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
+      const step = H / 30, off = (s * 0.8 * step) % step; for (let y = off; y < H; y += step) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+      g.globalAlpha = 1; }} />
+  </>);
+};
+// вопрос в небе: белый + жёлтый текст с обводкой, плашка «ПИШИ В КОММЕНТЫ ↓»
+export const QuestionCard: React.FC<{ p: V3; t: number; w?: number }> = ({ p, t, w = 4.2 }) => {
+  const sec = useSec(); const k = popAt(sec, t, 0.45); if (k <= 0) return null;
+  const pulse = 1 + 0.03 * Math.sin((sec - t) * 6);
+  return <group position={p} scale={k * pulse}><Screen p={[0, 0, 0]} w={w} h={w * 0.62} res={1024} transparent draw={(g, s, W, H) => {
+    g.clearRect(0, 0, W, H);
+    const out = (txt: string, y: number, size: number, col: string) => { g.font = `900 ${size}px ${FONT}`; g.textAlign = "center"; g.textBaseline = "middle";
+      let sz = size; while (g.measureText(txt).width > W * 0.94 && sz > 20) { sz -= 4; g.font = `900 ${sz}px ${FONT}`; }
+      g.lineJoin = "round"; g.lineWidth = sz * 0.16; g.strokeStyle = INK; g.strokeText(txt, W / 2, y); g.fillStyle = col; g.fillText(txt, W / 2, y); };
+    out("А ТЫ ЖДЁШЬ", H * 0.2, H * 0.17, "#ffffff"); out("GTA 6?", H * 0.47, H * 0.3, YEL);
+    const pk = 1 + 0.04 * Math.sin(s * 6); g.save(); g.translate(W / 2, H * 0.82); g.scale(pk, pk);
+    g.fillStyle = YEL; rr(g, -W * 0.36, -H * 0.085, W * 0.72, H * 0.17, H * 0.085); g.fill(); g.lineWidth = 8; g.strokeStyle = INK; g.stroke();
+    fitText(g, "ПИШИ В КОММЕНТЫ ↓", 0, 4, W * 0.62, H * 0.09, INK); g.restore(); }} /></group>;
+};
