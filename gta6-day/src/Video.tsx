@@ -4,7 +4,7 @@ import { AbsoluteFill, Audio, Sequence, continueRender, delayRender, interpolate
 import words from "./words.json";
 import { setData, FPS, WORDS } from "./timeline.js";
 setData(words);
-import { SHOTS } from "./shots";
+import { SHOTS, BUBBLES } from "./shots";
 import { Captions } from "./captions";
 
 const FONTS: [string, string, string][] = [["Rubik", "fonts/Rubik.ttf", "800"], ["Russo One", "fonts/RussoOne.ttf", "400"], ["Oswald", "fonts/Oswald.ttf", "700"]];
@@ -28,6 +28,17 @@ const ShotWrap: React.FC<{ i: number; children: React.ReactNode }> = ({ i, child
   </AbsoluteFill>;
 };
 
+// облачка поверх видео: появляются с «пружинкой», исчезают на конце шота
+const Bubbles: React.FC = () => {
+  const f = useCurrentFrame(); const t = f / FPS;
+  return <>{BUBBLES.filter((b) => t >= b.t0 && t < b.t1).map((b, i) => {
+    const u = (t - b.t0) * FPS; const k = Math.min(1, u / 5); const sc = u < 5 ? 0.6 + 0.5 * k : u < 9 ? 1.1 - 0.1 * ((u - 5) / 4) : 1;
+    return <div key={i} style={{ position: "absolute", left: b.x, top: b.y, transform: `translate(-50%,-50%) scale(${sc})`, maxWidth: 820,
+      background: b.col ?? "#ffffff", border: "8px solid #1a1020", borderRadius: 48, padding: "18px 36px", fontFamily: "Russo One", fontSize: 54,
+      color: "#1a1020", whiteSpace: "nowrap", boxShadow: "0 10px 0 rgba(0,0,0,0.35)", opacity: k }}>{b.text}</div>;
+  })}</>;
+};
+
 export const Video: React.FC = () => {
   useFonts();
   return (
@@ -38,6 +49,7 @@ export const Video: React.FC = () => {
         const extra = next && (next.tr ?? "fade") === "fade" ? XF : 0;
         return <Sequence key={i} from={from} durationInFrames={to - from + extra}><ShotWrap i={i}>{s.el}</ShotWrap></Sequence>;
       })}
+      <Bubbles />
       <Captions />
       <Audio src={staticFile("audio.mp3")} />
     </AbsoluteFill>

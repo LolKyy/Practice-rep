@@ -4,9 +4,9 @@ import words from "./words.json";
 import { setData, wt, ps, TOTAL } from "./timeline.js";
 setData(words);
 import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText } from "./kit";
-import { NewsStudio, SynthSunset, QuestionCard, Smoke, Confetti, Bubble, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
+import { NewsStudio, SynthSunset, QuestionCard, Smoke, Confetti, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
 import { titleDraw, loadDraw, viceDraw, mapDraw, paperDraw, vacDraw, pcDraw, PaperSet, PcRoom, OfficeDoor, Cat } from "./sets2";
-import { Apartment, City, Cockpit, Train, Clinic2, Shop2, Store2, Kitchen2, Stage2, Chips, SixPack, Console } from "./sets3";
+import { Apartment, City, Cockpit, TrainFront, Clinic2, Shop2, Store2, Kitchen2, Stage2, Chips, SixPack, Console } from "./sets3";
 import { boardDraw } from "./sets2";
 import type { Look } from "./doodle";
 
@@ -129,7 +129,6 @@ export const SHOTS: Shot[] = [
       cam={cam([t.p3many, [0.0, 1.45, 1.1], [0.15, 1.45, -0.85], 50], [t.p3po, [0.05, 1.45, 0.8], [0.15, 1.45, -0.85], 48])}>
       <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "TAKE-TWO", W / 2, H * 0.36, W * 0.7, H * 0.25, "#fff"); }} />
       <Doodle a={{ pos: [0.3, 0.3, -0.85], seed: 21, look: CEO, expr: [[0, "grin"], [t.p3many + 1.0, "proud"]], scale: 1.2, talk: [[t.p3many, t.p3po]], handF: pointKeys(t.p3many + 0.4, -0.3, 0.5, 1.2, "f") }} />
-      <Bubble p={[0.2, 2.2, -0.7]} text="БЕРИТЕ БОЛЬНИЧНЫЙ 😎" t={t.p3many + 0.2} w={0.95} />
     </Scene3D>)),
   // 9. «Официальное разрешение» — бумага и печать
   S(t.p3po, P[4], (
@@ -159,7 +158,6 @@ export const SHOTS: Shot[] = [
       cam={cam([t.p4kha, [-0.2, 1.05, 0.7], [-0.35, 1.0, -0.75], 44], [P[5], [-0.25, 1.03, 0.4], [-0.35, 1.0, -0.75], 40])}>
       <Apartment tv={titleDraw()} clock={() => "08:01"} />
       <Doodle a={hero([-0.35, 0, -0.75], [[0, "holdlaugh"], [t.p4flu, "nervous"]], { handB: [[0, 0.3, HEAD_Z - 0.05]], handF: [[0, -0.1, HEAD_Z - 0.15]], talk: [[t.p4kha, P[5]]] }, HERO_NOPAD)} />
-      <Bubble p={[0.3, 1.75, -0.6]} text="КХА-КХА 🤒" t={t.p4kha + 0.05} w={0.85} />
     </Scene3D>)),
 
   // 13. Новости: «грипп GTA», ведущий сбоку, экран виден
@@ -178,7 +176,6 @@ export const SHOTS: Shot[] = [
       {[-2.3, -1.6, -0.9].map((x, i) => <Doodle key={i} a={{ pos: [x, 0, -0.95 + (i % 2) * 0.15], seed: 40 + i, look: { body: ["#e64b4b", "#2f8fe0", "#b04fd6"][i], hair: (["spiky", "long", "slick"] as const)[i] },
         handF: [[0, -0.22, HIP + 0.35]], handB: [[0, 0.22, HIP + 0.35]], expr: [[0, "tired"], [t.p5steal, "smug"]], shiver: 2.5, scale: 1.05 }} />)}
       <Doodle a={{ pos: [1.1, 0, -0.45], seed: 47, look: DOCTOR, expr: [[0, "blank"], [t.p5shake, "shock"]], scale: 1.15 }} />
-      <Bubble p={[-1.2, 2.05, -0.8]} text="ХОЧУ УГНАТЬ МАШИНУ" t={t.p5steal} w={1.4} col={YEL} />
     </Scene3D>)),
 
   // 15. Приставки сметают с полок
@@ -195,7 +192,6 @@ export const SHOTS: Shot[] = [
       <Shop2 />
       <Doodle a={{ pos: [-0.1, 0, -0.8], seed: 55, look: MAN40, expr: [[0, "proud"], [t.p6son, "smug"]], scale: 1.2, handB: [[0, 0.3, HIP + 0.3]] }} />
       <group position={[0.38, 0.62, -0.68]} rotation={[0, -0.3, 0.1]}><Box p={[0, 0, 0]} s={[0.28, 0.36, 0.14]} c="#f4f4f8" /><Sign p={[0, 0.02, 0.071]} w={0.24} h={0.1} text="PS5" bg="#1a1a2a" fg="#fff" glow={0.4} /></group>
-      <Bubble p={[-0.55, 1.95, -0.7]} text="ДЛЯ СЫНА 🙂" t={t.p6son - 0.1} w={0.95} />
     </Scene3D>)),
   // 17. «Сына у него нет»
   S(t.p6noson, P[7], (
@@ -234,13 +230,13 @@ export const SHOTS: Shot[] = [
       cam={cam([P[8], [0.6, 1.6, 2.2], [-0.1, 1.4, -1.2], 58], [t.p8trains, [0.4, 1.5, 1.5], [-0.2, 1.35, -1.2], 54])}>
       <Cockpit />
       <Doodle a={{ pos: [-0.65, 0, -0.35], seed: 71, look: { body: "#2a3a6a", hair: "bowl", cap: "#1a2440", badge: true, pad: true }, ...padHands, expr: [[0, "hype"]], scale: 1.15 }} />
-      <Bubble p={[0.2, 2.15, -0.5]} text="Я В GTA ✈" t={t.p8pilots} w={0.95} />
     </Scene3D>)),
-  // 22. Поезд стоит: в окне кабины записка
+  // 22. Поезд стоит: локомотив носом в кадр, в лобовом стекле «УШЁЛ В GTA», на перроне злые пассажиры
   S(t.p8trains, t.p8streets, (
-    <Scene3D t0={t.p8trains} light="day" bg="#9fc8e8" focus={[0.45, 1.75, -0.6]}
-      cam={cam([t.p8trains, [2.6, 1.7, 3.6], [0.4, 1.5, -1.3], 56], [t.p8streets, [1.8, 1.65, 2.4], [0.6, 1.6, -1.2], 52])}>
-      <Train board={boardDraw("ПОЕЗДА", [["№ 19", "08:00"], ["№ 66", "09:30"], ["№ 06", "11:11"]], "ОПАЗДЫВАЕТ")} />
+    <Scene3D t0={t.p8trains} light="day" bg="#a8d0f0" focus={[0, 1.6, -2.6]}
+      cam={cam([t.p8trains, [-0.4, 1.6, 3.4], [1.0, 1.6, -2.4], 60], [t.p8streets, [-0.1, 1.7, 2.4], [1.0, 1.7, -2.4], 56])}>
+      <TrainFront board={boardDraw("ПОЕЗДА", [["№ 19", "08:00"], ["№ 66", "09:30"], ["№ 06", "11:11"]], "ОПАЗДЫВАЕТ")} />
+      {[[1.9, -1.4], [2.5, -2.2], [2.2, -0.6]].map(([x, z], i) => <Doodle key={i} a={{ pos: [x, 0.9, z], seed: 120 + i, look: { body: ["#2f8fe0", "#e64b4b", "#b04fd6"][i], hair: (["bowl", "long", "spiky"] as const)[i] }, expr: [[0, "angry"], [t.p8trains + 0.8, "tired"]], scale: 1.0 }} />)}
     </Scene3D>)),
   // 23. Пустые улицы как в ковид: перекати-поле, мигающий светофор, ни машин ни людей
   S(t.p8streets, t.p8door, (
@@ -296,7 +292,6 @@ export const SHOTS: Shot[] = [
       cam={cam([t.p10cat, [0.2, 0.8, 1.6], [1.0, 0.55, -0.8], 48], [t.p10vice, [0.6, 0.8, 1.3], [1.5, 0.55, -0.8], 46])}>
       <Apartment tv={loadDraw("ТРЕБУЕТСЯ ОБНОВЛЕНИЕ", [[0, 99]], "#ffd23f")} night />
       <group scale={1.6} position={[0, -0.2, 0.3]}><Cat x0={-0.3} x1={1.9} z={-0.6} t0={t.p10cat + 0.2} d={1.4} /></group>
-      <Sign p={[2.1, 1.0, -0.6]} w={0.8} h={0.32} text="К СОСЕДЯМ →" bg="#fff" fg={INK} rot={[0, -0.8, 0]} glow={0.3} />
     </Scene3D>)),
   // 31. Вайс-Сити! Вспышка, конфетти
   S(t.p10vice, t.p10nosleep, (
@@ -366,4 +361,16 @@ export const SHOTS: Shot[] = [
       <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="А ТЫ ВОЗЬМЁШЬ" l2="ОТГУЛ 19-ГО?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
       {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["УЖЕ ВЗЯЛ!", "КХА-КХА 🤒", "Я БОЛЕЮ", "ДА!!!"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
     </Scene3D>)),
+];
+
+// ---------------------------------------------------------------- облачка-реплики: плоский слой поверх видео (всегда в кадре)
+// x, y — центр в пикселях кадра 1080×1920; зона субтитров (y≈1430–1530) и правый край (x>940) не заняты
+export type Bub = { t0: number; t1: number; text: string; x: number; y: number; col?: string };
+export const BUBBLES: Bub[] = [
+  { t0: t.p3many + 0.2, t1: t.p3po, text: "БЕРИТЕ БОЛЬНИЧНЫЙ 😎", x: 500, y: 430 },
+  { t0: t.p4kha + 0.05, t1: P[5], text: "КХА-КХА 🤒", x: 690, y: 330 },
+  { t0: t.p5steal, t1: P[6], text: "ХОЧУ УГНАТЬ МАШИНУ 🚗", x: 500, y: 420, col: YEL },
+  { t0: t.p6son - 0.1, t1: t.p6noson, text: "ДЛЯ СЫНА 🙂", x: 520, y: 430 },
+  { t0: t.p8pilots, t1: t.p8trains, text: "Я В GTA ✈", x: 640, y: 820 },
+  { t0: t.p10cat + 0.2, t1: t.p10vice, text: "УШЁЛ К СОСЕДЯМ →", x: 540, y: 400 },
 ];

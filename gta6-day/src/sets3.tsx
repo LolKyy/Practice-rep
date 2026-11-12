@@ -318,6 +318,43 @@ export const Stage2: React.FC<{ screen: Draw }> = ({ screen }) => (<>
   <Box p={[0, 0.15, -0.9]} s={[4.5, 0.3, 1.8]} c="#2a2f45" />
   <Box p={[1.1, 0.75, -0.7]} s={[0.55, 0.9, 0.4]} c="#3a3f55" />
   <Sign p={[1.1, 0.85, -0.49]} w={0.45} h={0.18} text="TAKE-TWO" bg="#1a1a2a" fg="#fff" glow={0.4} />
-  <Cyl p={[0.95, 1.35, -0.6]} r={0.012} h={0.35} c="#222" rot={[0, 0, 0.5]} />
   {[-1.8, 1.8].map((x) => <spotLight key={x} position={[x, 2.9, 1]} angle={0.5} penumbra={0.7} intensity={25} decay={1} color="#fff2d8" />)}
 </>);
+
+// Поезд v2: локомотив смотрит на камеру (нос к +z). Лобовое стекло с запиской «УШЁЛ В GTA», фары, номер,
+// токоприёмник, рельсы со шпалами, перрон с табло и часами.
+export const TrainFront: React.FC<{ board: Draw }> = ({ board }) => {
+  const sec = useSec();
+  const blink = Math.floor(sec * 2) % 2 === 0;
+  return (<>
+    <mesh position={[0, 8, -22]}><planeGeometry args={[60, 24]} /><meshBasicMaterial color="#a8d0f0" /></mesh>
+    <Box p={[0, -0.05, -4]} s={[30, 0.1, 30]} c="#8a8478" line={false} />
+    {/* рельсы и шпалы */}
+    {Array.from({ length: 22 }, (_, i) => <Box key={i} p={[0, 0.03, 3 - i * 0.6]} s={[1.9, 0.06, 0.18]} c="#5a4030" line={false} />)}
+    {[-0.6, 0.6].map((x) => <Box key={x} p={[x, 0.09, -3.5]} s={[0.08, 0.08, 14]} c="#b0b0b8" line={false} metal={0.6} r={0.3} />)}
+    {/* локомотив */}
+    <group position={[0, 0, -2.6]}>
+      <Box p={[0, 1.45, -2.5]} s={[1.9, 2.3, 5]} c="#d64545" r={0.45} />
+      <Box p={[0, 0.55, -2.5]} s={[1.95, 0.5, 5]} c="#2a2a32" />
+      <Box p={[0, 1.15, 0.0]} s={[1.9, 1.5, 0.12]} c="#d64545" r={0.45} />
+      <Box p={[0, 2.25, -0.15]} s={[1.9, 0.75, 0.45]} c="#d64545" r={0.45} rot={[-0.35, 0, 0]} />
+      <Box p={[0, 2.2, 0.08]} s={[1.6, 0.6, 0.04]} c="#9fd0f0" rot={[-0.35, 0, 0]} />
+      <group position={[0, 2.18, 0.14]} rotation={[-0.35, 0, 0]}><Sign p={[0, 0, 0]} w={0.95} h={0.34} text="УШЁЛ В GTA" bg="#ffffff" fg={RED} glow={0.5} /></group>
+      <Box p={[0, 1.5, 0.07]} s={[1.9, 0.14, 0.02]} c={YEL} line={false} />
+      <Sign p={[0, 1.22, 0.07]} w={0.7} h={0.24} text="GTA-6" bg="#1a1a22" fg="#fff" glow={0.4} />
+      {[-0.65, 0.65].map((x) => <mesh key={x} position={[x, 0.85, 0.08]}><circleGeometry args={[0.13, 24]} /><meshBasicMaterial color={new THREE.Color("#fff6c0").multiplyScalar(0.95)} toneMapped={false} /></mesh>)}
+      {[-0.3, 0.3].map((x) => <mesh key={x} position={[x, 0.85, 0.08]}><circleGeometry args={[0.07, 18]} /><meshBasicMaterial color={new THREE.Color(RED).multiplyScalar(blink ? 0.9 : 0.3)} toneMapped={false} /></mesh>)}
+      <Box p={[0, 0.35, 0.12]} s={[1.6, 0.25, 0.2]} c="#3a3a44" />
+      {[-1, -2.2, -3.4, -4.6].map((z) => <Box key={z} p={[0.96, 1.75, z]} s={[0.02, 0.55, 0.7]} c="#9fd0f0" line={false} />)}
+      <Box p={[0, 2.66, -2.5]} s={[1.6, 0.06, 4.5]} c="#9a9aa2" />
+      <group position={[0, 2.7, -3]}><Box p={[0, 0.35, 0]} s={[0.05, 0.7, 0.05]} c="#333" rot={[0, 0, 0.6]} /><Box p={[0, 0.65, 0]} s={[1.0, 0.04, 0.08]} c="#333" /></group>
+      {[-0.6, -1.8, -3.2, -4.4].flatMap((z) => [-0.97, 0.97].map((x) => <mesh key={z + "_" + x} position={[x, 0.4, z]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[0.3, 0.3, 0.08, 20]} /><meshStandardMaterial color="#222" /></mesh>))}
+    </group>
+    {/* перрон: табло, часы, скамейка */}
+    <Box p={[2.6, 0.45, -3]} s={[2.2, 0.9, 14]} c="#c8c0b0" />
+    <Box p={[1.55, 0.92, -3]} s={[0.12, 0.04, 14]} c={YEL} line={false} />
+    <group position={[2.2, 0.9, -3.4]}><Cyl p={[0, 1.2, 0]} r={0.05} h={2.4} c="#333" />
+      <Box p={[0, 2.5, 0]} s={[1.8, 0.8, 0.08]} c="#05060a" /><Screen p={[0, 2.5, 0.05]} w={1.7} h={0.72} res={700} draw={board} /></group>
+    <group position={[3.2, 0.9, -1.6]}><Box p={[0, 0.45, 0]} s={[1.2, 0.06, 0.45]} c="#8a5a3a" /><Box p={[0, 0.75, -0.2]} s={[1.2, 0.4, 0.06]} c="#8a5a3a" /></group>
+  </>);
+};
