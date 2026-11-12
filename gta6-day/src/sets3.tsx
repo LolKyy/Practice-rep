@@ -358,3 +358,4 @@ export const TrainFront: React.FC<{ board: Draw }> = ({ board }) => {
     <group position={[3.2, 0.9, -1.6]}><Box p={[0, 0.45, 0]} s={[1.2, 0.06, 0.45]} c="#8a5a3a" /><Box p={[0, 0.75, -0.2]} s={[1.2, 0.4, 0.06]} c="#8a5a3a" /></group>
   </>);
 };
+

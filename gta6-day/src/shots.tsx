@@ -293,7 +293,7 @@ export const SHOTS: Shot[] = [
       <Apartment tv={loadDraw("ТРЕБУЕТСЯ ОБНОВЛЕНИЕ", [[0, 99]], "#ffd23f")} night />
       <group scale={1.6} position={[0, -0.2, 0.3]}><Cat x0={-0.3} x1={1.9} z={-0.6} t0={t.p10cat + 0.2} d={1.4} /></group>
     </Scene3D>)),
-  // 31. Вайс-Сити! Вспышка, конфетти
+  // 31. И вот — Вайс-Сити! Вспышка, конфетти (под «пальмы, пляжи, дорогие тачки» — тот же кадр)
   S(t.p10vice, t.p10nosleep, (
     <Scene3D t0={t.p10vice} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]} shakes={[[t.p10vice, 0.8]]}
       cam={cam([t.p10vice, [1.0, 1.18, -0.6], [1.0, 1.18, -1.85], 48], [t.p10nosleep, [0.5, 1.25, 1.0], [0.5, 1.1, -1.6], 56])}>
