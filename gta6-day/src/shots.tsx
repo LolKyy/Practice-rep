@@ -94,7 +94,7 @@ export const SHOTS: Shot[] = [
   // 4. Приставка протёрта, геймпад заряжен — крупно приставка и геймпад, блеск
   S(t.p2console, t.p2chips, (
     <Scene3D t0={t.p2console} light="night" bg="#0b0f2a" focus={[0.3, 0.75, -1.62]}
-      cam={cam([t.p2console, [0.15, 0.95, -0.5], [0.4, 0.75, -1.6], 48], [t.p2chips, [0.3, 0.9, -0.75], [0.45, 0.75, -1.6], 44])}>
+      cam={cam([t.p2console, [0.2, 1.05, 0.3], [0.3, 0.8, -1.5], 52], [t.p2chips, [0.25, 1.0, 0.0], [0.3, 0.8, -1.5], 50])}>
       <Apartment tv={titleDraw()} night />
       <Confetti t0={t.p2console + 0.2} n={16} area={[0.1, 0.6, -1.65, -1.4]} />
       <Doodle a={hero([-0.35, 0, -1.25], [[0, "proud"]], { handB: [[0, 0.1, HIP + 0.16], [t.p2console + 0.3, 0.42, HIP + 0.3], [t.p2console + 0.6, 0.3, HIP + 0.32], [t.p2console + 0.9, 0.42, HIP + 0.3]] }, HERO_NOPAD)} />
@@ -102,24 +102,24 @@ export const SHOTS: Shot[] = [
   // 5. Гора чипсов на диване, герой рядом целиком в кадре
   S(t.p2chips, t.p2every, (
     <Scene3D t0={t.p2chips} light="night" bg="#0b0f2a" focus={[-0.8, 0.8, -1.0]}
-      cam={cam([t.p2chips, [-0.5, 1.2, 1.6], [-0.6, 0.85, -1.0], 54], [t.p2every, [-0.5, 1.15, 1.15], [-0.6, 0.85, -1.0], 50])}>
+      cam={cam([t.p2chips, [-0.5, 1.2, 1.8], [-0.55, 0.9, -1.0], 56], [t.p2every, [-0.5, 1.15, 1.4], [-0.55, 0.9, -1.0], 54])}>
       <Apartment tv={titleDraw()} night />
       {Array.from({ length: 16 }, (_, i) => { const r = (k: number) => { const v = Math.sin((i + 1) * 77.7 * k) * 43758.5; return v - Math.floor(v); };
         return <Chips key={i} p={[-1.6 + (i % 6) * 0.25 + r(1) * 0.1, 0.62 + Math.floor(i / 6) * 0.22, -1.0 + r(2) * 0.2]} rot={[-0.3 + r(3) * 0.4, r(4) - 0.5, r(5) - 0.5]} col={CHIPS_COLS[i % 6]} scale={0.8} />; })}
       <Sign p={[-1.0, 1.55, -1.3]} w={0.9} h={0.28} text="НА НЕДЕЛЮ" bg="#fff" fg={INK} glow={0.4} />
-      <Doodle a={hero([0.35, 0, -0.75], [[0, "proud"]])} />
+      <Doodle a={hero([0.05, 0, -0.8], [[0, "proud"]])} />
     </Scene3D>)),
   // 6. Опрос: карта США на экране студии, без голов на переднем плане
   S(t.p2every, P[3], (
     <Scene3D t0={t.p2every} light="studio" bg="#0c1224" focus={[0, 1.75, -1.92]}
-      cam={cam([t.p2every, [0, 1.6, 1.4], [0, 1.7, -1.92], 54], [P[3], [0, 1.65, 0.7], [0, 1.72, -1.92], 50])}>
+      cam={cam([t.p2every, [0, 1.6, 2.0], [0, 1.6, -1.92], 56], [P[3], [0, 1.6, 1.5], [0, 1.6, -1.92], 54])}>
       <NewsStudio screen={mapDraw(t.p2young)} ticker="ОПРОС: КАЖДЫЙ 5-Й ВОЗЬМЁТ ВЫХОДНОЙ 19 НОЯБРЯ  •  СРЕДИ МОЛОДЫХ — КАЖДЫЙ 3-Й  •  " />
     </Scene3D>)),
 
   // 7. Глава Take-Two на сцене (ничто не загораживает)
   S(P[3], t.p3many, (
     <Scene3D t0={P[3]} light="studio" bg="#0a0d18" focus={[0.3, 1.3, -0.8]}
-      cam={cam([P[3], [-0.6, 1.6, 2.6], [0.2, 1.5, -1.2], 58], [t.p3many, [-0.2, 1.5, 1.9], [0.25, 1.45, -1.0], 54])}>
+      cam={cam([P[3], [-0.4, 1.6, 2.0], [0.25, 1.45, -1.0], 56], [t.p3many, [-0.1, 1.5, 1.4], [0.25, 1.4, -0.9], 52])}>
       <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "TAKE-TWO", W / 2, H * 0.36, W * 0.7, H * 0.25, "#fff"); fitText(g, "19.11 — GTA VI", W / 2, H * 0.66, W * 0.6, H * 0.12, CYAN); }} />
       <Doodle a={{ pos: [0.3, 0.3, -0.85], seed: 21, look: CEO, expr: [[0, "smug"]], scale: 1.2, talk: [[P[3] + 0.3, t.p3many]] }} />
     </Scene3D>)),
@@ -129,7 +129,7 @@ export const SHOTS: Shot[] = [
       cam={cam([t.p3many, [0.0, 1.45, 1.1], [0.15, 1.45, -0.85], 50], [t.p3po, [0.05, 1.45, 0.8], [0.15, 1.45, -0.85], 48])}>
       <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "TAKE-TWO", W / 2, H * 0.36, W * 0.7, H * 0.25, "#fff"); }} />
       <Doodle a={{ pos: [0.3, 0.3, -0.85], seed: 21, look: CEO, expr: [[0, "grin"], [t.p3many + 1.0, "proud"]], scale: 1.2, talk: [[t.p3many, t.p3po]], handF: pointKeys(t.p3many + 0.4, -0.3, 0.5, 1.2, "f") }} />
-      <Bubble p={[-0.15, 2.15, -0.7]} text="БЕРИТЕ БОЛЬНИЧНЫЙ 😎" t={t.p3many + 0.2} w={1.2} />
+      <Bubble p={[0.2, 2.2, -0.7]} text="БЕРИТЕ БОЛЬНИЧНЫЙ 😎" t={t.p3many + 0.2} w={0.95} />
     </Scene3D>)),
   // 9. «Официальное разрешение» — бумага и печать
   S(t.p3po, P[4], (
@@ -173,11 +173,11 @@ export const SHOTS: Shot[] = [
   // 14. Поликлиника: у всех трясутся руки, врач в шоке
   S(t.p5sym, P[6], (
     <Scene3D t0={t.p5sym} light="office" bg="#d8eee8" focus={[0, 1, -1]} shakes={[[t.p5steal, 0.6]]}
-      cam={cam([t.p5sym, [-0.4, 1.5, 2.6], [0, 1.25, -1.2], 58], [P[6], [-0.2, 1.4, 1.9], [0.1, 1.25, -1.2], 54])}>
+      cam={cam([t.p5sym, [-0.3, 1.45, 2.8], [-0.2, 1.2, -1.2], 60], [P[6], [-0.2, 1.4, 2.2], [-0.15, 1.2, -1.2], 58])}>
       <Clinic2 />
       {[-2.3, -1.6, -0.9].map((x, i) => <Doodle key={i} a={{ pos: [x, 0, -0.95 + (i % 2) * 0.15], seed: 40 + i, look: { body: ["#e64b4b", "#2f8fe0", "#b04fd6"][i], hair: (["spiky", "long", "slick"] as const)[i] },
         handF: [[0, -0.22, HIP + 0.35]], handB: [[0, 0.22, HIP + 0.35]], expr: [[0, "tired"], [t.p5steal, "smug"]], shiver: 2.5, scale: 1.05 }} />)}
-      <Doodle a={{ pos: [1.5, 0, -0.45], seed: 47, look: DOCTOR, expr: [[0, "blank"], [t.p5shake, "shock"]], scale: 1.15 }} />
+      <Doodle a={{ pos: [1.1, 0, -0.45], seed: 47, look: DOCTOR, expr: [[0, "blank"], [t.p5shake, "shock"]], scale: 1.15 }} />
       <Bubble p={[-1.2, 2.05, -0.8]} text="ХОЧУ УГНАТЬ МАШИНУ" t={t.p5steal} w={1.4} col={YEL} />
     </Scene3D>)),
 
@@ -209,7 +209,7 @@ export const SHOTS: Shot[] = [
   // 18. ПК-бояре: RGB-комната, гордо стоит у компа
   S(P[7], t.p7watch, (
     <Scene3D t0={P[7]} light="neon" bg="#0a0814" focus={[-0.4, 1.0, -0.7]}
-      cam={cam([P[7], [0.9, 1.4, 1.6], [0.0, 1.15, -1.3], 56], [t.p7watch, [0.5, 1.3, 1.0], [-0.1, 1.1, -1.1], 52])}>
+      cam={cam([P[7], [0.6, 1.3, 1.1], [-0.1, 1.1, -1.1], 54], [t.p7watch, [0.3, 1.25, 0.7], [-0.15, 1.1, -1.0], 50])}>
       <PcRoom mon={pcDraw(t.p7date)} />
       <Doodle a={{ pos: [-0.5, 0, -0.75], seed: 61, look: PCBOY, expr: [[0, "smug"]], scale: 1.15 }} />
     </Scene3D>)),
@@ -239,7 +239,7 @@ export const SHOTS: Shot[] = [
   // 22. Поезд стоит: в окне кабины записка
   S(t.p8trains, t.p8streets, (
     <Scene3D t0={t.p8trains} light="day" bg="#9fc8e8" focus={[0.45, 1.75, -0.6]}
-      cam={cam([t.p8trains, [-1.2, 1.6, 3.6], [0.0, 1.5, -1.4], 56], [t.p8streets, [0.6, 1.7, 2.0], [0.45, 1.7, -0.6], 50])}>
+      cam={cam([t.p8trains, [2.6, 1.7, 3.6], [0.4, 1.5, -1.3], 56], [t.p8streets, [1.8, 1.65, 2.4], [0.6, 1.6, -1.2], 52])}>
       <Train board={boardDraw("ПОЕЗДА", [["№ 19", "08:00"], ["№ 66", "09:30"], ["№ 06", "11:11"]], "ОПАЗДЫВАЕТ")} />
     </Scene3D>)),
   // 23. Пустые улицы как в ковид: перекати-поле, мигающий светофор, ни машин ни людей
@@ -361,9 +361,9 @@ export const SHOTS: Shot[] = [
   // 38. Финал: утренний город, толпа с табличками, крупный вопрос над улицей
   S(P[12], END, (
     <Scene3D t0={P[12]} light="day" bg="#5aa0e8" focus={[0, 1.5, -1]}
-      cam={cam([P[12], [0, 1.6, 2.4], [0, 2.4, -3], 58], [END, [0, 1.8, 3.6], [0, 2.4, -3], 60])}>
+      cam={cam([P[12], [0, 1.9, 2.6], [0, 2.5, -0.5], 60], [END, [0, 2.0, 3.2], [0, 2.5, -0.5], 62])}>
       <City />
-      <QuestionCard p={[0, 3.1, -1.6]} t={P[12] + 0.15} w={3.2} l1="А ТЫ ВОЗЬМЁШЬ" l2="ОТГУЛ 19-ГО?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
+      <QuestionCard p={[0, 3.35, -0.6]} t={P[12] + 0.15} w={2.7} l1="А ТЫ ВОЗЬМЁШЬ" l2="ОТГУЛ 19-ГО?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
       {crowd(12, -2.6, 2.6, -0.8, 0.9, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 3 === 0 ? [["УЖЕ ВЗЯЛ!", "КХА-КХА 🤒", "Я БОЛЕЮ", "ДА!!!"][(i / 3) % 4], ["#fff", YEL, PINK, CYAN][(i / 3) % 4], INK] : undefined }} />)}
       <Doodle a={hero([0, 0, 0.3], [[0, "proud"]], {}, HERO_NOPAD)} />
     </Scene3D>)),

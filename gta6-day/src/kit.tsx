@@ -317,7 +317,7 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
     <directionalLight position={[-2, 4, 4]} intensity={1.6} color="#ffd8f0" {...sh} />
     <pointLight position={[-2, 2.4, 0]} intensity={10} decay={1.3} color="#ff4fb8" /><pointLight position={[2.2, 2.2, 0.5]} intensity={10} decay={1.3} color="#30d8ff" /></>);
   if (preset === "office") return (<><hemisphereLight args={["#e8f0ff", "#4a4a5a", 1.0]} />
-    <directionalLight position={[-3, 5, 3]} intensity={2.2} color="#fff0dd" {...sh} /><pointLight position={[0, 2.7, 0]} intensity={4} decay={1.4} color="#fff4e0" /></>);
+    <directionalLight position={[-3, 5, 3]} intensity={2.4} color="#fff0dd" {...sh} /><pointLight position={[0, 1.8, 1.5]} intensity={1.5} decay={1.4} color="#fff4e0" /></>);
   if (preset === "storm") return (<><hemisphereLight args={["#a0b0d8", "#303048", 1.2]} />
     <directionalLight position={[-3, 6, 3]} intensity={1.2} color="#b0c0ff" {...sh} /></>);
   return (<><hemisphereLight args={["#cfd8ff", "#141a33", 0.7]} />
