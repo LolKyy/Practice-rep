@@ -144,7 +144,7 @@ export const PcRoom: React.FC<{ mon: Draw }> = ({ mon }) => {
     <Sign p={[-1.8, 1.9, -1.98]} w={1.1} h={0.5} text="RTX 9090" bg="#1a1a1a" fg="#3fff8f" glow={0.8} />
     <Box p={[-0.55, 0.82, -1.3]} s={[0.5, 0.04, 0.18]} c="#111" />
     <Neon p={[0.2, 0.79, -1.06]} s={[2.2, 0.02, 0.02]} col={PINK} k={1.6} />
-    <Chair p={[0.2, 0, -0.6]} c="#d6304f" rotY={Math.PI} />
+    <Chair p={[1.2, 0, -0.7]} c="#d6304f" rotY={-0.6} />
   </>);
 };
 

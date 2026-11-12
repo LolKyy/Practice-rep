@@ -137,9 +137,9 @@ export const Couch: React.FC<{ p: V3; c?: string; rotY?: number }> = ({ p, c = "
     {[-1, 1].map((s) => <Box key={s} p={[s * 0.95, 0.5, 0]} s={[0.2, 0.35, 0.85]} c={c} r={0.9} />)}
   </group>
 );
-export const Lamp: React.FC<{ p: V3; len?: number; glow?: number; col?: string }> = ({ p, len = 1.4, glow = 1.6, col }) => (
+export const Lamp: React.FC<{ p: V3; len?: number; glow?: number; col?: string }> = ({ p, len = 1.4, glow: g0 = 0.9, col }) => { const glow = Math.min(0.9, g0); return (
   <mesh position={p}><boxGeometry args={[len, 0.04, 0.16]} /><meshBasicMaterial color={col ? new THREE.Color(col).multiplyScalar(glow) : [glow, glow * 0.96, glow * 0.88]} toneMapped={false} /></mesh>
-);
+); };
 // неоновая полоса
 export const Neon: React.FC<{ p: V3; s: V3; col: string; k?: number }> = ({ p, s, col, k = 2.2 }) => (
   <mesh position={p}><boxGeometry args={s} /><meshBasicMaterial color={new THREE.Color(col).multiplyScalar(k)} toneMapped={false} /></mesh>
@@ -219,7 +219,7 @@ const trackLin = (t: number, keys: Key[]): [number, number] => {
 export type Actor = {
   pos: V3; look: Look; seed: number; scale?: number;
   expr: [number, string][];
-  handF?: Key[]; handB?: Key[]; lean?: Key[]; talk?: [number, number][]; walk?: Key[]; hidden?: [number, number][]; shiver?: number; hop?: number;
+  handF?: Key[]; handB?: Key[]; lean?: Key[]; talk?: [number, number][]; walk?: Key[]; hidden?: [number, number][]; shiver?: number; hop?: number; back?: [number, number][];
   sign?: [string, string, string]; // плакат над головой: текст, фон, цвет текста
 };
 export const pointKeys = (t: number, dx: number, dz: number, hold = 1.0, side: "f" | "b" = "f"): Key[] => {
@@ -254,7 +254,7 @@ export const Doodle: React.FC<{ a: Actor }> = ({ a }) => {
     expr: ex, blink: (f2 + a.seed * 37) % 79 < 3, bonk, breathe: Math.sin(f2 / 14 + a.seed) * 0.012, lookX: dart,
     talk: talking ? 0.25 + 0.75 * Math.abs(Math.sin(t * FPS * Math.PI / 3.5)) : 0,
     handF: a.handF ? track(t, a.handF) : REST_F, handB: a.handB ? track(t, a.handB) : REST_B,
-    lean: a.lean ? track(t, a.lean)[0] : 0, tilt: Math.sin(t * 1.1 + a.seed) * 0.03, shiver: a.shiver,
+    lean: a.lean ? track(t, a.lean)[0] : 0, tilt: Math.sin(t * 1.1 + a.seed) * 0.03, shiver: a.shiver, back: a.back?.some(([s, e]) => t >= s && t < e),
   };
   drawDoodle(canvas.getContext("2d")!, a.look, pose, rnd);
   tex.needsUpdate = true;
@@ -328,7 +328,7 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
 export const CAM_DIST = 1.55, CAM_FOV = 6;
 export type Shake = [number, number, number?]; // [секунда, сила, длительность]
 export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; children: React.ReactNode }> =
-  ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 6, fog, children }) => {
+  ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, children }) => {
     const frame = useCurrentFrame();
     const { width, height } = useVideoConfig();
     const t = t0 + frame / FPS;
@@ -354,8 +354,8 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
             <Lights preset={light} />
             {children}
             <EffectComposer multisampling={4}>
-              <DepthOfField target={focus} focalLength={0.05} bokehScale={dof * 0.3} height={1080} />
-              <Bloom luminanceThreshold={0.95} intensity={0.45} mipmapBlur />
+              {dof > 0 ? <DepthOfField target={focus} focalLength={0.05} bokehScale={dof * 0.3} height={1080} /> : <></>}
+              <Bloom luminanceThreshold={1.05} intensity={0.35} mipmapBlur />
               <ChromaticAberration offset={new THREE.Vector2(0.0005, 0.0003) as any} radialModulation={true} modulationOffset={0.6} />
               <Noise opacity={0.025} blendFunction={BlendFunction.OVERLAY} />
               <Vignette eskil={false} offset={0.3} darkness={0.35} />

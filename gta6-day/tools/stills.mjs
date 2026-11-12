@@ -8,7 +8,7 @@ import { renderStill, selectComposition } from "@remotion/renderer";
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const serveUrl = await bundle({ entryPoint: path.join(ROOT, "src/index.ts") });
 let shots = null;
-const comp = await selectComposition({ serveUrl, id: "Gta6Doodle", chromiumOptions: { gl: "swiftshader" },
+const comp = await selectComposition({ serveUrl, id: "Gta6Day", chromiumOptions: { gl: "swiftshader" },
   onBrowserLog: (l) => { if (l.text.startsWith("SHOTS ")) shots = JSON.parse(l.text.slice(6)); } });
 let secs;
 if (process.argv[2]) secs = process.argv[2].split(",").map(Number);

@@ -7,12 +7,12 @@ export type Look = {
 export type Pose = {
   expr: string; blink: boolean; bonk: number; breathe: number; lookX?: number; talk?: number;
   lean?: number; tilt?: number; squash?: number; hip?: number; shiver?: number;
-  handF?: [number, number]; handB?: [number, number]; bendF?: number; bendB?: number;
+  handF?: [number, number]; handB?: [number, number]; bendF?: number; bendB?: number; back?: boolean;
 };
 
 const INK = "#2a1d1a";
 export const PLANE_W = 1.4, PLANE_H = 2.1;
-export const CW = 560, CH = Math.round((CW * PLANE_H) / PLANE_W);
+export const CW = 960, CH = Math.round((CW * PLANE_H) / PLANE_W);
 const K = CW / PLANE_W;
 const X = (x: number) => CW / 2 + x * K;
 const Y = (z: number) => CH - z * K;
@@ -111,6 +111,12 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   ctx.restore();
   stroke(0.028); ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
   const hc = look.hairCol ?? "#1b1615";
+  if (p.back) {
+    // вид со спины: затылок волосами, без лица
+    ctx.fillStyle = look.hair === "bald" ? "#e8e2d8" : hc; ctx.beginPath(); ctx.arc(0, 0, r * 1.02, 0, Math.PI * 2); ctx.fill(); stroke(0.024); ctx.stroke();
+    if (look.hair === "bald") { ctx.fillStyle = hc; ctx.beginPath(); ctx.arc(0, r * 0.35, r * 0.9, 0.15 * Math.PI, 0.85 * Math.PI); ctx.fill(); }
+    ctx.restore(); limb(shF, hF, p.bendF ?? 0.12); hand(hF); return;
+  }
   if (look.hair !== "bald") {
     ctx.fillStyle = hc; ctx.beginPath(); ctx.arc(0, 0, r * 1.05, Math.PI, Math.PI * 2);
     const fr = look.hair === "slick" ? 0.55 : 0.46;

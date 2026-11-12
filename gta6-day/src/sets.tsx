@@ -172,7 +172,7 @@ export const NovemberDoor: React.FC<{ p: V3 }> = ({ p }) => (<group position={p}
 </group>);
 
 // Студия новостей
-export const NewsStudio: React.FC<{ screen: (g: CanvasRenderingContext2D, s: number, W: number, H: number) => void }> = ({ screen }) => (<>
+export const NewsStudio: React.FC<{ screen: (g: CanvasRenderingContext2D, s: number, W: number, H: number) => void; ticker?: string }> = ({ screen, ticker = "ROCKSTAR СНОВА ПЕРЕНЕСЛА GTA 6  •  ФАНАТЫ В ШОКЕ  •  ИНТЕРНЕТ ЛЁГ  •  " }) => (<>
   <Room wall="#14203a" floor="#1b2440" wain="#0f1830" ceil="#0c1224" />
   <Box p={[0, 1.75, -1.97]} s={[3.9, 2.2, 0.06]} c="#0a0a12" />
   <Screen p={[0, 1.75, -1.92]} w={3.7} h={2.05} draw={screen} res={900} />
@@ -181,7 +181,7 @@ export const NewsStudio: React.FC<{ screen: (g: CanvasRenderingContext2D, s: num
   <Screen p={[0, 0.55, -0.29]} w={2.3} h={0.32} res={900} draw={(g, s, W, H) => { g.fillStyle = RED; g.fillRect(0, 0, W, H); g.fillStyle = "#fff"; g.fillRect(0, 0, W * 0.22, H);
     fitText(g, "СРОЧНО", W * 0.11, H / 2 + 3, W * 0.18, H * 0.6, RED); g.save(); g.beginPath(); g.rect(W * 0.23, 0, W, H); g.clip();
     g.font = `900 ${H * 0.55}px ${FONT}`; g.fillStyle = "#fff"; g.textBaseline = "middle"; g.textAlign = "left";
-    const txt = "ROCKSTAR СНОВА ПЕРЕНЕСЛА GTA 6  •  ФАНАТЫ В ШОКЕ  •  ИНТЕРНЕТ ЛЁГ  •  "; const w = g.measureText(txt).width; const x = W * 0.25 - ((s * 260) % w);
+    const txt = ticker; const w = g.measureText(txt).width; const x = W * 0.25 - ((s * 260) % w);
     g.fillText(txt, x, H / 2 + 3); g.fillText(txt, x + w, H / 2 + 3); g.restore(); }} />
   <Box p={[-0.6, 1.08, -0.6]} s={[0.3, 0.14, 0.22]} c="#ddd" />
   <Cyl p={[0.7, 1.08, -0.55]} r={0.05} h={0.14} c={RED} />
