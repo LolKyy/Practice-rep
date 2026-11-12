@@ -5,3 +5,4 @@ audio/takes/
 audio/trim/
 audio/*.wav
 checks_log.txt
+node_modules
