@@ -4,7 +4,7 @@ import words from "./words.json";
 import { setData, wt, ps, TOTAL } from "./timeline.js";
 setData(words);
 import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText } from "./kit";
-import { NewsStudio, QuestionCard, Smoke, Confetti, Bubble, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
+import { NewsStudio, SynthSunset, QuestionCard, Smoke, Confetti, Bubble, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
 import { titleDraw, loadDraw, viceDraw, mapDraw, paperDraw, vacDraw, pcDraw, PaperSet, PcRoom, OfficeDoor, Cat } from "./sets2";
 import { Apartment, City, Cockpit, Train, Clinic2, Shop2, Store2, Kitchen2, Stage2, Chips, SixPack, Console } from "./sets3";
 import { boardDraw } from "./sets2";
@@ -358,13 +358,12 @@ export const SHOTS: Shot[] = [
       <Doodle a={hero([-0.55, 0, -0.4], [[0, "smug"]], { walk: [[t.p11nod + 1.0, -0.55, -0.4], [P[12], -2.4, 0.2]] }, HERO_NOPAD)} />
     </Scene3D>)),
 
-  // 38. Финал: утренний город, толпа с табличками, крупный вопрос над улицей
+  // 38. Финал: неоновый закат GTA (как было) и вопрос
   S(P[12], END, (
-    <Scene3D t0={P[12]} light="day" bg="#5aa0e8" focus={[0, 1.5, -1]}
-      cam={cam([P[12], [0, 1.9, 2.6], [0, 2.5, -0.5], 60], [END, [0, 2.0, 3.2], [0, 2.5, -0.5], 62])}>
-      <City />
-      <QuestionCard p={[0, 3.35, -0.6]} t={P[12] + 0.15} w={2.7} l1="А ТЫ ВОЗЬМЁШЬ" l2="ОТГУЛ 19-ГО?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
-      {crowd(12, -2.6, 2.6, -0.8, 0.9, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 3 === 0 ? [["УЖЕ ВЗЯЛ!", "КХА-КХА 🤒", "Я БОЛЕЮ", "ДА!!!"][(i / 3) % 4], ["#fff", YEL, PINK, CYAN][(i / 3) % 4], INK] : undefined }} />)}
-      <Doodle a={hero([0, 0, 0.3], [[0, "proud"]], {}, HERO_NOPAD)} />
+    <Scene3D t0={P[12]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]}
+      cam={cam([P[12], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
+      <SynthSunset />
+      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="А ТЫ ВОЗЬМЁШЬ" l2="ОТГУЛ 19-ГО?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
+      {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["УЖЕ ВЗЯЛ!", "КХА-КХА 🤒", "Я БОЛЕЮ", "ДА!!!"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
     </Scene3D>)),
 ];
