@@ -8,7 +8,7 @@ const tl = await import(path.join(ROOT, "src/timeline.js"));
 tl.setData(JSON.parse(fs.readFileSync(path.join(ROOT, "src/words.json"), "utf8")));
 const OUT = path.join(ROOT, "audio");
 fs.writeFileSync(path.join(OUT, "sfx.json"), JSON.stringify(tl.sfxList()));
-execFileSync("python3", ["-I", path.join(ROOT, "tools/sfx.py"), OUT, String(tl.TOTAL)], { stdio: "inherit" });
+execFileSync("python3", ["-I", path.join(ROOT, "../shared/tools/sfx.py"), OUT, String(tl.TOTAL)], { stdio: "inherit" });
 const run = (args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "inherit" });
 run(["-i", path.join(OUT, "voice.mp3"), "-af", "loudnorm=I=-16:TP=-2:LRA=9", "-ar", "44100", "-ac", "2", path.join(OUT, "voice_n.wav")]);
 run(["-i", path.join(OUT, "sfx.wav"), "-af", "loudnorm=I=-30:TP=-9:LRA=20", "-ar", "44100", "-ac", "2", path.join(OUT, "sfx_n.wav")]);

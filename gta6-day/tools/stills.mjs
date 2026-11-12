@@ -6,7 +6,9 @@ import { execFileSync } from "node:child_process";
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
-const serveUrl = await bundle({ entryPoint: path.join(ROOT, "src/index.ts") });
+// общий движок в ../shared/remotion: его импорты ищем в node_modules этого ролика (как в remotion.config.ts)
+const serveUrl = await bundle({ entryPoint: path.join(ROOT, "src/index.ts"),
+  webpackOverride: (c) => ({ ...c, resolve: { ...c.resolve, modules: [path.join(ROOT, "node_modules"), "node_modules"] } }) });
 let shots = null;
 const comp = await selectComposition({ serveUrl, id: "Gta6Day", chromiumOptions: { gl: "swiftshader" },
   onBrowserLog: (l) => { if (l.text.startsWith("SHOTS ")) shots = JSON.parse(l.text.slice(6)); } });

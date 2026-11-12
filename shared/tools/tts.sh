@@ -1,6 +1,6 @@
 #!/bin/bash
-# tools/tts.sh <номер абзаца 1..N> <дубль>  → audio/takes/pNN_tK.mp3 (ElevenLabs, ключ подставляет прокси)
-cd "$(dirname "$0")/.."
+# ../shared/tools/tts.sh <номер абзаца 1..N> <дубль>  → audio/takes/pNN_tK.mp3 (ElevenLabs, ключ подставляет прокси)
+# запускать из папки ролика: ../shared/tools/tts.sh <абзац> <дубль>
 n=$1; k=$2
 txt=$(awk -v RS= -v n="$n" 'NR==n' script/voice.txt)
 body=$(python3 -c 'import json,sys;print(json.dumps({"text":sys.argv[1],"model_id":"eleven_v3","voice_settings":{"stability":0.5,"similarity_boost":0.75}}))' "$txt")

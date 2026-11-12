@@ -3,13 +3,14 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { useFonts } from "./Video";
-import { Scene3D, Doodle, HEAD_Z, Box, Sign } from "./kit";
-import { Apartment, Chips } from "./sets3";
-import { titleDraw } from "./sets2";
+import { Scene3D, Doodle, HEAD_Z, Box, Sign } from "../../shared/remotion/kit";
+import { Apartment, Chips } from "../../shared/remotion/sets3";
+import { titleDraw } from "../../shared/remotion/sets2";
 
 const stroke = (w: number) => ({ WebkitTextStroke: `${w}px #1a1020`, paintOrder: "stroke fill" as any });
 export const Cover: React.FC = () => {
-  useFonts();
+  const ready = useFonts();
+  if (!ready) return <AbsoluteFill style={{ background: "#1a1030" }} />;
   return (
     <AbsoluteFill style={{ background: "#1a1030" }}>
       <Scene3D t0={3} light="night" bg="#0b0f2a" focus={[0.2, 1.1, -1.2]}

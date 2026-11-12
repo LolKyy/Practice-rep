@@ -3,12 +3,12 @@ import React from "react";
 import words from "./words.json";
 import { setData, wt, ps, TOTAL } from "./timeline.js";
 setData(words);
-import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText } from "./kit";
-import { NewsStudio, SynthSunset, QuestionCard, Smoke, Confetti, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "./sets";
-import { titleDraw, loadDraw, viceDraw, mapDraw, paperDraw, vacDraw, pcDraw, PaperSet, PcRoom, OfficeDoor, Cat } from "./sets2";
-import { Apartment, City, Cockpit, TrainFront, Clinic2, Shop2, Store2, Kitchen2, Stage2, Chips, SixPack, Console } from "./sets3";
-import { boardDraw } from "./sets2";
-import type { Look } from "./doodle";
+import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText } from "../../shared/remotion/kit";
+import { NewsStudio, SynthSunset, QuestionCard, Smoke, Confetti, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "../../shared/remotion/sets";
+import { titleDraw, loadDraw, viceDraw, mapDraw, paperDraw, vacDraw, pcDraw, PaperSet, PcRoom, OfficeDoor, Cat } from "../../shared/remotion/sets2";
+import { Apartment, City, Cockpit, TrainFront, Clinic2, Shop2, Store2, Kitchen2, Stage2, Chips, SixPack, Console } from "../../shared/remotion/sets3";
+import { boardDraw } from "../../shared/remotion/sets2";
+import type { Look } from "../../shared/remotion/doodle";
 
 export type Shot = { t0: number; t1: number; el: React.ReactNode; tr?: "fade" | "cut" | "flash" };
 

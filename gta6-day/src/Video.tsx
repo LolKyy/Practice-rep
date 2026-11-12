@@ -8,12 +8,16 @@ import { SHOTS, BUBBLES } from "./shots";
 import { Captions } from "./captions";
 
 const FONTS: [string, string, string][] = [["Rubik", "fonts/Rubik.ttf", "800"], ["Russo One", "fonts/RussoOne.ttf", "400"], ["Oswald", "fonts/Oswald.ttf", "700"]];
+// Шрифты грузятся до первой отрисовки сцен: надписи на 3D-вывесках рисуются в canvas один раз,
+// и если шрифт ещё не готов, там навсегда останется запасной шрифт. Поэтому сцены ждут ready.
 export const useFonts = () => {
   const [h] = useState(() => delayRender("fonts"));
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     Promise.all(FONTS.map(([n, f, w]) => new FontFace(n, `url(${staticFile(f)})`, { weight: w }).load().then((ff) => (document.fonts as any).add(ff))))
-      .then(() => continueRender(h)).catch(() => continueRender(h));
+      .then(() => document.fonts.ready).then(() => { setReady(true); continueRender(h); }).catch(() => { setReady(true); continueRender(h); });
   }, []);
+  return ready;
 };
 
 console.log("SHOTS " + JSON.stringify(SHOTS.map((s) => [+s.t0.toFixed(2), +s.t1.toFixed(2)])));
@@ -40,7 +44,8 @@ const Bubbles: React.FC = () => {
 };
 
 export const Video: React.FC = () => {
-  useFonts();
+  const ready = useFonts();
+  if (!ready) return <AbsoluteFill style={{ backgroundColor: "black" }} />;
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
       {SHOTS.map((s, i) => {
