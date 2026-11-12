@@ -15,7 +15,7 @@ export const titleDraw = (pause?: number): Draw => (g, s, W, H) => {
   const r = H * 0.32, cx = W / 2, cy = H * 1.0; const sg = g.createLinearGradient(0, cy - r, 0, cy); sg.addColorStop(0, "#FFE14D"); sg.addColorStop(1, "#FF3BD4");
   g.fillStyle = sg; g.beginPath(); g.arc(cx, cy, r, Math.PI, 0); g.fill(); g.fillStyle = "#2B1055"; for (let i = 0; i < 5; i++) g.fillRect(cx - r, cy - r * 0.45 + i * r * 0.09, r * 2, 3 + i * 3);
   drawLogo(g, W, H, H * 0.42, H / 360);
-  fitText(g, "19 НОЯБРЯ", W / 2, H * 0.78, W * 0.6, H * 0.12, YEL);
+  g.save(); g.font = `900 ${H * 0.11}px ${FONT}`; g.textAlign = "center"; g.textBaseline = "middle"; g.lineWidth = H * 0.018; g.strokeStyle = INK; g.strokeText("19 НОЯБРЯ", W / 2, H * 0.66); g.fillStyle = YEL; g.fillText("19 НОЯБРЯ", W / 2, H * 0.66); g.restore();
   if (pause !== undefined && s >= pause) { const k = popAt(s, pause, 0.3); g.save(); g.globalAlpha = 0.55 * Math.min(1, k); g.fillStyle = "#000"; g.fillRect(0, 0, W, H); g.restore();
     g.save(); g.translate(W / 2, H / 2); g.scale(k, k); g.fillStyle = "#fff"; g.fillRect(-W * 0.09, -H * 0.2, W * 0.06, H * 0.4); g.fillRect(W * 0.03, -H * 0.2, W * 0.06, H * 0.4); g.restore(); }
 };

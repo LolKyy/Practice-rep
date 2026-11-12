@@ -22,10 +22,10 @@ export const Cover: React.FC = () => {
       <div style={{ position: "absolute", top: 270, left: 40, width: 880, textAlign: "center", fontFamily: "Russo One", lineHeight: 1.0, transform: "rotate(-3deg)" }}>
         <div style={{ fontSize: 150, color: "#ffd23f", ...stroke(26), textShadow: "0 12px 0 rgba(0,0,0,0.5)" }}>19 НОЯБРЯ</div>
         <div style={{ fontSize: 112, color: "#ff3b3b", ...stroke(20), marginTop: 10, textShadow: "0 10px 0 rgba(0,0,0,0.5)" }}>ВСЕ НА</div>
-        <div style={{ fontSize: 112, color: "#ffffff", ...stroke(20), textShadow: "0 10px 0 rgba(0,0,0,0.5)" }}>БОЛЬНИЧНОМ?!</div>
+        <div style={{ fontSize: 96, color: "#ffffff", ...stroke(18), textShadow: "0 10px 0 rgba(0,0,0,0.5)" }}>БОЛЬНИЧНОМ?!</div>
       </div>
       <div style={{ position: "absolute", top: 1420, left: 60, width: 840, textAlign: "center" }}>
-        <span style={{ display: "inline-block", fontFamily: "Rubik", fontWeight: 800, fontSize: 70, color: "#1a1020", background: "#ffd23f", padding: "14px 40px", borderRadius: 60, border: "8px solid #1a1020", transform: "rotate(2deg)" }}>
+        <span style={{ display: "inline-block", fontFamily: "Rubik", fontWeight: 800, fontSize: 58, whiteSpace: "nowrap", color: "#1a1020", background: "#ffd23f", padding: "14px 36px", borderRadius: 60, border: "8px solid #1a1020", transform: "rotate(2deg)" }}>
           ДЕНЬ ВЫХОДА GTA 6
         </span>
       </div>
