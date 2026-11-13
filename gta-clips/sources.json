@@ -1,0 +1,9 @@
+{
+  "_note": "Только официальные материалы Rockstar Games. Файлы лежат в sources/<id>.mp4 (не в git).",
+  "t1":       {"title": "Grand Theft Auto VI Trailer 1",            "url": "https://www.youtube.com/watch?v=QdBZY2fkU-0"},
+  "t2":       {"title": "Grand Theft Auto VI Trailer 2",            "url": "https://www.youtube.com/watch?v=VQRLujxTm3c"},
+  "launch":   {"title": "Grand Theft Auto VI Launch Trailer",       "url": "https://www.youtube.com/watch?v=rz1B4B2yBZY"},
+  "extended": {"title": "Grand Theft Auto VI: An Extended Look",    "url": "https://www.youtube.com/watch?v=tJbzMqJGH4k"},
+  "preload":  {"title": "Grand Theft Auto VI: Pre-Load Now",        "url": "https://www.youtube.com/watch?v=_yl5ELcmugI"},
+  "cover":    {"title": "Grand Theft Auto VI: Official Cover Art Reveal", "url": "https://www.youtube.com/watch?v=EiQEBYDox_k"}
+}

@@ -1,0 +1,10 @@
+# Исходники (трейлеры целиком) и рабочие файлы в git НЕ кладём
+sources/
+refs/
+work/
+out/
+video/node_modules/
+video/public/clips/
+video/public/music/
+__pycache__/
+scenes/_thumbs_*/
