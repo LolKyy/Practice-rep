@@ -3,6 +3,13 @@
 export type Look = {
   body: string; hair: "bowl" | "spiky" | "long" | "slick" | "bald" | "bun";
   hairCol?: string; tie?: string; beard?: boolean; cap?: string; glasses?: boolean; pad?: boolean; wrinkles?: boolean; badge?: boolean;
+  outfit?: "hoodie" | "hawaii" | "jacket"; // худи с капюшоном / гавайская рубашка / куртка поверх футболки
+  accent?: string;      // второй цвет одежды (цветы, футболка под курткой, завязки худи)
+  headphones?: string;  // большие наушники (цвет)
+  shades?: boolean;     // тёмные очки
+  chain?: boolean;      // золотая цепь
+  capBack?: boolean;    // кепка козырьком назад (вместе с cap)
+  mustache?: boolean;   // усы
 };
 export type Pose = {
   expr: string; blink: boolean; bonk: number; breathe: number; lookX?: number; talk?: number;
@@ -79,6 +86,15 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   const body = () => { ctx.beginPath(); ctx.roundRect(-bw / 2 * K, -bh * K, bw * K, bh * K, bw * 0.45 * K); };
   ctx.fillStyle = look.body; body(); ctx.fill();
   ctx.save(); body(); ctx.clip(); ctx.fillStyle = shade(look.body, 0.62); ctx.fillRect(bw * 0.2 * K, -bh * K, bw * K, bh * K); ctx.restore();
+  if (look.outfit === "hawaii") { ctx.save(); body(); ctx.clip();
+    for (let i = 0; i < 12; i++) { const fx = (-0.36 + (i % 3) * 0.36 + ((i * 7) % 3 - 1) * 0.05) * bw * K, fy = -bh * K * (0.12 + Math.floor(i / 3) * 0.24 + (i % 2) * 0.07);
+      ctx.fillStyle = look.accent ?? "#ffd23f"; for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; ctx.beginPath(); ctx.arc(fx + Math.cos(a) * 0.022 * K, fy + Math.sin(a) * 0.022 * K, 0.016 * K, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(fx, fy, 0.01 * K, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore(); }
+  if (look.outfit === "jacket") { ctx.save(); body(); ctx.clip(); ctx.fillStyle = look.accent ?? "#f4f4f4"; ctx.fillRect(-bw * 0.17 * K, -bh * K, bw * 0.34 * K, bh * K);
+    stroke(0.012); ctx.beginPath(); ctx.moveTo(-bw * 0.17 * K, -bh * K); ctx.lineTo(-bw * 0.17 * K, 0); ctx.moveTo(bw * 0.17 * K, -bh * K); ctx.lineTo(bw * 0.17 * K, 0); ctx.stroke(); ctx.restore(); }
+  if (look.outfit === "hoodie") { ctx.save(); body(); ctx.clip(); ctx.fillStyle = shade(look.body, 0.8); ctx.beginPath(); ctx.roundRect(-bw * 0.32 * K, -bh * 0.42 * K, bw * 0.64 * K, bh * 0.26 * K, 0.03 * K); ctx.fill();
+    stroke(0.01); ctx.stroke(); stroke(0.012, look.accent ?? "#fff"); for (const sx of [-0.08, 0.08]) { ctx.beginPath(); ctx.moveTo(sx * K, -bh * 0.98 * K); ctx.lineTo(sx * K, -bh * 0.72 * K); ctx.stroke(); } ctx.restore(); }
   stroke(0.028); body(); ctx.stroke();
   ctx.fillStyle = "#f7f7f2"; stroke(0.01);
   ctx.beginPath(); ctx.moveTo(-W * 0.2 * K, -bh * K); ctx.lineTo(0, -bh * 0.62 * K); ctx.lineTo(W * 0.2 * K, -bh * K); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -89,7 +105,9 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   if (look.badge) {
     ctx.fillStyle = "#f2c230"; stroke(0.008); ctx.beginPath(); ctx.arc(-W * 0.22 * K, -bh * 0.7 * K, W * 0.08 * K, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }
-  stroke(0.008); ctx.beginPath(); ctx.moveTo(W * 0.12 * K, -bh * 0.5 * K); ctx.lineTo(W * 0.36 * K, -bh * 0.5 * K); ctx.stroke();
+  if (look.outfit !== "hawaii" && look.outfit !== "hoodie") { stroke(0.008); ctx.beginPath(); ctx.moveTo(W * 0.12 * K, -bh * 0.5 * K); ctx.lineTo(W * 0.36 * K, -bh * 0.5 * K); ctx.stroke(); }
+  if (look.chain) { stroke(0.014, "#e8b83a"); ctx.beginPath(); ctx.arc(0, -bh * 0.98 * K, W * 0.24 * K, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    ctx.fillStyle = "#f2c230"; stroke(0.006); ctx.beginPath(); ctx.arc(0, -bh * 0.98 * K + W * 0.27 * K, 0.025 * K, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
   ctx.restore();
   // геймпад в руках
   if (look.pad) {
@@ -105,6 +123,8 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   ctx.save();
   ctx.translate(X(top[0] + shk), Y(top[1] + shk)); ctx.rotate(lean * 0.7 + (p.tilt ?? 0) + 0.06 * p.bonk);
   const r = hr * K;
+  if (look.outfit === "hoodie" && !p.back) { ctx.fillStyle = look.body; stroke(0.026); ctx.beginPath(); ctx.ellipse(0, r * 0.12, r * 1.24, r * 1.22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = shade(look.body, 0.7); ctx.beginPath(); ctx.ellipse(0, r * 0.08, r * 1.08, r * 1.08, 0, 0, Math.PI * 2); ctx.fill(); }
   ctx.fillStyle = "#f5f1ea"; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
   ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.clip();
   ctx.fillStyle = "#d8d2c8"; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.arc(-r * 0.1, -r * 0.08, r * 0.82, 0, Math.PI * 2, true); ctx.fill("evenodd");
@@ -133,7 +153,14 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   if (look.cap) {
     ctx.fillStyle = look.cap; stroke(0.02);
     ctx.beginPath(); ctx.arc(0, -r * 0.25, r * 1.0, Math.PI * 1.05, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.roundRect(-r * 1.25, -r * 0.42, r * 1.3, r * 0.2, r * 0.08); ctx.fill(); ctx.stroke();
+    if (look.capBack) { ctx.beginPath(); ctx.roundRect(r * 0.55, -r * 0.5, r * 0.6, r * 0.16, r * 0.06); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.roundRect(-r * 0.25, -r * 0.62, r * 0.5, r * 0.18, r * 0.06); ctx.fill(); }
+    else { ctx.beginPath(); ctx.roundRect(-r * 1.25, -r * 0.42, r * 1.3, r * 0.2, r * 0.08); ctx.fill(); ctx.stroke(); }
+  }
+  if (look.headphones) {
+    stroke(0.05, INK); ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 1.1, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
+    stroke(0.032, look.headphones); ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 1.1, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+    for (const sx of [-1, 1]) { ctx.fillStyle = look.headphones; stroke(0.022); ctx.beginPath(); ctx.ellipse(sx * r * 1.0, r * 0.05, r * 0.2, r * 0.32, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
   }
   stroke(0.012, "#ffffff"); ctx.beginPath(); ctx.arc(-r * 0.15, -r * 0.2, r * 0.75, Math.PI * 1.25, Math.PI * 1.5); ctx.stroke();
   if (look.wrinkles) { stroke(0.008, "#b8ad9e"); for (const yy of [-0.62, -0.54]) { ctx.beginPath(); ctx.moveTo(-r * 0.3, r * yy); ctx.quadraticCurveTo(0, r * (yy - 0.05), r * 0.3, r * yy); ctx.stroke(); } }
@@ -168,6 +195,12 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
     ctx.beginPath(); ctx.moveTo(outer, by + bt * r * 0.07); ctx.lineTo((inner + outer) / 2, by - r * 0.02); ctx.lineTo(inner, by - bt * r * 0.14); ctx.stroke();
     if (E.tears) { ctx.fillStyle = "#7cc8ff"; ctx.fillRect(ex - r * 0.04, ey + r * 0.08, r * 0.08, r * 0.55 + rnd() * r * 0.05); }
   }
+  if (look.shades && !["squeeze", "happy"].includes(E.eyes)) {
+    ctx.fillStyle = "#15151c"; stroke(0.016);
+    for (const sx of [-1, 1]) { ctx.beginPath(); ctx.roundRect(sx * r * 0.34 - r * 0.24, -r * 0.16, r * 0.48, r * 0.3, r * 0.12); ctx.fill(); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(-r * 0.1, -r * 0.07); ctx.lineTo(r * 0.1, -r * 0.07); ctx.stroke();
+    stroke(0.008, "#ffffff"); for (const sx of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sx * r * 0.34 - r * 0.14, -r * 0.08); ctx.lineTo(sx * r * 0.34 - r * 0.04, -r * 0.12); ctx.stroke(); }
+  }
   if (E.cheeks) { ctx.fillStyle = "#f0b3a4"; for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * r * 0.55, r * 0.3, r * 0.2, r * 0.14, 0, 0, Math.PI * 2); ctx.fill(); } }
   // борода (под ртом)
   if (look.beard) {
@@ -196,6 +229,9 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
     ctx.fillStyle = "#d66a6c"; ctx.beginPath(); ctx.ellipse(mx, my + mh * 0.6, mw * 0.5, mh * 0.25, 0, 0, Math.PI * 2); ctx.fill();
     stroke(0.024, "#fff"); ctx.beginPath(); ctx.moveTo(mx - mw * 0.75, my - r * 0.025); ctx.lineTo(mx + mw * 0.75, my - r * 0.025); ctx.stroke();
   }
+  if (look.mustache) { ctx.fillStyle = look.hairCol ?? "#1b1615"; stroke(0.012);
+    ctx.beginPath(); ctx.moveTo(-r * 0.32, r * 0.36); ctx.quadraticCurveTo(-r * 0.15, r * 0.22, 0, r * 0.3); ctx.quadraticCurveTo(r * 0.15, r * 0.22, r * 0.32, r * 0.36);
+    ctx.quadraticCurveTo(r * 0.15, r * 0.34, 0, r * 0.38); ctx.quadraticCurveTo(-r * 0.15, r * 0.34, -r * 0.32, r * 0.36); ctx.fill(); ctx.stroke(); }
   if (E.sweat) { ctx.fillStyle = "#c9e6ff"; stroke(0.01, "#3d7fd0"); ctx.beginPath(); ctx.moveTo(r * 0.98, -r * 0.5); ctx.quadraticCurveTo(r * 1.1, -r * 0.25, r * 0.98, -r * 0.18); ctx.quadraticCurveTo(r * 0.86, -r * 0.25, r * 0.98, -r * 0.5); ctx.fill(); ctx.stroke(); }
   ctx.restore();
   limb(shF, hF, p.bendF ?? 0.12); hand(hF);
