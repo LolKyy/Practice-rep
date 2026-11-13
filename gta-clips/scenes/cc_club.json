@@ -1,0 +1,63 @@
+{
+ "source": "cc_club",
+ "file": "cc_club.mp4",
+ "info": {
+  "duration": 1.466667,
+  "has_audio": false,
+  "width": 720,
+  "height": 404,
+  "fps": 30.0,
+  "vcodec": "h264"
+ },
+ "analysis_fps": 12,
+ "shots": [
+  {
+   "id": 0,
+   "t_in": 0.0,
+   "t_out": 0.167,
+   "dur": 0.167,
+   "block": "dark",
+   "score": 0.0,
+   "brightness": 0.0,
+   "saturation": 0.0,
+   "colorful": 0.0,
+   "motion": 0.0,
+   "hues": {
+    "warm": 0.0,
+    "green": 0.0,
+    "cyan": 0.0,
+    "blue": 0.0,
+    "magenta": 0.0
+   },
+   "best": [
+    0.0,
+    0.167
+   ],
+   "crop_x": 0.503
+  },
+  {
+   "id": 1,
+   "t_in": 0.167,
+   "t_out": 1.5,
+   "dur": 1.333,
+   "block": "night",
+   "score": 70.6,
+   "brightness": 0.253,
+   "saturation": 0.659,
+   "colorful": 0.212,
+   "motion": 0.0482,
+   "hues": {
+    "warm": 0.015,
+    "green": 0.0,
+    "cyan": 0.007,
+    "blue": 0.751,
+    "magenta": 0.226
+   },
+   "best": [
+    0.25,
+    1.417
+   ],
+   "crop_x": 0.159
+  }
+ ]
+}

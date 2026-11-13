@@ -25,6 +25,17 @@ def comp_id(edit_id):
     return "Clip-" + "".join(c if c.isalnum() else "-" for c in edit_id)
 
 
+def delogo_filters(src_id, t0, dur):
+    """Стирание водяных знаков платформы (TikTok и т.п.) по sources.json: [x, y, w, h, от, до] в сек исходника."""
+    reg = load_json(ROOT / "sources.json").get(src_id, {})
+    out = []
+    for x, y, w, h, a, b in reg.get("delogo", []):
+        if b <= t0 or a >= t0 + dur:
+            continue
+        out.append(f"delogo=x={x}:y={y}:w={w}:h={h}:enable='between(t,{a - t0:.3f},{b - t0:.3f})'")
+    return out
+
+
 def cut_clip(shot, span, lut, force):
     src = source_path(shot["src"])
     info = probe(src)
@@ -33,7 +44,7 @@ def cut_clip(shot, span, lut, force):
     ch = sh / zoom
     cw = ch * 9 / 16
     if cw > sw:                       # исходник уже вертикальный/узкий
-        cw, ch = sw, sw * 16 / 9
+        cw, ch = sw / zoom, sw / zoom * 16 / 9
     cw, ch = int(cw) // 2 * 2, int(ch) // 2 * 2
     cx = float(shot.get("crop", 0.5))
     cy = float(shot.get("cy", 0.5))
@@ -46,18 +57,33 @@ def cut_clip(shot, span, lut, force):
         xe = clampx(f"({x0}+({x1}-{x0})*t/{dur:.4f})*{sw}-{cw / 2}")
     else:
         xe = str(max(0, min(sw - cw, int(cx * sw - cw / 2))))
-    key = f"{src.name}|{t0:.4f}|{dur:.4f}|{cw}|{ch}|{xe}|{y}|{lut.stat().st_mtime if lut else 0}|{FPS}"
+    band = shot.get("band")           # широкий кадр полосой по центру на размытом фоне: {"aspect": 1.78, "zoom": 1}
+    pre = [f"fps={FPS}"] + delogo_filters(shot["src"], t0, dur)
+    sharp = "unsharp=5:5:0.7:5:5:0" if H / ch > 1.6 else None
+    if band:
+        bz = float(band.get("zoom", 1.0))
+        bh = int(sh / bz) // 2 * 2
+        bw = min(sw, int(bh * float(band.get("aspect", sw / sh)))) // 2 * 2
+        bx = max(0, min(sw - bw, int(cx * sw - bw / 2)))
+        by = max(0, min(sh - bh, int(cy * sh - bh / 2)))
+        fh = int(W * bh / bw) // 2 * 2
+        graph = (",".join(pre) + ",split[a][b];"
+                 f"[a]crop={cw}:{ch}:'{xe}':{y},scale={W // 4}:{H // 4},boxblur=12:2,scale={W}:{H},eq=brightness=-0.12:saturation=1.25[bg];"
+                 f"[b]crop={bw}:{bh}:{bx}:{by},scale={W}:{fh}:flags=lanczos" + (",unsharp=5:5:0.5:5:5:0" if W / bw > 1.2 else "") + "[fg];"
+                 f"[bg][fg]overlay=0:(H-h)/2")
+    else:
+        graph = ",".join(pre + [f"crop={cw}:{ch}:'{xe}':{y}", f"scale={W}:{H}:flags=lanczos"] + ([sharp] if sharp else []))
+    if lut:
+        graph += f",lut3d=file={lut.relative_to(ROOT).as_posix()}:interp=tetrahedral"
+    graph += ",format=yuv420p"
+    key = f"{src.name}|{t0:.4f}|{dur:.4f}|{graph}|{lut.stat().st_mtime if lut else 0}"
     name = hashlib.sha1(key.encode()).hexdigest()[:12] + ".mp4"
     out = PUBLIC / "clips" / name
     if out.exists() and not force:
         return name
     out.parent.mkdir(parents=True, exist_ok=True)
-    vf = [f"fps={FPS}", f"crop={cw}:{ch}:'{xe}':{y}", f"scale={W}:{H}:flags=lanczos"]
-    if lut:
-        vf.append(f"lut3d=file={lut.relative_to(ROOT).as_posix()}:interp=tetrahedral")
-    vf.append("format=yuv420p")
     run([FFMPEG, "-v", "error", "-y", "-ss", f"{t0:.4f}", "-i", str(src), "-t", f"{dur:.4f}", "-an",
-         "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "6", "-bf", "0",
+         "-filter_complex", graph, "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "6", "-bf", "0",
          "-movflags", "+faststart", str(out)], cwd=str(ROOT))
     return name
 

@@ -1,9 +1,117 @@
 {
-  "_note": "Только официальные материалы Rockstar Games. Файлы лежат в sources/<id>.mp4 (не в git).",
-  "t1":       {"title": "Grand Theft Auto VI Trailer 1",            "url": "https://www.youtube.com/watch?v=QdBZY2fkU-0"},
-  "t2":       {"title": "Grand Theft Auto VI Trailer 2",            "url": "https://www.youtube.com/watch?v=VQRLujxTm3c"},
-  "launch":   {"title": "Grand Theft Auto VI Launch Trailer",       "url": "https://www.youtube.com/watch?v=rz1B4B2yBZY"},
-  "extended": {"title": "Grand Theft Auto VI: An Extended Look",    "url": "https://www.youtube.com/watch?v=tJbzMqJGH4k"},
-  "preload":  {"title": "Grand Theft Auto VI: Pre-Load Now",        "url": "https://www.youtube.com/watch?v=_yl5ELcmugI"},
-  "cover":    {"title": "Grand Theft Auto VI: Official Cover Art Reveal", "url": "https://www.youtube.com/watch?v=EiQEBYDox_k"}
+ "_note": "Только официальные материалы Rockstar Games. Файлы лежат в sources/<id>.mp4 (не в git).",
+ "t1": {
+  "title": "Grand Theft Auto VI Trailer 1",
+  "url": "https://www.youtube.com/watch?v=QdBZY2fkU-0"
+ },
+ "t2": {
+  "title": "Grand Theft Auto VI Trailer 2",
+  "url": "https://www.youtube.com/watch?v=VQRLujxTm3c"
+ },
+ "launch": {
+  "title": "Grand Theft Auto VI Launch Trailer",
+  "url": "https://www.youtube.com/watch?v=rz1B4B2yBZY"
+ },
+ "extended": {
+  "title": "Grand Theft Auto VI: An Extended Look",
+  "url": "https://www.youtube.com/watch?v=tJbzMqJGH4k"
+ },
+ "preload": {
+  "title": "Grand Theft Auto VI: Pre-Load Now",
+  "url": "https://www.youtube.com/watch?v=_yl5ELcmugI"
+ },
+ "cover": {
+  "title": "Grand Theft Auto VI: Official Cover Art Reveal",
+  "url": "https://www.youtube.com/watch?v=EiQEBYDox_k"
+ },
+ "tt_launch": {
+  "title": "Rockstar Games TikTok — GTA VI launch trailer (повёрнут в 16:9, присл. пользователем)",
+  "local": true,
+  "delogo": [
+   [
+    384,
+    326,
+    82,
+    87,
+    0,
+    5.15
+   ],
+   [
+    636,
+    1,
+    86,
+    92,
+    4.9,
+    99
+   ]
+  ]
+ },
+ "tt_para": {
+  "title": "Rockstar Games TikTok — An Extended Look (парашют)",
+  "local": true,
+  "delogo": [
+   [
+    1,
+    385,
+    125,
+    86,
+    0,
+    5.3
+   ],
+   [
+    340,
+    632,
+    123,
+    88,
+    3.0,
+    99
+   ],
+   [
+    1,
+    595,
+    72,
+    100,
+    0,
+    2.2
+   ]
+  ]
+ },
+ "tt_ocean": {
+  "title": "Геймплей Ocean Drive (репост официального геймплея, @gtasix.news)",
+  "local": true,
+  "delogo": [
+   [
+    1,
+    385,
+    125,
+    86,
+    0,
+    5.3
+   ],
+   [
+    340,
+    632,
+    123,
+    88,
+    3.0,
+    99
+   ]
+  ]
+ },
+ "cc_launch": {
+  "title": "Launch/Pre-Load трейлер — кусок (экспорт CapCut пользователя)",
+  "local": true
+ },
+ "cc_logo": {
+  "title": "Анимация логотипа VI (экспорт CapCut пользователя)",
+  "local": true
+ },
+ "cc_club": {
+  "title": "Клуб — кусок трейлера (экспорт CapCut)",
+  "local": true
+ },
+ "cc_flip": {
+  "title": "AudaCity — кусок трейлера (экспорт CapCut)",
+  "local": true
+ }
 }

@@ -133,7 +133,7 @@ def contact_sheet(path, src_id, shots, info, out_dir, per_sheet=40, cols=8):
     tw, th = 180, 320
     tmp = out_dir / f"_thumbs_{src_id}"
     tmp.mkdir(parents=True, exist_ok=True)
-    cw = int(round(info["height"] * 9 / 16))
+    cw = min(info["width"], int(round(info["height"] * 9 / 16)))
     colors = dict(night=(190, 70, 255), day=(40, 200, 230), sunset=(255, 140, 40), warm=(230, 200, 120), dark=(90, 90, 90))
     try:
         font = ImageFont.truetype("DejaVuSans-Bold.ttf", 15)

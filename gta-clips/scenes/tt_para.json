@@ -1,0 +1,111 @@
+{
+ "source": "tt_para",
+ "file": "tt_para.mp4",
+ "info": {
+  "duration": 16.3,
+  "has_audio": true,
+  "width": 464,
+  "height": 848,
+  "fps": 30.0,
+  "vcodec": "h264"
+ },
+ "analysis_fps": 12,
+ "shots": [
+  {
+   "id": 0,
+   "t_in": 0.0,
+   "t_out": 5.583,
+   "dur": 5.583,
+   "block": "day",
+   "score": 58.7,
+   "brightness": 0.406,
+   "saturation": 0.249,
+   "colorful": 0.104,
+   "motion": 0.0529,
+   "hues": {
+    "warm": 0.143,
+    "green": 0.0,
+    "cyan": 0.01,
+    "blue": 0.822,
+    "magenta": 0.026
+   },
+   "best": [
+    3.333,
+    4.5
+   ],
+   "crop_x": 0.513
+  },
+  {
+   "id": 1,
+   "t_in": 5.583,
+   "t_out": 9.333,
+   "dur": 3.75,
+   "block": "day",
+   "score": 58.2,
+   "brightness": 0.411,
+   "saturation": 0.3,
+   "colorful": 0.142,
+   "motion": 0.0373,
+   "hues": {
+    "warm": 0.338,
+    "green": 0.0,
+    "cyan": 0.007,
+    "blue": 0.64,
+    "magenta": 0.015
+   },
+   "best": [
+    5.667,
+    6.833
+   ],
+   "crop_x": 0.513
+  },
+  {
+   "id": 2,
+   "t_in": 9.333,
+   "t_out": 12.333,
+   "dur": 3.0,
+   "block": "night",
+   "score": 19.1,
+   "brightness": 0.216,
+   "saturation": 0.242,
+   "colorful": 0.023,
+   "motion": 0.0004,
+   "hues": {
+    "warm": 0.003,
+    "green": 0.0,
+    "cyan": 0.004,
+    "blue": 0.993,
+    "magenta": 0.001
+   },
+   "best": [
+    9.833,
+    11.0
+   ],
+   "crop_x": 0.513
+  },
+  {
+   "id": 3,
+   "t_in": 12.333,
+   "t_out": 16.333,
+   "dur": 4.0,
+   "block": "night",
+   "score": 28.9,
+   "brightness": 0.124,
+   "saturation": 0.508,
+   "colorful": 0.07,
+   "motion": 0.0035,
+   "hues": {
+    "warm": 0.392,
+    "green": 0.0,
+    "cyan": 0.489,
+    "blue": 0.091,
+    "magenta": 0.028
+   },
+   "best": [
+    12.417,
+    13.583
+   ],
+   "crop_x": 0.513
+  }
+ ]
+}

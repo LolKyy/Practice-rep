@@ -1,0 +1,63 @@
+{
+ "source": "cc_logo",
+ "file": "cc_logo.mp4",
+ "info": {
+  "duration": 8.8,
+  "has_audio": false,
+  "width": 720,
+  "height": 404,
+  "fps": 30.0,
+  "vcodec": "h264"
+ },
+ "analysis_fps": 12,
+ "shots": [
+  {
+   "id": 0,
+   "t_in": 0.0,
+   "t_out": 1.583,
+   "dur": 1.583,
+   "block": "dark",
+   "score": 0.0,
+   "brightness": 0.0,
+   "saturation": 0.0,
+   "colorful": 0.0,
+   "motion": 0.0001,
+   "hues": {
+    "warm": 0.0,
+    "green": 0.0,
+    "cyan": 0.0,
+    "blue": 0.0,
+    "magenta": 0.0
+   },
+   "best": [
+    0.083,
+    1.25
+   ],
+   "crop_x": 0.497
+  },
+  {
+   "id": 1,
+   "t_in": 1.583,
+   "t_out": 8.833,
+   "dur": 7.25,
+   "block": "night",
+   "score": 47.5,
+   "brightness": 0.229,
+   "saturation": 0.848,
+   "colorful": 0.136,
+   "motion": 0.016,
+   "hues": {
+    "warm": 0.054,
+    "green": 0.0,
+    "cyan": 0.0,
+    "blue": 0.016,
+    "magenta": 0.93
+   },
+   "best": [
+    4.583,
+    5.75
+   ],
+   "crop_x": 0.503
+  }
+ ]
+}

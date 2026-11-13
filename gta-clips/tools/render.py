@@ -50,7 +50,7 @@ def main():
     if a.mode == "keyframes":
         frames = []
         for s in tl["shots"]:
-            frames.append(s["from"] + (1 if s["fx"] else s["frames"] // 2))   # кадр 1 — виден удар (zoom/rgb/shake)
+            frames.append(s["from"] + min(4, s["frames"] - 1) if s["fx"] else s["from"] + s["frames"] // 2)   # кадр 4 — удар виден, вспышка уже сошла
         sd = out / f"{edit['id']}_stills"
         shutil.rmtree(sd, ignore_errors=True)
         run(["node", str(VIDEO / "stills.mjs"), tl["comp"], str(sd), ",".join(map(str, frames))] + bopts, cwd=str(VIDEO))

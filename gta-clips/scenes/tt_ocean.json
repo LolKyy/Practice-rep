@@ -1,0 +1,87 @@
+{
+ "source": "tt_ocean",
+ "file": "tt_ocean.mp4",
+ "info": {
+  "duration": 24.034014,
+  "has_audio": true,
+  "width": 464,
+  "height": 848,
+  "fps": 30.0,
+  "vcodec": "h264"
+ },
+ "analysis_fps": 12,
+ "shots": [
+  {
+   "id": 0,
+   "t_in": 0.0,
+   "t_out": 10.0,
+   "dur": 10.0,
+   "block": "warm",
+   "score": 57.9,
+   "brightness": 0.443,
+   "saturation": 0.287,
+   "colorful": 0.143,
+   "motion": 0.0336,
+   "hues": {
+    "warm": 0.636,
+    "green": 0.078,
+    "cyan": 0.014,
+    "blue": 0.235,
+    "magenta": 0.009
+   },
+   "best": [
+    0.083,
+    1.25
+   ],
+   "crop_x": 0.513
+  },
+  {
+   "id": 1,
+   "t_in": 10.0,
+   "t_out": 20.0,
+   "dur": 10.0,
+   "block": "warm",
+   "score": 71.4,
+   "brightness": 0.43,
+   "saturation": 0.332,
+   "colorful": 0.16,
+   "motion": 0.0787,
+   "hues": {
+    "warm": 0.522,
+    "green": 0.152,
+    "cyan": 0.129,
+    "blue": 0.103,
+    "magenta": 0.013
+   },
+   "best": [
+    14.333,
+    15.5
+   ],
+   "crop_x": 0.513
+  },
+  {
+   "id": 2,
+   "t_in": 20.0,
+   "t_out": 24.0,
+   "dur": 4.0,
+   "block": "night",
+   "score": 28.4,
+   "brightness": 0.123,
+   "saturation": 0.507,
+   "colorful": 0.066,
+   "motion": 0.0039,
+   "hues": {
+    "warm": 0.358,
+    "green": 0.0,
+    "cyan": 0.465,
+    "blue": 0.146,
+    "magenta": 0.031
+   },
+   "best": [
+    20.083,
+    21.25
+   ],
+   "crop_x": 0.513
+  }
+ ]
+}
