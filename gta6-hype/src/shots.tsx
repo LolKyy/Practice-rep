@@ -308,7 +308,7 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={P[12]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]}
       cam={cam([P[12], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
       <SynthSunset />
-      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="GTA 6" l2="ПЕРЕОЦЕНЕНА?" pill="ПИШИ В КОММЕНТЫ 👇" />
+      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="GTA 6" l2="ПЕРЕОЦЕНЕНА?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
       {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["ДА", "НЕТ!", "ШЕДЕВР", "ПОСМОТРИМ"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
       <Doodle a={hero([0, 0, 0.9], [[0, "smug"]])} />
     </Scene3D>)),
