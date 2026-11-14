@@ -27,14 +27,56 @@ def comp_id(edit_id):
     return "Clip-" + "".join(c if c.isalnum() else "-" for c in edit_id)
 
 
+def _patch(L, crop, flip, ox, oy, w, h, edges, en, F=14):
+    """Заплатка: участок рядом (crop) зеркально (flip) → сильно размыть → мягкие края (кроме сторон у края кадра) → наложить."""
+    t, bo, l, r = ("t" in edges), ("b" in edges), ("l" in edges), ("r" in edges)
+    parts = ["1"]
+    if not l: parts.append(f"X/{F}")
+    if not r: parts.append(f"(W-1-X)/{F}")
+    if not t: parts.append(f"Y/{F}")
+    if not bo: parts.append(f"(H-1-Y)/{F}")
+    expr = parts[0]
+    for q in parts[1:]:
+        expr = f"min({expr},{q})"                                   # min() в ffmpeg — только 2 аргумента
+    alpha = f"255*{expr}"
+    return (f"split[{L}m][{L}p];[{L}p]{crop},{flip},gblur=sigma=9,format=yuva444p,"
+            f"geq=lum='lum(X,Y)':cb='cb(X,Y)':cr='cr(X,Y)':a='{alpha}'[{L}q];"
+            f"[{L}m][{L}q]overlay={ox}:{oy}:{en}:format=auto")
+
+
 def delogo_filters(src_id, t0, dur):
-    """Стирание водяных знаков платформы (TikTok и т.п.) по sources.json: [x, y, w, h, от, до] в сек исходника."""
+    """Убрать водяные знаки платформы (TikTok и т.п.) по sources.json: [x, y, w, h, от, до] в сек исходника.
+    Знак у края кадра закрывается размытой зеркальной заплаткой из соседнего участка с мягкими краями;
+    знак внутри кадра — фильтром delogo. Возвращает звенья цепочки фильтров (могут содержать метки)."""
     reg = load_json(ROOT / "sources.json").get(src_id, {})
     out = []
-    for x, y, w, h, a, b in reg.get("delogo", []):
+    try:
+        info = probe(source_path(src_id))
+        SW, SH = info["width"], info["height"]
+    except Exception:
+        SW = SH = None
+    P = 14                                                          # запас под мягкий край
+    for n, (x, y, w, h, a, b) in enumerate(reg.get("delogo", [])):
         if b <= t0 or a >= t0 + dur:
             continue
-        out.append(f"delogo=x={x}:y={y}:w={w}:h={h}:enable='between(t,{a - t0:.3f},{b - t0:.3f})'")
+        en = f"enable='between(t,{a - t0:.3f},{b - t0:.3f})'"
+        L = f"wm{n}"
+        if SW and y <= 2 and y + 2 * h + P < SH:                   # у верхнего края → отражение участка снизу
+            x0 = max(0, x - P); w2 = min(SW - x0, w + 2 * P); h2 = y + h + P
+            out.append(_patch(L, f"crop={w2}:{h2}:{x0}:{h2}", "vflip", x0, 0, w2, h2,
+                              "t" + ("l" if x0 == 0 else "") + ("r" if x0 + w2 >= SW else ""), en))
+        elif SW and y + h >= SH - 2 and y - h - P > 0:             # у нижнего края → отражение участка сверху
+            x0 = max(0, x - P); w2 = min(SW - x0, w + 2 * P); h2 = SH - y + P
+            out.append(_patch(L, f"crop={w2}:{h2}:{x0}:{SH - 2 * h2}", "vflip", x0, SH - h2, w2, h2,
+                              "b" + ("l" if x0 == 0 else "") + ("r" if x0 + w2 >= SW else ""), en))
+        elif SW and x <= 2 and x + 2 * w + P < SW:                 # у левого края → отражение справа
+            y0 = max(0, y - P); h2 = min(SH - y0, h + 2 * P); w2 = x + w + P
+            out.append(_patch(L, f"crop={w2}:{h2}:{w2}:{y0}", "hflip", 0, y0, w2, h2, "l", en))
+        elif SW and x + w >= SW - 2 and x - w - P > 0:             # у правого края → отражение слева
+            y0 = max(0, y - P); h2 = min(SH - y0, h + 2 * P); w2 = SW - x + P
+            out.append(_patch(L, f"crop={w2}:{h2}:{SW - 2 * w2}:{y0}", "hflip", SW - w2, y0, w2, h2, "r", en))
+        else:
+            out.append(f"delogo=x={x}:y={y}:w={w}:h={h}:{en}")
     return out
 
 
