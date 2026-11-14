@@ -3,7 +3,7 @@ export type Shot = {
   i: number; src: string; src_in: number;
   from: number; frames: number;          // место на таймлайне (кадры 60 fps)
   clip: string; pad: number; span: number; // файл фрагмента, запас в кадрах, длина источника в кадрах
-  ramp: null | "in" | "out" | "smash";
+  ramp: null | "in" | "out" | "smash" | "glide";
   fx: Fx[]; strong: boolean; kind: "beat" | "half"; block: string; drift: number;
 };
 export type Caption = { text: string; color: string; from: number; to: number };

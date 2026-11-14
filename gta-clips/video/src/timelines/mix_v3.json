@@ -1,0 +1,402 @@
+{
+ "id": "mix_v3",
+ "comp": "Clip-mix-v3",
+ "fps": 60,
+ "width": 1080,
+ "height": 1920,
+ "res": 1,
+ "frames": 1151,
+ "music": {
+  "file": "music/launch_tt.mp3",
+  "start": 59.7182
+ },
+ "outro": 54,
+ "watermark": "CLIPSO",
+ "captions": [],
+ "shots": [
+  {
+   "i": 0,
+   "src": "tt_para",
+   "src_in": 2.25,
+   "frames": 228,
+   "clip": "clips/97af73fb8f57.mp4",
+   "pad": 3,
+   "span": 156.0,
+   "ramp": "glide",
+   "fx": [],
+   "strong": false,
+   "kind": "intro",
+   "block": "intro",
+   "drift": 0.07,
+   "from": 0
+  },
+  {
+   "i": 1,
+   "src": "tt_launch",
+   "src_in": 59.207,
+   "frames": 57,
+   "clip": "clips/fc671ea8331a.mp4",
+   "pad": 3,
+   "span": 50.16,
+   "ramp": "out",
+   "fx": [
+    "flash",
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#36 night",
+   "drift": 0,
+   "from": 228
+  },
+  {
+   "i": 2,
+   "src": "tt_launch",
+   "src_in": 73.725,
+   "frames": 57,
+   "clip": "clips/322050190a4f.mp4",
+   "pad": 3,
+   "span": 57.0,
+   "ramp": null,
+   "fx": [],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#51 night",
+   "drift": 0,
+   "from": 285
+  },
+  {
+   "i": 3,
+   "src": "tt_launch",
+   "src_in": 41.623,
+   "frames": 57,
+   "clip": "clips/974af1478ac6.mp4",
+   "pad": 3,
+   "span": 57.0,
+   "ramp": null,
+   "fx": [
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#25 night",
+   "drift": 0,
+   "from": 342
+  },
+  {
+   "i": 4,
+   "src": "tt_launch",
+   "src_in": 32.873,
+   "frames": 57,
+   "clip": "clips/674df45ee07d.mp4",
+   "pad": 3,
+   "span": 57.0,
+   "ramp": null,
+   "fx": [
+    "rgb"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#19 night",
+   "drift": 0,
+   "from": 399
+  },
+  {
+   "i": 5,
+   "src": "tt_launch",
+   "src_in": 69.207,
+   "frames": 58,
+   "clip": "clips/6c9c58943147.mp4",
+   "pad": 3,
+   "span": 49.88,
+   "ramp": null,
+   "fx": [
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#45 dark",
+   "drift": 0,
+   "from": 456
+  },
+  {
+   "i": 6,
+   "src": "tt_launch",
+   "src_in": 54.525,
+   "frames": 57,
+   "clip": "clips/798fa69ca5fc.mp4",
+   "pad": 3,
+   "span": 57.0,
+   "ramp": null,
+   "fx": [
+    "flash"
+   ],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#33 warm",
+   "drift": 0,
+   "from": 514
+  },
+  {
+   "i": 7,
+   "src": "tt_ocean",
+   "src_in": 0.425,
+   "frames": 57,
+   "clip": "clips/3745e7d95e22.mp4",
+   "pad": 3,
+   "span": 57.0,
+   "ramp": null,
+   "fx": [
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_ocean#0 warm",
+   "drift": 0,
+   "from": 571
+  },
+  {
+   "i": 8,
+   "src": "tt_launch",
+   "src_in": 13.457,
+   "frames": 57,
+   "clip": "clips/8ddacb228fe2.mp4",
+   "pad": 3,
+   "span": 55.29,
+   "ramp": null,
+   "fx": [],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#6 day",
+   "drift": 0,
+   "from": 628
+  },
+  {
+   "i": 9,
+   "src": "tt_launch",
+   "src_in": 20.457,
+   "frames": 56,
+   "clip": "clips/6691f402d9ff.mp4",
+   "pad": 3,
+   "span": 56.0,
+   "ramp": null,
+   "fx": [
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#11 dark",
+   "drift": 0,
+   "from": 685
+  },
+  {
+   "i": 10,
+   "src": "tt_para",
+   "src_in": 6.517,
+   "frames": 58,
+   "clip": "clips/defc20a4bffe.mp4",
+   "pad": 3,
+   "span": 58.0,
+   "ramp": "out",
+   "fx": [],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_para#1 day",
+   "drift": 0,
+   "from": 741
+  },
+  {
+   "i": 11,
+   "src": "tt_ocean",
+   "src_in": 17.367,
+   "frames": 28,
+   "clip": "clips/e9595cee357a.mp4",
+   "pad": 3,
+   "span": 28.0,
+   "ramp": null,
+   "fx": [
+    "flash",
+    "rgb"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_ocean#1 warm",
+   "drift": 0,
+   "from": 799
+  },
+  {
+   "i": 12,
+   "src": "tt_launch",
+   "src_in": 39.707,
+   "frames": 29,
+   "clip": "clips/e498c3f84315.mp4",
+   "pad": 3,
+   "span": 29.0,
+   "ramp": null,
+   "fx": [
+    "shake"
+   ],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#24 warm",
+   "drift": 0,
+   "from": 827
+  },
+  {
+   "i": 13,
+   "src": "tt_launch",
+   "src_in": 27.358,
+   "frames": 29,
+   "clip": "clips/1569992b02a5.mp4",
+   "pad": 3,
+   "span": 29.0,
+   "ramp": null,
+   "fx": [
+    "rgb"
+   ],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#15 sunset",
+   "drift": 0,
+   "from": 856
+  },
+  {
+   "i": 14,
+   "src": "tt_launch",
+   "src_in": 72.04,
+   "frames": 28,
+   "clip": "clips/4dd8b48bf26e.mp4",
+   "pad": 3,
+   "span": 28.0,
+   "ramp": null,
+   "fx": [
+    "shake"
+   ],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#50 sunset",
+   "drift": 0,
+   "from": 885
+  },
+  {
+   "i": 15,
+   "src": "tt_launch",
+   "src_in": 53.79,
+   "frames": 29,
+   "clip": "clips/bb299f8ec183.mp4",
+   "pad": 3,
+   "span": 25.23,
+   "ramp": null,
+   "fx": [
+    "rgb"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#31 sunset",
+   "drift": 0,
+   "from": 913
+  },
+  {
+   "i": 16,
+   "src": "tt_launch",
+   "src_in": 38.29,
+   "frames": 29,
+   "clip": "clips/3f8760cfe20d.mp4",
+   "pad": 3,
+   "span": 29.0,
+   "ramp": null,
+   "fx": [
+    "zoom"
+   ],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#23 sunset",
+   "drift": 0,
+   "from": 942
+  },
+  {
+   "i": 17,
+   "src": "tt_launch",
+   "src_in": 25.623,
+   "frames": 27,
+   "clip": "clips/f1f25e154433.mp4",
+   "pad": 3,
+   "span": 27.0,
+   "ramp": null,
+   "fx": [],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#14 sunset",
+   "drift": 0,
+   "from": 971
+  },
+  {
+   "i": 18,
+   "src": "tt_launch",
+   "src_in": 66.373,
+   "frames": 30,
+   "clip": "clips/33e2dd2fdd26.mp4",
+   "pad": 3,
+   "span": 30.0,
+   "ramp": null,
+   "fx": [],
+   "strong": false,
+   "kind": "beat",
+   "block": "tt_launch#43 warm",
+   "drift": 0,
+   "from": 998
+  },
+  {
+   "i": 19,
+   "src": "tt_launch",
+   "src_in": 77.207,
+   "frames": 123,
+   "clip": "clips/3b7d1e04354b.mp4",
+   "pad": 3,
+   "span": 123.0,
+   "ramp": null,
+   "fx": [
+    "flash",
+    "zoom"
+   ],
+   "strong": true,
+   "kind": "beat",
+   "block": "tt_launch#53 night",
+   "drift": 0.06,
+   "from": 1028
+  }
+ ],
+ "cuts": [
+  0,
+  228,
+  285,
+  342,
+  399,
+  456,
+  514,
+  571,
+  628,
+  685,
+  741,
+  799,
+  827,
+  856,
+  885,
+  913,
+  942,
+  971,
+  998,
+  1028
+ ],
+ "strong": [
+  228,
+  342,
+  399,
+  456,
+  571,
+  685,
+  799,
+  913,
+  1028
+ ]
+}

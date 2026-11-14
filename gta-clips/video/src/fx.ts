@@ -8,6 +8,8 @@ export const rampMap = (ramp: string | null, u: number): number => {
       return 0.25 * c + 0.75 * Math.pow(c, 2.4);
     case "out":   // быстро → слоумо
       return 0.25 * c + 0.75 * (1 - Math.pow(1 - c, 2.4));
+    case "glide": // почти обычная скорость → плавное слоумо к концу (для интро)
+      return 0.6 * c + 0.4 * (1 - Math.pow(1 - c, 2));
     case "smash": // быстро → слоумо → быстро
       return 0.3 * c + 0.7 * (0.5 + 0.5 * Math.sign(2 * c - 1) * Math.pow(Math.abs(2 * c - 1), 3));
     default:

@@ -192,12 +192,24 @@ def main():
     if lut and not lut.exists():
         sys.exit(f"нет LUT {lut} — python tools/grade_lut.py")
     shots, g = [], 0
-    for n, s in enumerate(edit["shots"]):
+    # интро: один длинный «крутой момент» до первого удара сетки (например, 3.8 с до дропа песни)
+    intro = edit.get("intro")
+    IF = int(round(float(intro["dur"]) * FPS)) if intro else 0
+    if intro:
+        span = (float(intro["out"]) - float(intro["in"])) if intro.get("out") is not None else intro["dur"] * float(intro.get("speed", 1))
+        if span > 4.0:
+            sys.exit(f"интро: фрагмент {span:.2f} с > 4 с")
+        clip = cut_clip(intro, span, lut, args.force, res, args.upscale, args.interp or edit.get("interp", False))
+        shots.append(dict(i=0, src=intro["src"], src_in=intro["in"], from_=0, frames=IF, clip=f"clips/{clip}", pad=PAD,
+                          span=round(span * FPS, 3), ramp=intro.get("ramp"), fx=intro.get("fx", []), strong=False,
+                          kind="intro", block="intro", drift=intro.get("drift", 0)))
+        print(f"  интро 0+{IF}к  {intro['src']}@{intro['in']:.2f}  span {span:.2f}c", file=sys.stderr)
+    for n, s in enumerate(edit["shots"], start=len(shots)):
         k = int(s.get("beats", 1))
         if g >= len(grid):
             print(f"! шот {n} лишний — сетка закончилась", file=sys.stderr); break
         seg = grid[g:g + k]
-        frm, frames = seg[0]["from"], sum(x["frames"] for x in seg)
+        frm, frames = seg[0]["from"] + IF, sum(x["frames"] for x in seg) + int(round(float(s.get("extra", 0)) * FPS))
         g += k
         dur = frames / FPS
         span = (float(s["out"]) - float(s["in"])) if s.get("out") is not None else dur * float(s.get("speed", 1))
@@ -209,7 +221,7 @@ def main():
                           kind=seg[0]["kind"], block=s.get("note", ""), drift=s.get("drift", 0)))
         print(f"  #{n:2} {frm:4}+{frames:3}к  {s['src']}@{s['in']:.2f}  span {span:.2f}c  {s.get('fx', [])}", file=sys.stderr)
     if g < len(grid):
-        print(f"! заполнено {g} из {len(grid)} ударов — эдит обрежется на кадре {grid[g]['from']}", file=sys.stderr)
+        print(f"! заполнено {g} из {len(grid)} ударов — эдит обрежется на кадре {grid[g]['from'] + IF}", file=sys.stderr)
     total = shots[-1]["from_"] + shots[-1]["frames"]
     for s in shots:
         s["from"] = s.pop("from_")
@@ -217,7 +229,7 @@ def main():
     if edit.get("music"):
         mf = PUBLIC / "music" / edit["music"]
         if mf.exists():
-            music = dict(file=f"music/{edit['music']}", start=beats["start"])
+            music = dict(file=f"music/{edit['music']}", start=max(0.0, beats["start"] - IF / FPS))
         else:
             print(f"! нет {mf} — превью будет без трека", file=sys.stderr)
     caps = [dict(text=c["text"], color=c.get("color", "#ff3df2"), from_=int(round(c["from"] * FPS)),
