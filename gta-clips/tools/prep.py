@@ -42,8 +42,8 @@ def find_upscaler():
     """Real-ESRGAN (ncnn-vulkan, работает на любой видеокарте с Vulkan, в т.ч. RTX 4060): REALESRGAN=путь к exe
     или tools/bin/realesrgan-ncnn-vulkan(.exe). Модели — рядом с exe в папке models/."""
     import shutil as sh
-    for c in [os.environ.get("REALESRGAN"), ROOT / "tools/bin/realesrgan-ncnn-vulkan.exe",
-              ROOT / "tools/bin/realesrgan-ncnn-vulkan", sh.which("realesrgan-ncnn-vulkan")]:
+    found = sorted((ROOT / "tools/bin").glob("**/realesrgan-ncnn-vulkan*")) if (ROOT / "tools/bin").exists() else []
+    for c in [os.environ.get("REALESRGAN"), *[f for f in found if f.suffix in (".exe", "")], sh.which("realesrgan-ncnn-vulkan")]:
         if c and Path(c).exists():
             return Path(c)
     return None

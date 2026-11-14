@@ -9,3 +9,4 @@ video/public/music/
 __pycache__/
 scenes/_thumbs_*/
 scenes/*.jpg
+tools/bin/

@@ -1,6 +1,6 @@
 """Подготовить присланные пользователем ролики (для эдита mix_v1/mix_v2) → sources/*.mp4.
 
-  python tools/import_mix.py <папка с роликами>
+  python tools/import_mix.py [папка с роликами]   — без папки ищет сам в Загрузках, на Рабочем столе, в F:\\video
 
 Ищет файлы по концу имени (как их отдали TikTok/CapCut), поворачивает TikTok-ролик трейлера в 16:9,
 обрезает чёрные полосы у экспортов CapCut. Трейлеры целиком остаются только в sources/ (не в git).
@@ -8,7 +8,7 @@
 import sys
 from pathlib import Path
 
-from common import FFMPEG, SOURCES, run
+from common import FFMPEG, SOURCES, ROOT, run
 
 ENC = ["-c:v", "libx264", "-preset", "slow", "-crf", "12", "-pix_fmt", "yuv420p"]
 MAP = [  # (конец имени файла, id, фильтр, со звуком)
@@ -22,10 +22,39 @@ MAP = [  # (конец имени файла, id, фильтр, со звуко�
 ]
 
 
+REPO = ROOT.parent.resolve()
+
+
+def candidates():
+    """Где обычно лежат скачанные ролики: Загрузки, Рабочий стол, Видео, F:\\video (с подпапками, до 3 уровней)."""
+    home = Path.home()
+    roots = [home / "Downloads", home / "Desktop", home / "Videos", home / "OneDrive" / "Desktop",
+             Path("F:/video"), Path("F:/"), Path("D:/video")]
+    seen = set()
+    for r in roots:
+        if not r.exists():
+            continue
+        for depth in range(4):
+            for p in r.glob("/".join(["*"] * (depth + 1))):
+                p = p.resolve()
+                if p.suffix.lower() in (".mp4", ".mov") and p not in seen and REPO not in p.parents:
+                    seen.add(p)
+                    yield p
+
+
 def main():
-    folder = Path(sys.argv[1])
     SOURCES.mkdir(exist_ok=True)
-    files = list(folder.iterdir())
+    if len(sys.argv) > 1:
+        files = list(Path(sys.argv[1]).iterdir())
+    else:
+        files = []
+        need = [m[0] for m in MAP]
+        for p in candidates():
+            if any(p.name.endswith(n) for n in need):
+                files.append(p)
+            if all(any(f.name.endswith(n) for f in files) for n in need):
+                break
+        print("Нашёл ролики:", *sorted({str(f.parent) for f in files}) or ["— ничего"])
     for suffix, sid, vf, audio in MAP:
         f = next((p for p in files if p.name.endswith(suffix) and not (suffix == "202611140159.mp4" and "_" in p.name.split("202611140159")[-1])), None)
         if not f:
