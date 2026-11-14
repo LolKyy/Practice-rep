@@ -64,8 +64,19 @@ const Caption: React.FC<{ c: CaptionT; cuts: number[] }> = ({ c, cuts }) => {
   );
 };
 
+// Финал: плавное затемнение в чёрный и затухание трека за tl.outro кадров
+const Outro: React.FC<{ tl: Timeline }> = ({ tl }) => {
+  const f = useCurrentFrame();
+  const n = tl.outro || 0;
+  if (!n) return null;
+  const o = interpolate(f, [tl.frames - n, tl.frames - 1], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return <AbsoluteFill style={{ backgroundColor: "#000", opacity: Math.pow(o, 1.4) }} />;
+};
+
 export const Clip: React.FC<{ tl: Timeline; withAudio?: boolean }> = ({ tl, withAudio = true }) => {
   useFonts();
+  const n = tl.outro || 0;
+  const volume = (f: number) => (n ? interpolate(f, [tl.frames - n * 1.4, tl.frames - 1], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 1);
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       {tl.shots.map((s) => (
@@ -81,7 +92,8 @@ export const Clip: React.FC<{ tl: Timeline; withAudio?: boolean }> = ({ tl, with
         </Sequence>
       ))}
       {tl.watermark && <Watermark text={tl.watermark} />}
-      {withAudio && tl.music && <Audio src={staticFile(tl.music.file)} trimBefore={Math.round(tl.music.start * tl.fps)} />}
+      <Outro tl={tl} />
+      {withAudio && tl.music && <Audio src={staticFile(tl.music.file)} trimBefore={Math.round(tl.music.start * tl.fps)} volume={volume} />}
     </AbsoluteFill>
   );
 };

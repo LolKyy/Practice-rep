@@ -52,7 +52,7 @@ pip install -r tools/requirements.txt
 cd video && npm install && cd ..
 
 python3 tools/fetch.py get t2                      # или: python3 tools/fetch.py import t2 <скачанный файл>
-python3 tools/beats.py <трек.mp3> --len 16 --plot  # трек положить и в video/public/music/
+python3 tools/beats.py <трек.mp3> --len 16 --plot  # трек положить и в video/public/music/; --per 2 — спокойнее (шот на 2 доли)
 python3 tools/scenes.py t2 --sheet
 python3 tools/draft.py --id t2_v1 --beats beats/<трек>.json --scenes t2 --music <трек.mp3>
 python3 tools/render.py edits/t2_v1.json keyframes
@@ -64,6 +64,26 @@ python tools/render.py edits/t2_v1.json video --chrome-mode chrome-for-testing -
 ```
 Просмотр/правка в браузере: `cd video && npx remotion studio` (композиция `Clip-<id>`).
 
+## 4K на своём ПК (Windows, RTX 4060)
+Качество упирается в исходник: из 720p/464p в 4K деталей не прибавится, поэтому есть два пути (лучше оба):
+1. **4K-исходники** — официальные видео Rockstar с YouTube (на домашнем IP yt-dlp качает 4K):
+   `python tools/fetch.py get launch t2 extended` → потом в эдите заменить `src` на них.
+2. **AI-апскейл** слабых исходников ×4 (Real-ESRGAN на видеокарте): скачать
+   `realesrgan-ncnn-vulkan-20220424-windows.zip` со страницы релизов github.com/xinntao/Real-ESRGAN,
+   распаковать в `gta-clips/tools/bin/` (рядом с exe должна лежать папка `models`). Ключ `--upscale`.
+
+```
+cd F:\video\Practice-rep\gta-clips
+pip install -r tools/requirements.txt
+cd video && npm install && cd ..
+python tools/import_mix.py "<папка с присланными роликами>"
+python tools/render.py edits/mix_v2.json video --res 2 --interp --upscale --chrome-mode chrome-for-testing --browser "C:\Program Files\Google\Chrome\Application\chrome.exe"
+```
+`--res 2` — 2160×3840 (вёрстка та же, Remotion рендерит с `--scale=2`), `--interp` — 30→60 fps интерполяцией движения,
+`--upscale` — Real-ESRGAN x4plus для исходников ниже 1920 px. Без `--upscale` всё тоже работает, просто мягче.
+Готово: `out/mix_v2_preview.mp4` (с треком) и `out/mix_v2_upload.mp4` (без звука).
+
 ## Замеры
 - Облако (4 ядра, без GPU): 16 с эдита (954 кадра) — рендер 3 мин 15 с; нарезка 38 фрагментов — ~1 мин 10 с.
+- 4K (2160×3840) в облаке: ~0.6 с/кадр → 17 с эдита ≈ 10 мин; на RTX 4060 быстрее.
 - Точность: кадр исходника на таймлайне совпадает до кадра (проверено синтетикой со счётчиком кадров).

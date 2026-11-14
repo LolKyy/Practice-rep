@@ -34,10 +34,21 @@ def main():
     ap.add_argument("--concurrency")
     ap.add_argument("--gl", default="angle")
     ap.add_argument("--no-prep", action="store_true")
+    ap.add_argument("--res", type=int, help="2 = 4K 2160×3840")
+    ap.add_argument("--upscale", nargs="?", const="realesrgan-x4plus", help="AI-апскейл слабых исходников (Real-ESRGAN)")
+    ap.add_argument("--bitrate", help="вместо CRF, напр. 60M")
+    ap.add_argument("--interp", action="store_true", help="30→60 fps интерполяцией движения")
     a = ap.parse_args()
     edit = load_json(a.edit)
     if not a.no_prep:
-        run([sys.executable, str(ROOT / "tools" / "prep.py"), a.edit])
+        cmd = [sys.executable, str(ROOT / "tools" / "prep.py"), a.edit]
+        if a.res:
+            cmd += ["--res", str(a.res)]
+        if a.upscale:
+            cmd += ["--upscale", a.upscale]
+        if a.interp:
+            cmd.append("--interp")
+        run(cmd)
     tl = load_json(VIDEO / "src" / "timelines" / f"{edit['id']}.json")
     out = ROOT / "out"
     out.mkdir(exist_ok=True)
@@ -74,7 +85,7 @@ def main():
         print("→", f)
     else:
         prev = out / f"{edit['id']}_preview.mp4"
-        cmd = [npx(), "remotion", "render", "src/index.ts", tl["comp"], str(prev), "--codec=h264", "--crf=16",
+        cmd = [npx(), "remotion", "render", "src/index.ts", tl["comp"], str(prev), "--codec=h264", "--pixel-format=yuv420p",
                f"--gl={a.gl}", "--x264-preset=slow", "--audio-bitrate=320k"]
         if a.browser:
             cmd.append(f"--browser-executable={a.browser}")
@@ -82,6 +93,9 @@ def main():
             cmd.append(f"--chrome-mode={a.chrome_mode}")
         if a.concurrency:
             cmd.append(f"--concurrency={a.concurrency}")
+        if tl.get("res", 1) > 1:                       # 4K: та же вёрстка 1080×1920, пиксели ×2 (клипы уже 2160×3840)
+            cmd.append(f"--scale={tl['res']}")
+        cmd.append(f"--video-bitrate={a.bitrate}" if a.bitrate else f"--crf={12 if tl.get('res', 1) > 1 else 16}")
         run(cmd, cwd=str(VIDEO))
         up = out / f"{edit['id']}_upload.mp4"
         run([FFMPEG, "-v", "error", "-y", "-i", str(prev), "-an", "-c:v", "copy", "-movflags", "+faststart", str(up)])

@@ -96,7 +96,7 @@ def pick_window(a, length):
     return best[1]
 
 
-def build(a, start_idx, length, climax=None, half=True):
+def build(a, start_idx, length, climax=None, half=True, per=1):
     beats, period = a["beats"], a["period"]
     start = beats[start_idx]
     n_beats = int(round(length / period))
@@ -121,9 +121,12 @@ def build(a, start_idx, length, climax=None, half=True):
         rel = t - start
         bar_pos = (i - a["phase"]) % 4
         strong = bar_pos == 0 or a["on_at"][i] >= strong_thr
+        in_climax = bool(climax) and climax[0] - 1e-3 <= rel < climax[1] - 1e-3
+        if n % per and not (in_climax and half):
+            continue                     # медленный режим: склейка раз в per долей (в кульминации — каждую долю)
         cuts.append(dict(t=rel, kind="beat", strong=bool(strong), down=bar_pos == 0, beat=n))
         nxt = (win[n + 1][1] if n + 1 < len(win) else end) - start
-        if half and climax and climax[0] - 1e-3 <= rel < climax[1] - 1e-3:
+        if half and per == 1 and in_climax:
             cuts.append(dict(t=(rel + nxt) / 2, kind="half", strong=False, down=False, beat=n))
     for c in cuts:
         c["frame"] = int(round(c["t"] * FPS))
@@ -174,7 +177,8 @@ def main():
     ap.add_argument("--start", type=float, help="начало окна в треке, с (снапится к ближайшей доле)")
     ap.add_argument("--bpm", type=float)
     ap.add_argument("--climax", help="a-b в секундах от начала окна: там полудоли")
-    ap.add_argument("--no-half", action="store_true")
+    ap.add_argument("--no-half", action="store_true", help="без ускорения в кульминации")
+    ap.add_argument("--per", type=int, default=1, help="долей на шот: 1 — быстрый эдит, 2 — спокойнее (в кульминации по доле)")
     ap.add_argument("--plot", action="store_true")
     args = ap.parse_args()
     a = analyze(args.track, args.bpm)
@@ -183,7 +187,7 @@ def main():
     else:
         idx = pick_window(a, args.len)
     climax = tuple(map(float, args.climax.split("-"))) if args.climax else None
-    res = build(a, idx, args.len, climax, half=not args.no_half)
+    res = build(a, idx, args.len, climax, half=not args.no_half, per=args.per)
     out = Path(args.out) if args.out else ROOT / "beats" / (Path(args.track).stem + ".json")
     data = dict(track=Path(args.track).name, bpm=round(a["tempo"], 2), period=round(a["period"], 4),
                 track_duration=round(a["duration"], 3), fps=FPS, **res,

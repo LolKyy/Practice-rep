@@ -9,6 +9,7 @@ export type Shot = {
 export type Caption = { text: string; color: string; from: number; to: number };
 export type Timeline = {
   id: string; comp: string; fps: number; width: number; height: number; frames: number;
+  res?: number; outro?: number;           // res 2 = 4K (рендер с --scale=2), outro — кадров затемнения в конце
   music: null | { file: string; start: number };
   watermark: string; captions: Caption[]; shots: Shot[]; cuts: number[]; strong: number[];
 };
