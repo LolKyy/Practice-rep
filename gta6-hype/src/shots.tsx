@@ -4,7 +4,7 @@ import words from "./words.json";
 import { setData, wt, ps, TOTAL } from "./timeline.js";
 setData(words);
 import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText, useSec } from "../../shared/remotion/kit";
-import { NewsStudio, SynthSunset, QuestionCard, Confetti, drawBg, rr, PINK, CYAN, YEL, RED, INK } from "../../shared/remotion/sets";
+import { NewsStudio, SynthSunset, QuestionCard, Confetti, drawBg, drawStamp, rr, PINK, CYAN, YEL, RED, INK } from "../../shared/remotion/sets";
 import { titleDraw, loadDraw } from "../../shared/remotion/sets2";
 import { Apartment, City, Store2, Stage2, Car } from "../../shared/remotion/sets3";
 import { viceMapDraw, ClubFront, ShoeShop, GasStation, Gym, TrunkCar, Garage, FlippedCar, HotDog, wantedDraw, realismDraw, choresDraw, missionDraw, fpsDraw, yearsDraw } from "../../shared/remotion/sets4";
@@ -34,10 +34,11 @@ const t = {
   p6mech: W(6, "механики"), p6rut: W(6, "рутину"), p6gas: W(6, "заправь"), p6gym: W(6, "сходи"), p6eat: W(6, "поешь"), p6over: W(6, "переешь"), p6gun: W(6, "лишнее"),
   p7drive: W(7, "доедь"), p7take: W(7, "забери"), p7run: W(7, "убеги"),
   p8wait: W(8, "ждали"), p8fps: W(8, "чтобы"), p8thirty: W(8, "тридцать"), p8pro: W(8, "даже"),
-  p9there: W(9, "там"), p9cars: W(9, "тачки"), p9guns: W(9, "стволы"), p9plus: W(9, "плюшки"),
-  p10how: W(10, "как"),
+  p9there: W(10, "там"), p9cars: W(10, "тачки"), p9guns: W(10, "стволы"), p9plus: W(10, "плюшки"),
+  p9bug: W(9, "баги"), p9fly: W(9, "летающие"), p9sony: W(9, "и"), p9tho: W(9, "хотя"), p9move: W(9, "переносили"),
+  p10how: W(11, "как"),
 };
-const P = [0, ...Array.from({ length: 11 }, (_, i) => ps(i + 1))];
+const P = [0, ...Array.from({ length: 12 }, (_, i) => ps(i + 1))];
 const END = TOTAL;
 const cam = (...k: CamKey[]) => k;
 const S = (t0: number, t1: number, el: React.ReactNode, tr?: Shot["tr"]): Shot => ({ t0, t1, el, tr });
@@ -50,6 +51,28 @@ const previewDraw = (tRed: number) => (g: CanvasRenderingContext2D, s: number, W
   fitText(g, s < tRed ? "🐢" : "🤠🐎", W * 0.68, H * 0.47, W * 0.4, H * 0.32, "#fff"); fitText(g, s < tRed ? "МЕДЛЕННЕЕ" : "ПОЧТИ RED DEAD", W * 0.68, H * 0.82, W * 0.55, H * 0.14, YEL); };
 const soonDraw = (g: CanvasRenderingContext2D, s: number, W: number, H: number) => { titleDraw()(g, s, W, H); g.fillStyle = "rgba(0,0,0,0.55)"; rr(g, W * 0.1, H * 0.72, W * 0.8, H * 0.18, 20); g.fill(); fitText(g, "УВИДИМ ПОСЛЕ ВЫХОДА 👀", W / 2, H * 0.81, W * 0.75, H * 0.11, "#fff"); };
 const qDraw = (g: CanvasRenderingContext2D, s: number, W: number, H: number) => { drawBg(g, W, H, "#1a0f2a", "#3a1a4a"); for (let i = 0; i < 7; i++) fitText(g, "?", W * (0.1 + i * 0.13), H * (0.5 + 0.25 * Math.sin(s * 3 + i)), W * 0.12, H * 0.4, [YEL, PINK, CYAN][i % 3]); };
+
+const glitchDraw = (t0: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
+  titleDraw()(g, s, W, H); if (s < t0) return; const k = Math.min(1, (s - t0) / 0.8);
+  for (let i = 0; i < 8; i++) { const y = ((Math.sin(s * 37 + i * 13) + 1) / 2) * H, h = H * 0.03 * (1 + (i % 3));
+    g.drawImage(g.canvas, 0, y, W, h, (Math.sin(s * 53 + i) * W * 0.08) * k, y, W, h); g.fillStyle = ["rgba(255,0,80,0.35)", "rgba(0,255,220,0.35)"][i % 2]; g.fillRect(0, y, W * k, h * 0.4); }
+};
+const bugsDraw = (tFly: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
+  g.fillStyle = "#7ac0f0"; g.fillRect(0, 0, W, H * 0.6); g.fillStyle = "#4a4a56"; g.fillRect(0, H * 0.6, W, H * 0.4);
+  const fy = s < tFly ? H * 0.62 : H * 0.62 - Math.min(1, (s - tFly) / 0.6) * H * 0.42, x = W * 0.62, r = (s - tFly) * 2;
+  g.save(); g.translate(x, fy); if (s >= tFly) g.rotate(r); g.fillStyle = "#ffd23f"; rr(g, -W * 0.14, -H * 0.06, W * 0.28, H * 0.1, 14); g.fill(); rr(g, -W * 0.07, -H * 0.13, W * 0.14, H * 0.08, 12); g.fill();
+  g.fillStyle = "#111"; for (const dx of [-0.09, 0.09]) { g.beginPath(); g.arc(W * dx, H * 0.04, W * 0.035, 0, 7); g.fill(); } g.restore();
+  g.strokeStyle = "#1a1020"; g.lineWidth = W * 0.012; const px = W * 0.22, py = H * 0.5; g.beginPath(); g.arc(px, py - H * 0.13, W * 0.035, 0, 7); g.stroke();
+  g.beginPath(); g.moveTo(px, py - H * 0.09); g.lineTo(px, py); g.moveTo(px - W * 0.12, py - H * 0.07); g.lineTo(px + W * 0.12, py - H * 0.07); g.moveTo(px, py); g.lineTo(px - W * 0.03, py + H * 0.1); g.moveTo(px, py); g.lineTo(px + W * 0.03, py + H * 0.1); g.stroke();
+  fitText(g, "T-POSE", px, py + H * 0.16, W * 0.25, H * 0.06, RED);
+  if (Math.floor(s * 6) % 2) { g.fillStyle = "rgba(255,0,80,0.25)"; g.fillRect(0, H * 0.3, W, H * 0.05); }
+  g.fillStyle = RED; rr(g, W * 0.05, H * 0.05, W * 0.5, H * 0.13, 12); g.fill(); fitText(g, "⚠ ERROR 0xBUG", W * 0.3, H * 0.115, W * 0.45, H * 0.08, "#fff");
+};
+const refundDraw = (tStamp: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
+  drawBg(g, W, H, "#0a1a4a", "#1d3a9a"); fitText(g, "PS STORE", W / 2, H * 0.14, W * 0.5, H * 0.11, "#fff");
+  g.fillStyle = "#fff"; rr(g, W * 0.12, H * 0.27, W * 0.76, H * 0.36, 20); g.fill(); fitText(g, "ИГРА УДАЛЕНА", W / 2, H * 0.45, W * 0.66, H * 0.13, RED);
+  if (s >= tStamp) { const k = Math.min(1, (s - tStamp) / 0.3); g.globalAlpha = k; fitText(g, "💸 ВОЗВРАТ ДЕНЕГ", W / 2, H * 0.8, W * 0.8 * (2 - k), H * 0.12, YEL); g.globalAlpha = 1; }
+};
 
 // ================================================================= ШОТЫ
 export const SHOTS: Shot[] = [
@@ -222,43 +245,70 @@ export const SHOTS: Shot[] = [
       <group position={[0.35, 0.62, -0.7]} rotation={[0, -0.3, 0.1]}><Box p={[0, 0, 0]} s={[0.3, 0.38, 0.14]} c="#f4f4f8" /><Sign p={[0, 0.03, 0.071]} w={0.27} h={0.1} text="PS5 PRO" bg="#1a1a2a" fg="#fff" glow={0.4} /></group>
     </Scene3D>)),
 
+  // 22a. А вдруг как с Киберпанком? — картинка на ТВ начинает глючить
+  S(P[9], t.p9bug, (
+    <Scene3D t0={P[9]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]} shakes={[[P[9] + 1.6, 0.5]]}
+      cam={cam([P[9], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [t.p9bug, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50])}>
+      <Apartment tv={glitchDraw(P[9] + 1.2)} night />
+      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [P[9] + 1.3, "nervous"]], {}, HERO_PAD)} />
+    </Scene3D>)),
+  // 22b. Баги, летающие тачки: ТВ крупно
+  S(t.p9bug, t.p9sony, (
+    <Scene3D t0={t.p9bug} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
+      cam={cam([t.p9bug, [1.0, 1.18, -0.2], [1.0, 1.18, -1.85], 46], [t.p9sony, [1.0, 1.18, -0.45], [1.0, 1.18, -1.85], 44])}>
+      <Apartment tv={bugsDraw(t.p9fly)} night />
+    </Scene3D>), "cut"),
+  // 22c. Sony возвращает деньги
+  S(t.p9sony, t.p9tho, (
+    <Scene3D t0={t.p9sony} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
+      cam={cam([t.p9sony, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50], [t.p9tho, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
+      <Apartment tv={refundDraw(t.p9sony + 0.3)} night />
+      <Doodle a={hero([-0.2, 0, -0.9], [[0, "shock"], [t.p9sony + 0.8, "cry"]], {}, HERO_PAD)} />
+    </Scene3D>), "cut"),
+  // 22d. Хотя игру переносили как раз поэтому — штамп «ПЕРЕНЕСЕНО»
+  S(t.p9tho, P[10], (
+    <Scene3D t0={t.p9tho} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]} shakes={[[t.p9move + 0.2, 0.7]]}
+      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[10], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
+      <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "GTA 6", W / 2, H * 0.3, W * 0.6, H * 0.22, "#fff"); drawStamp(g, W, H, s, t.p9move + 0.1, "ПЕРЕНЕСЕНО", H * 0.65); }} />
+    </Scene3D>)),
+
   // 23. Зато Ultimate за $100 — без вопросов: шоурум, золотая тачка
-  S(P[9], t.p9there, (
-    <Scene3D t0={P[9]} light="office" bg="#1a1a2a" focus={[0, 0.9, -0.6]}
-      cam={cam([P[9], [1.6, 1.5, 2.8], [0, 0.9, -0.8], 58], [t.p9there, [0.8, 1.4, 2.2], [0, 0.9, -0.8], 56])}>
+  S(P[10], t.p9there, (
+    <Scene3D t0={P[10]} light="office" bg="#1a1a2a" focus={[0, 0.9, -0.6]}
+      cam={cam([P[10], [1.6, 1.5, 2.8], [0, 0.9, -0.8], 58], [t.p9there, [0.8, 1.4, 2.2], [0, 0.9, -0.8], 56])}>
       <Garage />
       <Doodle a={hero([1.35, 0, 0.2], [[0, "hype"]])} />
     </Scene3D>)),
   // 24. Тачки, стволы и прочие плюшки — конфетти
-  S(t.p9there, P[10], (
+  S(t.p9there, P[11], (
     <Scene3D t0={t.p9there} light="office" bg="#1a1a2a" focus={[-0.5, 1.0, -0.8]}
-      cam={cam([t.p9there, [-0.2, 1.4, 2.0], [-0.4, 1.0, -0.8], 56], [P[10], [-0.5, 1.4, 1.5], [-0.6, 1.0, -1.0], 54])}>
+      cam={cam([t.p9there, [-0.2, 1.4, 2.0], [-0.4, 1.0, -0.8], 56], [P[11], [-0.5, 1.4, 1.5], [-0.6, 1.0, -1.0], 54])}>
       <Garage />
       <Doodle a={hero([-1.1, 0, 0.1], [[0, "proud"], [t.p9plus, "hype"]], armsUp(t.p9plus, 9))} />
       <Confetti t0={t.p9plus} n={40} area={[-2, 1.8, -1.5, 0.5]} />
     </Scene3D>)),
 
   // 25. Это всё только вопросы — герой разводит руками, на ТВ знаки вопроса
-  S(P[10], t.p10how, (
-    <Scene3D t0={P[10]} light="night" bg="#0b0f2a" focus={[0.2, 1.0, -1.0]}
-      cam={cam([P[10], [0.5, 1.2, 1.2], [0.4, 1.1, -1.4], 54], [t.p10how, [0.4, 1.15, 0.8], [0.3, 1.05, -1.3], 50])}>
+  S(P[11], t.p10how, (
+    <Scene3D t0={P[11]} light="night" bg="#0b0f2a" focus={[0.2, 1.0, -1.0]}
+      cam={cam([P[11], [0.5, 1.2, 1.2], [0.4, 1.1, -1.4], 54], [t.p10how, [0.4, 1.15, 0.8], [0.3, 1.05, -1.3], 50])}>
       <Apartment tv={qDraw} night />
       <Doodle a={hero([-0.2, 0, -0.85], [[0, "nervous"]], { handF: [[0, -0.42, HIP + 0.3]], handB: [[0, 0.42, HIP + 0.3]] })} />
     </Scene3D>)),
   // 26. Как на самом деле — увидим после выхода
-  S(t.p10how, P[11], (
+  S(t.p10how, P[12], (
     <Scene3D t0={t.p10how} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p10how, [0.9, 1.18, 0.2], [1.0, 1.18, -1.85], 50], [P[11], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
+      cam={cam([t.p10how, [0.9, 1.18, 0.2], [1.0, 1.18, -1.85], 50], [P[12], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
       <Apartment tv={soonDraw} night />
       <Doodle a={hero([-0.2, 0, -0.9], [[0, "smug"]], {}, HERO_PAD)} />
     </Scene3D>)),
 
   // 27. Финал: неоновый закат GTA и вопрос
-  S(P[11], END, (
-    <Scene3D t0={P[11]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]}
-      cam={cam([P[11], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
+  S(P[12], END, (
+    <Scene3D t0={P[12]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]}
+      cam={cam([P[12], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
       <SynthSunset />
-      <QuestionCard p={[0, 4.3, -5]} t={P[11] + 0.15} w={5.2} l1="GTA 6" l2="ПЕРЕОЦЕНЕНА?" pill="ПИШИ В КОММЕНТЫ 👇" />
+      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="GTA 6" l2="ПЕРЕОЦЕНЕНА?" pill="ПИШИ В КОММЕНТЫ 👇" />
       {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["ДА", "НЕТ!", "ШЕДЕВР", "ПОСМОТРИМ"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
       <Doodle a={hero([0, 0, 0.9], [[0, "smug"]])} />
     </Scene3D>)),
