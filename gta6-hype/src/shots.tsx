@@ -116,7 +116,7 @@ export const SHOTS: Shot[] = [
   // 6. А внутри… обувной магазин. «Вам какой размер?»
   S(t.p2q, P[3], (
     <Scene3D t0={t.p2q} light="office" bg="#ffd8e8" focus={[0, 1.0, -0.6]} shakes={[[t.p2exp, 0.6]]}
-      cam={cam([t.p2q, [0, 1.45, 2.4], [0, 1.2, -0.8], 58], [P[4], [0, 1.35, 1.6], [0, 1.15, -0.7], 54])}>
+      cam={cam([t.p2q, [0, 1.3, 1.7], [0, 1.15, -0.6], 52], [P[3], [0, 1.25, 1.2], [0, 1.1, -0.6], 48])}>
       <ShoeShop />
       <Doodle a={{ pos: [0.6, 0, -0.6], seed: 41, look: SELLER, expr: [[0, "proud"]], scale: 1.12, talk: [[t.p2shoe2, t.p2shoe2 + 1.2]], handB: pointKeys(t.p2shoe2, 0.3, 0.6, 2, "b") }} />
       <Doodle a={hero([-0.6, 0, -0.5], [[0, "hype"], [t.p2shoe2 + 0.3, "blank"], [t.p2exp, "shock"]])} />
@@ -145,7 +145,7 @@ export const SHOTS: Shot[] = [
   // 22d. Хотя игру переносили как раз поэтому — штамп «ПЕРЕНЕСЕНО»
   S(t.p9tho, P[4], (
     <Scene3D t0={t.p9tho} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]} shakes={[[t.p9move + 0.2, 0.7]]}
-      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[10], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
+      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[4], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
       <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "GTA 6", W / 2, H * 0.3, W * 0.6, H * 0.22, "#fff"); drawStamp(g, W, H, s, t.p9move + 0.1, "ПЕРЕНЕСЕНО", H * 0.65); }} />
     </Scene3D>)),
 
@@ -154,7 +154,7 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={P[4]} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]}
       cam={cam([P[4], [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [t.p3jour, [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
       <Stage2 screen={proDraw} />
-    </Scene3D>)),
+    </Scene3D>), "cut"),
   // 8. Журналисты: медленнее, серьёзнее, почти Red Dead
   S(t.p3jour, t.p3q, (
     <Scene3D t0={t.p3jour} light="studio" bg="#0c1224" focus={[0, 1.6, -1.6]}
@@ -266,7 +266,7 @@ export const SHOTS: Shot[] = [
   // 22. Даже на PS5 Pro: коробка Pro, герой плачет
   S(t.p8pro, P[10], (
     <Scene3D t0={t.p8pro} light="office" bg="#eceaf4" focus={[0, 1.0, -0.8]} shakes={[[t.p8pro + 0.5, 0.5]]}
-      cam={cam([t.p8pro, [0.2, 1.25, 1.5], [0.1, 1.15, -0.8], 52], [P[3], [0.1, 1.2, 1.0], [0.1, 1.1, -0.8], 48])}>
+      cam={cam([t.p8pro, [0.2, 1.25, 1.5], [0.1, 1.15, -0.8], 52], [P[10], [0.1, 1.2, 1.0], [0.1, 1.1, -0.8], 48])}>
       <Apartment tv={fpsDraw} />
       <Doodle a={hero([-0.15, 0, -0.85], [[0, "cry"]], { handB: [[0, 0.3, HIP + 0.3]] })} />
       <group position={[0.35, 0.62, -0.7]} rotation={[0, -0.3, 0.1]}><Box p={[0, 0, 0]} s={[0.3, 0.38, 0.14]} c="#f4f4f8" /><Sign p={[0, 0.03, 0.071]} w={0.27} h={0.1} text="PS5 PRO" bg="#1a1a2a" fg="#fff" glow={0.4} /></group>
