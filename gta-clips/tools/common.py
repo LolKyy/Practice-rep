@@ -17,8 +17,21 @@ PUBLIC = VIDEO / "public"
 FPS = 60
 W, H = 1080, 1920
 
-FFMPEG = shutil.which("ffmpeg") or "ffmpeg"
-FFPROBE = shutil.which("ffprobe") or "ffprobe"
+def _find(tool):
+    """ffmpeg/ffprobe из PATH, иначе — из папки winget (Windows ставит туда, но PATH обновляется только в новом окне)."""
+    p = shutil.which(tool)
+    if p:
+        return p
+    la = os.environ.get("LOCALAPPDATA")
+    if la:
+        hits = sorted(Path(la, "Microsoft", "WinGet").glob(f"**/bin/{tool}.exe"))
+        if hits:
+            return str(hits[-1])
+    return tool
+
+
+FFMPEG = _find("ffmpeg")
+FFPROBE = _find("ffprobe")
 
 
 def run(cmd, **kw):
