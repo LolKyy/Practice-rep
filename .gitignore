@@ -378,3 +378,4 @@ vasya1/out/
 graphify-out/*
 !graphify-out/graph.html
 !graphify-out/GRAPH_REPORT.md
+out_zip/
