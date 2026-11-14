@@ -25,6 +25,7 @@ set "UP="
 dir /s /b tools\bin\realesrgan-ncnn-vulkan.exe >nul 2>nul && set "UP=--upscale"
 set "BR="
 if exist "C:\Program Files\Google\Chrome\Application\chrome.exe" set BR=--chrome-mode chrome-for-testing --browser "C:\Program Files\Google\Chrome\Application\chrome.exe"
+py tools\plan_mix_v2.py
 py tools\render.py edits\mix_v2.json video --res 2 --interp %UP% %BR%
 if errorlevel 1 (echo. & echo Рендер упал - пришли скрин последних строк. & pause & exit /b)
 

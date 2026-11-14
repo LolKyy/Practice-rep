@@ -58,13 +58,14 @@
    "note": "tt_launch#19 night"
   },
   {
-   "src": "cc_club",
-   "in": 0.225,
+   "src": "tt_launch",
+   "in": 69.207,
    "crop": 0.5,
    "fx": [
     "zoom"
    ],
-   "note": "cc_club#1 night"
+   "note": "tt_launch#45 dark",
+   "speed": 0.88
   },
   {
    "src": "tt_para",
