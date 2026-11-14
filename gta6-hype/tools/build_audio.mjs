@@ -17,7 +17,12 @@ const MUS = path.join(OUT, "music_src.wav");
 if (fs.existsSync(MUS)) {
   const T = tl.TOTAL;
   run(["-i", MUS, "-t", String(T), "-af", `loudnorm=I=-31:TP=-9:LRA=11,afade=t=in:d=1.2,afade=t=out:st=${(T - 2.5).toFixed(2)}:d=2.5`, "-ar", "44100", "-ac", "2", path.join(OUT, "music_n.wav")]);
-  run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-i", path.join(OUT, "music_n.wav"), "-filter_complex", "[0][1][2]amix=inputs=3:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9", "-ar", "44100", "-b:a", "192k", path.join(ROOT, "public/audio.mp3")]);
+  run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-i", path.join(OUT, "music_n.wav"), "-filter_complex", "[0][1][2]amix=inputs=3:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9", "-ar", "44100", path.join(OUT, "mix.wav")]);
 } else
-run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-filter_complex", "[0][1]amix=inputs=2:duration=longest:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9", "-ar", "44100", "-b:a", "192k", path.join(ROOT, "public/audio.mp3")]);
-console.log("public/audio.mp3 готов, длина", tl.TOTAL, "с");
+run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-filter_complex", "[0][1]amix=inputs=2:duration=longest:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9", "-ar", "44100", path.join(OUT, "mix.wav")]);
+// реклама: режем микс на стоп-кадре и вклеиваем звук баннера (audio/banner.wav, уже ускорен в 1.3 раза)
+const AD = tl.AD_F / tl.FPS, AT = Math.round(tl.AD_T * tl.FPS) / tl.FPS;
+run(["-i", path.join(OUT, "mix.wav"), "-i", path.join(OUT, "banner.wav"), "-filter_complex",
+  `[0]atrim=0:${AT},asetpts=N/SR/TB[a];[1]atrim=0:${AD},apad=whole_dur=${AD},asetpts=N/SR/TB[b];[0]atrim=${AT},asetpts=N/SR/TB[c];[a][b][c]concat=n=3:v=0:a=1`,
+  "-ar", "44100", "-b:a", "192k", path.join(ROOT, "public/audio.mp3")]);
+console.log("public/audio.mp3 готов, длина", (tl.TOTAL + AD).toFixed(2), "с (с рекламой)");

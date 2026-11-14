@@ -28,14 +28,14 @@ const W = (p: number, s: string, o = 0) => wt(p, s, o);
 const t = {
   p1a: W(1, "а"),
   p2go: W(2, "рвануть"), p2shoe: W(2, "туфельке"), p2all: W(2, "все", 1), p2q: W(2, "а"), p2shoe2: W(2, "туфелька"), p2exp: W(2, "оправдает"),
-  p3jour: W(3, "журналисты"), p3slow: W(3, "медленнее"), p3red: W(3, "почти"), p3q: W(3, "а"),
-  p4cop: W(4, "а"), p4face: W(4, "лицо"), p4cloth: W(4, "одежду"), p4car: W(4, "машину"), p4flip: W(4, "перевернул"), p4back: W(4, "обратно"),
-  p5rem: W(5, "запомнил"), p5off: W(5, "обиделся"),
-  p6mech: W(6, "механики"), p6rut: W(6, "рутину"), p6gas: W(6, "заправь"), p6gym: W(6, "сходи"), p6eat: W(6, "поешь"), p6over: W(6, "переешь"), p6gun: W(6, "лишнее"),
-  p7drive: W(7, "доедь"), p7take: W(7, "забери"), p7run: W(7, "убеги"),
-  p8wait: W(8, "ждали"), p8fps: W(8, "чтобы"), p8thirty: W(8, "тридцать"), p8pro: W(8, "даже"),
+  p3jour: W(4, "журналисты"), p3slow: W(4, "медленнее"), p3red: W(4, "почти"), p3q: W(4, "а"),
+  p4cop: W(5, "а"), p4face: W(5, "лицо"), p4cloth: W(5, "одежду"), p4car: W(5, "машину"), p4flip: W(5, "перевернул"), p4back: W(5, "обратно"),
+  p5rem: W(6, "запомнил"), p5off: W(6, "обиделся"),
+  p6mech: W(7, "механики"), p6rut: W(7, "рутину"), p6gas: W(7, "заправь"), p6gym: W(7, "сходи"), p6eat: W(7, "поешь"), p6over: W(7, "переешь"), p6gun: W(7, "лишнее"),
+  p7drive: W(8, "доедь"), p7take: W(8, "забери"), p7run: W(8, "убеги"),
+  p8wait: W(9, "ждали"), p8fps: W(9, "чтобы"), p8thirty: W(9, "тридцать"), p8pro: W(9, "даже"),
   p9there: W(10, "там"), p9cars: W(10, "тачки"), p9guns: W(10, "стволы"), p9plus: W(10, "плюшки"),
-  p9bug: W(9, "баги"), p9fly: W(9, "летающие"), p9sony: W(9, "и"), p9tho: W(9, "хотя"), p9move: W(9, "переносили"),
+  p9bug: W(3, "баги"), p9fly: W(3, "летающие"), p9sony: W(3, "и"), p9tho: W(3, "хотя"), p9move: W(3, "переносили"),
   p10how: W(11, "как"),
 };
 const P = [0, ...Array.from({ length: 12 }, (_, i) => ps(i + 1))];
@@ -116,16 +116,43 @@ export const SHOTS: Shot[] = [
   // 6. А внутри… обувной магазин. «Вам какой размер?»
   S(t.p2q, P[3], (
     <Scene3D t0={t.p2q} light="office" bg="#ffd8e8" focus={[0, 1.0, -0.6]} shakes={[[t.p2exp, 0.6]]}
-      cam={cam([t.p2q, [0, 1.45, 2.4], [0, 1.2, -0.8], 58], [P[3], [0, 1.35, 1.6], [0, 1.15, -0.7], 54])}>
+      cam={cam([t.p2q, [0, 1.45, 2.4], [0, 1.2, -0.8], 58], [P[4], [0, 1.35, 1.6], [0, 1.15, -0.7], 54])}>
       <ShoeShop />
       <Doodle a={{ pos: [0.6, 0, -0.6], seed: 41, look: SELLER, expr: [[0, "proud"]], scale: 1.12, talk: [[t.p2shoe2, t.p2shoe2 + 1.2]], handB: pointKeys(t.p2shoe2, 0.3, 0.6, 2, "b") }} />
       <Doodle a={hero([-0.6, 0, -0.5], [[0, "hype"], [t.p2shoe2 + 0.3, "blank"], [t.p2exp, "shock"]])} />
     </Scene3D>), "cut"),
 
+  // 22a. А вдруг как с Киберпанком? — картинка на ТВ начинает глючить
+  S(P[3], t.p9bug, (
+    <Scene3D t0={P[3]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]} shakes={[[P[3] + 1.6, 0.5]]}
+      cam={cam([P[3], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [t.p9bug, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50])}>
+      <Apartment tv={glitchDraw(P[3] + 1.2)} night />
+      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [P[3] + 1.3, "nervous"]], {}, HERO_PAD)} />
+    </Scene3D>)),
+  // 22b. Баги, летающие тачки: ТВ крупно
+  S(t.p9bug, t.p9sony, (
+    <Scene3D t0={t.p9bug} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
+      cam={cam([t.p9bug, [1.0, 1.18, -0.2], [1.0, 1.18, -1.85], 46], [t.p9sony, [1.0, 1.18, -0.45], [1.0, 1.18, -1.85], 44])}>
+      <Apartment tv={bugsDraw(t.p9fly)} night />
+    </Scene3D>), "cut"),
+  // 22c. Sony возвращает деньги
+  S(t.p9sony, t.p9tho, (
+    <Scene3D t0={t.p9sony} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
+      cam={cam([t.p9sony, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50], [t.p9tho, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
+      <Apartment tv={refundDraw(t.p9sony + 0.3)} night />
+      <Doodle a={hero([-0.2, 0, -0.9], [[0, "shock"], [t.p9sony + 0.8, "cry"]], {}, HERO_PAD)} />
+    </Scene3D>), "cut"),
+  // 22d. Хотя игру переносили как раз поэтому — штамп «ПЕРЕНЕСЕНО»
+  S(t.p9tho, P[4], (
+    <Scene3D t0={t.p9tho} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]} shakes={[[t.p9move + 0.2, 0.7]]}
+      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[10], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
+      <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "GTA 6", W / 2, H * 0.3, W * 0.6, H * 0.22, "#fff"); drawStamp(g, W, H, s, t.p9move + 0.1, "ПЕРЕНЕСЕНО", H * 0.65); }} />
+    </Scene3D>)),
+
   // 7. Rockstar: ставка на реализм
-  S(P[3], t.p3jour, (
-    <Scene3D t0={P[3]} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]}
-      cam={cam([P[3], [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [t.p3jour, [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
+  S(P[4], t.p3jour, (
+    <Scene3D t0={P[4]} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]}
+      cam={cam([P[4], [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [t.p3jour, [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
       <Stage2 screen={proDraw} />
     </Scene3D>)),
   // 8. Журналисты: медленнее, серьёзнее, почти Red Dead
@@ -136,19 +163,19 @@ export const SHOTS: Shot[] = [
       <Doodle a={{ pos: [-0.75, 0, -1.15], seed: 5, look: ANCHOR, expr: [[0, "stern"], [t.p3red, "realize"]], talk: [[t.p3jour, t.p3q]], scale: 1.2 }} />
     </Scene3D>)),
   // 9. «А что, если реализм начнёт мешать игре?» — шкала: реализм ↑, веселье ↓
-  S(t.p3q, P[4], (
+  S(t.p3q, P[5], (
     <Scene3D t0={t.p3q} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p3q, [0.7, 1.2, 0.4], [0.9, 1.15, -1.85], 50], [P[4], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
+      cam={cam([t.p3q, [0.7, 1.2, 0.4], [0.9, 1.15, -1.85], 50], [P[5], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
       <Apartment tv={realismDraw(t.p3q + 0.2)} night />
       <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p3q + 1.2, "nervous"]], {}, HERO_PAD)} />
     </Scene3D>)),
 
   // 10. Хочу хаос, как в GTA 5!
-  S(P[4], t.p4cop, (
-    <Scene3D t0={P[4]} light="day" bg="#5aa0e8" focus={[0, 1, -0.6]}
-      cam={cam([P[4], [0, 1.4, 3.2], [0, 1.4, -3], 58], [t.p4cop, [0, 1.3, 2.4], [0, 1.3, -3], 54])}>
+  S(P[5], t.p4cop, (
+    <Scene3D t0={P[5]} light="day" bg="#5aa0e8" focus={[0, 1, -0.6]}
+      cam={cam([P[5], [0, 1.4, 3.2], [0, 1.4, -3], 58], [t.p4cop, [0, 1.3, 2.4], [0, 1.3, -3], 54])}>
       <City />
-      <Doodle a={hero([0, 0, -0.4], [[0, "hype"]], { ...armsUp(P[4] + 0.2, 9), hop: 10 })} />
+      <Doodle a={hero([0, 0, -0.4], [[0, "hype"]], { ...armsUp(P[5] + 0.2, 9), hop: 10 })} />
     </Scene3D>)),
   // 11. Коп с плакатом: лицо ✓ одежда ✓ машина ✓
   S(t.p4cop, t.p4flip, (
@@ -159,28 +186,28 @@ export const SHOTS: Shot[] = [
       <Screen p={[0.3, 1.05, -0.6]} w={0.55} h={0.75} res={500} draw={wantedDraw([t.p4face, t.p4cloth, t.p4car])} glow={0.4} />
     </Scene3D>), "cut"),
   // 12. Перевернул тачку — обратно не поставить
-  S(t.p4flip, P[5], (
+  S(t.p4flip, P[6], (
     <Scene3D t0={t.p4flip} light="day" bg="#5aa0e8" focus={[-0.3, 0.8, -1.2]} shakes={[[t.p4back, 0.4]]}
-      cam={cam([t.p4flip, [0.2, 1.6, 3.4], [0.2, 0.9, -1.2], 60], [P[5], [0.1, 1.5, 2.8], [0.1, 0.9, -1.2], 58])}>
+      cam={cam([t.p4flip, [0.2, 1.6, 3.4], [0.2, 0.9, -1.2], 60], [P[6], [0.1, 1.5, 2.8], [0.1, 0.9, -1.2], 58])}>
       <City cars={false} />
       <FlippedCar p={[0.5, 0, -1.4]} col="#2f8fe0" t0={t.p4flip + 0.3} />
       <Doodle a={hero([-0.95, 0, -1.0], [[0, "nervous"], [t.p4back, "angry"]], { handF: [[0, 0.32, HIP + 0.3]], handB: [[0, 0.45, HIP + 0.32]], shiver: 2 })} />
     </Scene3D>)),
 
   // 13. Толкнул прохожего — запомнил — обиделся
-  S(P[5], P[6], (
-    <Scene3D t0={P[5]} light="day" bg="#5aa0e8" focus={[0, 1.0, -0.6]} shakes={[[P[5] + 0.55, 0.6]]}
-      cam={cam([P[5], [0, 1.35, 2.2], [0, 1.15, -0.8], 56], [P[6], [0.2, 1.25, 1.4], [0.2, 1.1, -0.8], 50])}>
+  S(P[6], P[7], (
+    <Scene3D t0={P[6]} light="day" bg="#5aa0e8" focus={[0, 1.0, -0.6]} shakes={[[P[6] + 0.55, 0.6]]}
+      cam={cam([P[6], [0, 1.35, 2.2], [0, 1.15, -0.8], 56], [P[7], [0.2, 1.25, 1.4], [0.2, 1.1, -0.8], 50])}>
       <City cars={false} />
-      <Doodle a={hero([-1.6, 0, -0.6], [[0, "smug"]], { walk: [[P[5], -1.6, -0.6], [P[5] + 0.55, -0.4, -0.6], [P[5] + 0.9, -0.55, -0.6]] })} />
-      <Doodle a={{ pos: [0.35, 0, -0.6], seed: 71, look: PED, expr: [[0, "neutral"], [P[5] + 0.55, "shock"], [t.p5rem - 0.4, "angry"], [t.p5off + 0.3, "cry"]], scale: 1.1, back: [[t.p5off + 0.2, 999]], shiver: 0 }} />
+      <Doodle a={hero([-1.6, 0, -0.6], [[0, "smug"]], { walk: [[P[6], -1.6, -0.6], [P[6] + 0.55, -0.4, -0.6], [P[6] + 0.9, -0.55, -0.6]] })} />
+      <Doodle a={{ pos: [0.35, 0, -0.6], seed: 71, look: PED, expr: [[0, "neutral"], [P[6] + 0.55, "shock"], [t.p5rem - 0.4, "angry"], [t.p5off + 0.3, "cry"]], scale: 1.1, back: [[t.p5off + 0.2, 999]], shiver: 0 }} />
     </Scene3D>)),
 
   // 14. А что, если механики превратят игру в рутину? Список дел на ТВ
-  S(P[6], t.p6gas, (
-    <Scene3D t0={P[6]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([P[6], [0.8, 1.2, 0.5], [0.85, 1.15, -1.85], 50], [t.p6gas, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={choresDraw([[P[6] + 0.3, "⛽ ЗАПРАВИТЬСЯ"], [P[6] + 0.8, "💪 ЗАЛ"], [P[6] + 1.3, "🌭 ПОЕСТЬ"], [P[6] + 1.8, "🔫 В БАГАЖНИК"]])} night />
+  S(P[7], t.p6gas, (
+    <Scene3D t0={P[7]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
+      cam={cam([P[7], [0.8, 1.2, 0.5], [0.85, 1.15, -1.85], 50], [t.p6gas, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
+      <Apartment tv={choresDraw([[P[7] + 0.3, "⛽ ЗАПРАВИТЬСЯ"], [P[7] + 0.8, "💪 ЗАЛ"], [P[7] + 1.3, "🌭 ПОЕСТЬ"], [P[7] + 1.8, "🔫 В БАГАЖНИК"]])} night />
       <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p6rut, "tired"]], {}, HERO_PAD)} />
     </Scene3D>)),
   // 15. Заправь машину
@@ -208,25 +235,25 @@ export const SHOTS: Shot[] = [
       <After t={t.p6over}><Sign p={[-0.45, 2.0, -0.4]} w={0.8} h={0.26} text="⚠️ +5 КГ" bg={RED} fg="#fff" glow={0.6} /></After>
     </Scene3D>), "cut"),
   // 18. Лишнее оружие — в багажник
-  S(t.p6gun, P[7], (
+  S(t.p6gun, P[8], (
     <Scene3D t0={t.p6gun} light="day" bg="#9ad0f8" focus={[0, 0.8, -0.6]}
-      cam={cam([t.p6gun, [0.2, 2.1, 2.4], [-0.3, 0.8, -0.6], 58], [P[7], [0.1, 2.0, 2.0], [-0.3, 0.8, -0.6], 56])}>
+      cam={cam([t.p6gun, [0.2, 2.1, 2.4], [-0.3, 0.8, -0.6], 58], [P[8], [0.1, 2.0, 2.0], [-0.3, 0.8, -0.6], 56])}>
       <TrunkCar t0={t.p6gun} />
       <Doodle a={hero([-0.95, 0, -0.4], [[0, "tired"]], { handB: pointKeys(t.p6gun + 0.3, 0.6, 0.2, 1.2, "b") })} />
     </Scene3D>), "cut"),
 
   // 19. Миссии: доедь / забери / убеги — герой зевает
-  S(P[7], P[8], (
-    <Scene3D t0={P[7]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([P[7], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [P[8], [0.85, 1.18, 0.2], [0.95, 1.15, -1.85], 50])}>
+  S(P[8], P[9], (
+    <Scene3D t0={P[8]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
+      cam={cam([P[8], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [P[9], [0.85, 1.18, 0.2], [0.95, 1.15, -1.85], 50])}>
       <Apartment tv={missionDraw([t.p7drive, t.p7take, t.p7run])} night />
       <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p7take, "tired"]], {}, HERO_PAD)} />
     </Scene3D>)),
 
   // 20. Ждали 13 лет: на ТВ 2013 → 2026, герой постарел
-  S(P[8], t.p8fps, (
-    <Scene3D t0={P[8]} light="night" bg="#0b0f2a" focus={[0.4, 1.1, -1.4]}
-      cam={cam([P[8], [0.3, 1.2, 1.1], [0.4, 1.1, -1.6], 54], [t.p8fps, [0.25, 1.15, 0.8], [0.35, 1.1, -1.6], 50])}>
+  S(P[9], t.p8fps, (
+    <Scene3D t0={P[9]} light="night" bg="#0b0f2a" focus={[0.4, 1.1, -1.4]}
+      cam={cam([P[9], [0.3, 1.2, 1.1], [0.4, 1.1, -1.6], 54], [t.p8fps, [0.25, 1.15, 0.8], [0.35, 1.1, -1.6], 50])}>
       <Apartment tv={yearsDraw(t.p8wait - 0.2, t.p8fps - 0.3)} night />
       <Doodle a={hero([-0.2, 0, -0.9], [[0, "tired"]], {}, { ...HERO_OLD, pad: true })} />
     </Scene3D>)),
@@ -237,39 +264,12 @@ export const SHOTS: Shot[] = [
       <Apartment tv={fpsDraw} night />
     </Scene3D>), "cut"),
   // 22. Даже на PS5 Pro: коробка Pro, герой плачет
-  S(t.p8pro, P[9], (
+  S(t.p8pro, P[10], (
     <Scene3D t0={t.p8pro} light="office" bg="#eceaf4" focus={[0, 1.0, -0.8]} shakes={[[t.p8pro + 0.5, 0.5]]}
-      cam={cam([t.p8pro, [0.2, 1.25, 1.5], [0.1, 1.15, -0.8], 52], [P[9], [0.1, 1.2, 1.0], [0.1, 1.1, -0.8], 48])}>
+      cam={cam([t.p8pro, [0.2, 1.25, 1.5], [0.1, 1.15, -0.8], 52], [P[3], [0.1, 1.2, 1.0], [0.1, 1.1, -0.8], 48])}>
       <Apartment tv={fpsDraw} />
       <Doodle a={hero([-0.15, 0, -0.85], [[0, "cry"]], { handB: [[0, 0.3, HIP + 0.3]] })} />
       <group position={[0.35, 0.62, -0.7]} rotation={[0, -0.3, 0.1]}><Box p={[0, 0, 0]} s={[0.3, 0.38, 0.14]} c="#f4f4f8" /><Sign p={[0, 0.03, 0.071]} w={0.27} h={0.1} text="PS5 PRO" bg="#1a1a2a" fg="#fff" glow={0.4} /></group>
-    </Scene3D>)),
-
-  // 22a. А вдруг как с Киберпанком? — картинка на ТВ начинает глючить
-  S(P[9], t.p9bug, (
-    <Scene3D t0={P[9]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]} shakes={[[P[9] + 1.6, 0.5]]}
-      cam={cam([P[9], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [t.p9bug, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50])}>
-      <Apartment tv={glitchDraw(P[9] + 1.2)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [P[9] + 1.3, "nervous"]], {}, HERO_PAD)} />
-    </Scene3D>)),
-  // 22b. Баги, летающие тачки: ТВ крупно
-  S(t.p9bug, t.p9sony, (
-    <Scene3D t0={t.p9bug} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
-      cam={cam([t.p9bug, [1.0, 1.18, -0.2], [1.0, 1.18, -1.85], 46], [t.p9sony, [1.0, 1.18, -0.45], [1.0, 1.18, -1.85], 44])}>
-      <Apartment tv={bugsDraw(t.p9fly)} night />
-    </Scene3D>), "cut"),
-  // 22c. Sony возвращает деньги
-  S(t.p9sony, t.p9tho, (
-    <Scene3D t0={t.p9sony} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p9sony, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50], [t.p9tho, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={refundDraw(t.p9sony + 0.3)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "shock"], [t.p9sony + 0.8, "cry"]], {}, HERO_PAD)} />
-    </Scene3D>), "cut"),
-  // 22d. Хотя игру переносили как раз поэтому — штамп «ПЕРЕНЕСЕНО»
-  S(t.p9tho, P[10], (
-    <Scene3D t0={t.p9tho} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]} shakes={[[t.p9move + 0.2, 0.7]]}
-      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[10], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
-      <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "GTA 6", W / 2, H * 0.3, W * 0.6, H * 0.22, "#fff"); drawStamp(g, W, H, s, t.p9move + 0.1, "ПЕРЕНЕСЕНО", H * 0.65); }} />
     </Scene3D>)),
 
   // 23. Зато Ultimate за $100 — без вопросов: шоурум, золотая тачка
@@ -319,7 +319,7 @@ export const SHOTS: Shot[] = [
 export type Bub = { t0: number; t1: number; text: string; x: number; y: number; col?: string };
 export const BUBBLES: Bub[] = [
   { t0: t.p2shoe2, t1: P[3], text: "ВАМ КАКОЙ РАЗМЕР? 👠", x: 600, y: 420 },
-  { t0: P[4] + 0.3, t1: t.p4cop, text: "ХАОС! 💥", x: 540, y: 400, col: YEL },
-  { t0: t.p4back, t1: P[5], text: "НУ ВСТАВАЙ ЖЕ 😤", x: 480, y: 420 },
+  { t0: P[5] + 0.3, t1: t.p4cop, text: "ХАОС! 💥", x: 540, y: 400, col: YEL },
+  { t0: t.p4back, t1: P[6], text: "НУ ВСТАВАЙ ЖЕ 😤", x: 480, y: 420 },
   { t0: t.p5rem, t1: t.p5off + 0.2, text: "Я ЗАПОМНИЛ 😤", x: 640, y: 420 },
 ];

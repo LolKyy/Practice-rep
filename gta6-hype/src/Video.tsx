@@ -1,8 +1,8 @@
 // Ролик: шоты (src/shots.tsx) с растворениями 5 кадров + субтитры по одному слову + звук.
 import React, { useEffect, useState } from "react";
-import { AbsoluteFill, Audio, Sequence, continueRender, delayRender, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, continueRender, delayRender, interpolate, staticFile, useCurrentFrame } from "remotion";
 import words from "./words.json";
-import { setData, FPS, WORDS } from "./timeline.js";
+import { setData, FPS, WORDS, AD_T, AD_F } from "./timeline.js";
 setData(words);
 import { SHOTS, BUBBLES } from "./shots";
 import { Captions } from "./captions";
@@ -43,19 +43,39 @@ const Bubbles: React.FC = () => {
   })}</>;
 };
 
+// весь ролик без звука (звук целиком в public/audio.mp3, реклама уже вклеена туда)
+const Main: React.FC = () => (<AbsoluteFill style={{ backgroundColor: "black" }}>
+  {SHOTS.map((s, i) => {
+    const from = Math.round(s.t0 * FPS), to = Math.round(s.t1 * FPS);
+    const next = SHOTS[i + 1];
+    const extra = next && (next.tr ?? "fade") === "fade" ? XF : 0;
+    return <Sequence key={i} from={from} durationInFrames={to - from + extra}><ShotWrap i={i}>{s.el}</ShotWrap></Sequence>;
+  })}
+  <Bubbles />
+  <Captions />
+</AbsoluteFill>);
+
+const AD0 = Math.round(AD_T * FPS);
+// баннер: ровно по центру кадра, 1080×500 (26% площади), плавно 0.3 с
+const Banner: React.FC = () => {
+  const f = useCurrentFrame();
+  const op = interpolate(f, [0, 9, AD_F - 9, AD_F], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return <AbsoluteFill>
+    <AbsoluteFill style={{ background: "rgba(0,0,0,0.25)", opacity: op }} />
+    <div style={{ position: "absolute", left: 0, top: (1920 - 500) / 2, width: 1080, height: 500, opacity: op }}>
+      <OffthreadVideo src={staticFile("banner.webm")} transparent muted style={{ width: 1080, height: 500 }} />
+    </div>
+  </AbsoluteFill>;
+};
+
 export const Video: React.FC = () => {
   const ready = useFonts();
   if (!ready) return <AbsoluteFill style={{ backgroundColor: "black" }} />;
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      {SHOTS.map((s, i) => {
-        const from = Math.round(s.t0 * FPS), to = Math.round(s.t1 * FPS);
-        const next = SHOTS[i + 1];
-        const extra = next && (next.tr ?? "fade") === "fade" ? XF : 0;
-        return <Sequence key={i} from={from} durationInFrames={to - from + extra}><ShotWrap i={i}>{s.el}</ShotWrap></Sequence>;
-      })}
-      <Bubbles />
-      <Captions />
+      <Sequence from={0} durationInFrames={AD0}><Main /></Sequence>
+      <Sequence from={AD0} durationInFrames={AD_F}><Freeze frame={AD0}><Main /></Freeze><Banner /></Sequence>
+      <Sequence from={AD0 + AD_F}><Sequence from={-AD0}><Main /></Sequence></Sequence>
       <Audio src={staticFile("audio.mp3")} />
     </AbsoluteFill>
   );
