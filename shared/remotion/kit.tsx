@@ -4,7 +4,7 @@ import React, { createContext, useContext, useMemo } from "react";
 import * as THREE from "three";
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
-import { EffectComposer, DepthOfField, Bloom, Vignette, ChromaticAberration, Noise } from "@react-three/postprocessing";
+import { EffectComposer, DepthOfField, Bloom, Vignette, ChromaticAberration, Noise, N8AO, HueSaturation, BrightnessContrast } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
@@ -305,7 +305,7 @@ const CamRig: React.FC<{ pos: THREE.Vector3; look: THREE.Vector3; fov: number; r
   return null;
 };
 
-export type LightPreset = "day" | "night" | "studio" | "neon" | "office" | "storm";
+export type LightPreset = "day" | "night" | "studio" | "neon" | "office" | "storm" | "lab" | "warm";
 const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
   const sh = { castShadow: true, "shadow-mapSize-width": 2048, "shadow-mapSize-height": 2048, "shadow-radius": 8, "shadow-bias": -0.0005,
     "shadow-camera-left": -8, "shadow-camera-right": 8, "shadow-camera-top": 8, "shadow-camera-bottom": -8 } as any;
@@ -318,6 +318,16 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
     <pointLight position={[-2, 2.4, 0]} intensity={10} decay={1.3} color="#ff4fb8" /><pointLight position={[2.2, 2.2, 0.5]} intensity={10} decay={1.3} color="#30d8ff" /></>);
   if (preset === "office") return (<><hemisphereLight args={["#e8f0ff", "#4a4a5a", 1.0]} />
     <directionalLight position={[-3, 5, 3]} intensity={2.4} color="#fff0dd" {...sh} /><pointLight position={[0, 1.8, 1.5]} intensity={1.5} decay={1.4} color="#fff4e0" /></>);
+  // v5: «лаборатория» — холодные лампы дневного света сверху + тёплая настольная лампа + контровой свет
+  if (preset === "lab") return (<><hemisphereLight args={["#cfe8f0", "#2a3038", 0.75]} />
+    <directionalLight position={[-2, 5, 3]} intensity={1.3} color="#d8f0ff" {...sh} />
+    <pointLight position={[0.7, 1.4, 0.2]} intensity={3.5} decay={1.6} color="#ffb860" castShadow />
+    <directionalLight position={[1.5, 2.5, -3]} intensity={1.6} color="#9fd8ff" /></>);
+  // v5: тёплый интерьер (вечер, лампа, огонь) + холодный контровой
+  if (preset === "warm") return (<><hemisphereLight args={["#ffd8b0", "#2a1a30", 0.7]} />
+    <pointLight position={[-0.8, 2.0, 1.0]} intensity={9} decay={1.4} color="#ffb070" castShadow />
+    <directionalLight position={[-3, 4, 2]} intensity={0.8} color="#ffe0c0" {...sh} />
+    <directionalLight position={[2, 2.5, -3]} intensity={1.4} color="#80b8ff" /></>);
   if (preset === "storm") return (<><hemisphereLight args={["#a0b0d8", "#303048", 1.2]} />
     <directionalLight position={[-3, 6, 3]} intensity={1.2} color="#b0c0ff" {...sh} /></>);
   return (<><hemisphereLight args={["#cfd8ff", "#141a33", 0.7]} />
@@ -327,8 +337,12 @@ const Lights: React.FC<{ preset: LightPreset }> = ({ preset }) => {
 
 export const CAM_DIST = 1.55, CAM_FOV = 6;
 export type Shake = [number, number, number?]; // [секунда, сила, длительность]
-export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; children: React.ReactNode }> =
-  ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, children }) => {
+// cine: «киношный» режим (v5): мягкие тени в углах (AO), размытие только фона (персонаж в фокусе резкий),
+// свечение ламп, сочнее цвет и контраст, сильнее виньетка. Старые ролики без cine рендерятся как раньше.
+export type Cine = { ao?: number; dof?: number; range?: number; sat?: number; contrast?: number; bloom?: number; exposure?: number };
+export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; cine?: boolean | Cine; children: React.ReactNode }> =
+  ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, cine, children }) => {
+    const C: Cine | null = cine ? { ao: 2.4, dof: 3.5, range: 0.9, sat: 0.12, contrast: 0.1, bloom: 0.5, exposure: 1.25, ...(cine === true ? {} : cine) } : null;
     const frame = useCurrentFrame();
     const { width, height } = useVideoConfig();
     const t = t0 + frame / FPS;
@@ -347,19 +361,27 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
     return (
       <ShotCtx.Provider value={{ t0, cam: pos }}>
         <ThreeCanvas width={width} height={height} shadows={{ type: THREE.PCFSoftShadowMap }}
-          gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.55, antialias: false }} style={{ backgroundColor: bg }}>
+          gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: C ? C.exposure! : 1.55, antialias: false }} style={{ backgroundColor: bg }}>
           <ShotCtx.Provider value={{ t0, cam: pos }}>
             <CamRig pos={pos} look={look} fov={(fov ?? 60) + CAM_FOV} roll={r} />
             {fog ? <fog attach="fog" args={[fog, 8, 40]} /> : null}
             <Lights preset={light} />
             {children}
-            <EffectComposer multisampling={4}>
+            {C ? <EffectComposer multisampling={4}>
+              <N8AO aoRadius={0.55} distanceFalloff={0.8} intensity={C.ao!} quality="medium" />
+              {C.dof! > 0 ? <DepthOfField target={focus} worldFocusRange={C.range!} bokehScale={C.dof!} height={1440} /> : <></>}
+              <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={C.bloom!} mipmapBlur />
+              <HueSaturation saturation={C.sat!} />
+              <BrightnessContrast contrast={C.contrast!} />
+              <Noise opacity={0.03} blendFunction={BlendFunction.OVERLAY} />
+              <Vignette eskil={false} offset={0.25} darkness={0.55} />
+            </EffectComposer> : <EffectComposer multisampling={4}>
               {dof > 0 ? <DepthOfField target={focus} focalLength={0.05} bokehScale={dof * 0.3} height={1080} /> : <></>}
               <Bloom luminanceThreshold={1.05} intensity={0.35} mipmapBlur />
               <ChromaticAberration offset={new THREE.Vector2(0.0005, 0.0003) as any} radialModulation={true} modulationOffset={0.6} />
               <Noise opacity={0.025} blendFunction={BlendFunction.OVERLAY} />
               <Vignette eskil={false} offset={0.3} darkness={0.35} />
-            </EffectComposer>
+            </EffectComposer>}
           </ShotCtx.Provider>
         </ThreeCanvas>
       </ShotCtx.Provider>

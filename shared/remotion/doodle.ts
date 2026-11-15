@@ -10,6 +10,11 @@ export type Look = {
   chain?: boolean;      // золотая цепь
   capBack?: boolean;    // кепка козырьком назад (вместе с cap)
   mustache?: boolean;   // усы
+  // v5 (как в «Титанике»): узор ткани, шарф, шапки, толщина контура
+  pattern?: "dots" | "stripes" | "check"; patCol?: string;
+  scarf?: string;
+  hat?: "flatcap" | "ushanka" | "beanie" | "beret"; hatCol?: string;
+  ink?: number;         // множитель толщины линий (1 — как раньше, 1.25 — жирнее, как в референсе)
 };
 export type Pose = {
   expr: string; blink: boolean; bonk: number; breathe: number; lookX?: number; talk?: number;
@@ -60,7 +65,7 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
     const c = Math.cos(lean), s = Math.sin(lean);
     return [x * c + z * s, hip - x * s + z * c];
   };
-  const stroke = (w: number, col = INK) => { ctx.strokeStyle = col; ctx.lineWidth = w * K; };
+  const stroke = (w: number, col = INK) => { ctx.strokeStyle = col; ctx.lineWidth = w * K * (look.ink ?? 1); };
   ctx.fillStyle = "rgba(0,0,0,0.22)"; ctx.beginPath(); ctx.ellipse(X(0), Y(0.01), W * 0.85 * K, 0.03 * K, 0, 0, Math.PI * 2); ctx.fill();
   const limb = (a: [number, number], b: [number, number], bend: number) => {
     const dx = b[0] - a[0], dz = b[1] - a[1];
@@ -85,7 +90,12 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   const o = B(0, 0); ctx.translate(X(o[0]), Y(o[1])); ctx.rotate(lean);
   const body = () => { ctx.beginPath(); ctx.roundRect(-bw / 2 * K, -bh * K, bw * K, bh * K, bw * 0.45 * K); };
   ctx.fillStyle = look.body; body(); ctx.fill();
-  ctx.save(); body(); ctx.clip(); ctx.fillStyle = shade(look.body, 0.62); ctx.fillRect(bw * 0.2 * K, -bh * K, bw * K, bh * K); ctx.restore();
+  if (look.pattern) { ctx.save(); body(); ctx.clip(); const pc = look.patCol ?? "#ffffff";
+    if (look.pattern === "dots") { ctx.fillStyle = pc; for (let yy = 0; yy < 14; yy++) for (let xx = -4; xx < 5; xx++) { ctx.beginPath(); ctx.arc((xx * 0.07 + (yy % 2) * 0.035) * K, -(yy * 0.055 + 0.02) * K, 0.012 * K, 0, Math.PI * 2); ctx.fill(); } }
+    if (look.pattern === "stripes") { ctx.fillStyle = pc; for (let yy = 0; yy < 9; yy++) ctx.fillRect(-bw * K, -(yy * 0.09 + 0.06) * K, bw * 2 * K, 0.04 * K); }
+    if (look.pattern === "check") { ctx.fillStyle = pc; ctx.globalAlpha = 0.45; for (let i = -5; i < 6; i++) { ctx.fillRect(i * 0.08 * K, -bh * K, 0.03 * K, bh * K); } for (let yy = 0; yy < 10; yy++) ctx.fillRect(-bw * K, -(yy * 0.08 + 0.04) * K, bw * 2 * K, 0.03 * K); ctx.globalAlpha = 1; }
+    ctx.fillStyle = "rgba(20,10,30,0.28)"; ctx.fillRect(bw * 0.2 * K, -bh * K, bw * K, bh * K); ctx.restore(); }
+  else { ctx.save(); body(); ctx.clip(); ctx.fillStyle = shade(look.body, 0.62); ctx.fillRect(bw * 0.2 * K, -bh * K, bw * K, bh * K); ctx.restore(); }
   if (look.outfit === "hawaii") { ctx.save(); body(); ctx.clip();
     for (let i = 0; i < 12; i++) { const fx = (-0.36 + (i % 3) * 0.36 + ((i * 7) % 3 - 1) * 0.05) * bw * K, fy = -bh * K * (0.12 + Math.floor(i / 3) * 0.24 + (i % 2) * 0.07);
       ctx.fillStyle = look.accent ?? "#ffd23f"; for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; ctx.beginPath(); ctx.arc(fx + Math.cos(a) * 0.022 * K, fy + Math.sin(a) * 0.022 * K, 0.016 * K, 0, Math.PI * 2); ctx.fill(); }
@@ -108,6 +118,10 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
   if (look.outfit !== "hawaii" && look.outfit !== "hoodie") { stroke(0.008); ctx.beginPath(); ctx.moveTo(W * 0.12 * K, -bh * 0.5 * K); ctx.lineTo(W * 0.36 * K, -bh * 0.5 * K); ctx.stroke(); }
   if (look.chain) { stroke(0.014, "#e8b83a"); ctx.beginPath(); ctx.arc(0, -bh * 0.98 * K, W * 0.24 * K, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
     ctx.fillStyle = "#f2c230"; stroke(0.006); ctx.beginPath(); ctx.arc(0, -bh * 0.98 * K + W * 0.27 * K, 0.025 * K, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+  if (look.scarf) { ctx.fillStyle = look.scarf; stroke(0.014);
+    ctx.beginPath(); ctx.roundRect(-bw * 0.48 * K, -bh * 1.02 * K, bw * 0.96 * K, 0.075 * K, 0.035 * K); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-bw * 0.22 * K, -bh * 0.95 * K); ctx.lineTo(-bw * 0.06 * K, -bh * 0.95 * K); ctx.lineTo(-bw * 0.02 * K, -bh * 0.52 * K); ctx.lineTo(-bw * 0.2 * K, -bh * 0.5 * K); ctx.closePath(); ctx.fill(); ctx.stroke();
+    stroke(0.008, shade(look.scarf, 0.6)); for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-bw * 0.2 * K, -bh * (0.62 + i * 0.07) * K); ctx.lineTo(-bw * 0.05 * K, -bh * (0.63 + i * 0.07) * K); ctx.stroke(); } }
   ctx.restore();
   // геймпад в руках
   if (look.pad) {
@@ -156,6 +170,21 @@ export function drawDoodle(ctx: CanvasRenderingContext2D, look: Look, p: Pose, r
     if (look.capBack) { ctx.beginPath(); ctx.roundRect(r * 0.55, -r * 0.5, r * 0.6, r * 0.16, r * 0.06); ctx.fill(); ctx.stroke();
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.roundRect(-r * 0.25, -r * 0.62, r * 0.5, r * 0.18, r * 0.06); ctx.fill(); }
     else { ctx.beginPath(); ctx.roundRect(-r * 1.25, -r * 0.42, r * 1.3, r * 0.2, r * 0.08); ctx.fill(); ctx.stroke(); }
+  }
+  if (look.hat) { const hcol = look.hatCol ?? "#5a6a7a"; ctx.fillStyle = hcol; stroke(0.022);
+    if (look.hat === "flatcap") { ctx.beginPath(); ctx.ellipse(r * 0.05, -r * 0.62, r * 1.12, r * 0.5, -0.06, Math.PI, Math.PI * 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(-r * 0.15, -r * 0.6, r * 1.05, r * 0.16, -0.06, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = shade(hcol, 0.7); ctx.beginPath(); ctx.ellipse(r * 0.45, -r * 0.82, r * 0.45, r * 0.18, -0.2, 0, Math.PI * 2); ctx.fill(); }
+    if (look.hat === "beret") { ctx.beginPath(); ctx.ellipse(r * 0.1, -r * 0.72, r * 1.1, r * 0.42, -0.12, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = INK; ctx.fillRect(r * 0.05, -r * 1.25, r * 0.08, r * 0.14); }
+    if (look.hat === "beanie") { ctx.beginPath(); ctx.arc(0, -r * 0.35, r * 1.02, Math.PI * 1.02, Math.PI * 1.98); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = shade(hcol, 0.8); ctx.beginPath(); ctx.roundRect(-r * 1.08, -r * 0.5, r * 2.16, r * 0.3, r * 0.1); ctx.fill(); ctx.stroke();
+      stroke(0.008, shade(hcol, 0.6)); for (let i = -4; i <= 4; i++) { ctx.beginPath(); ctx.moveTo(i * r * 0.22, -r * 0.48); ctx.lineTo(i * r * 0.22, -r * 0.24); ctx.stroke(); }
+      ctx.fillStyle = look.patCol ?? "#ffffff"; stroke(0.018); ctx.beginPath(); ctx.arc(0, -r * 1.42, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    if (look.hat === "ushanka") { const fur = shade(hcol, 0.75);
+      for (const sx of [-1, 1]) { ctx.fillStyle = fur; ctx.beginPath(); ctx.roundRect(sx > 0 ? r * 0.72 : -r * 1.14, -r * 0.55, r * 0.42, r * 0.95, r * 0.18); ctx.fill(); ctx.stroke(); }
+      ctx.fillStyle = hcol; ctx.beginPath(); ctx.arc(0, -r * 0.42, r * 1.05, Math.PI * 1.05, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = fur; ctx.beginPath(); ctx.roundRect(-r * 1.15, -r * 0.62, r * 2.3, r * 0.36, r * 0.16); ctx.fill(); ctx.stroke();
+      stroke(0.007, shade(hcol, 0.55)); for (let i = 0; i < 14; i++) { const fx = -r * 1.05 + i * r * 0.16; ctx.beginPath(); ctx.moveTo(fx, -r * 0.6); ctx.lineTo(fx + r * 0.04, -r * 0.3); ctx.stroke(); } }
   }
   if (look.headphones) {
     stroke(0.05, INK); ctx.beginPath(); ctx.arc(0, -r * 0.05, r * 1.1, Math.PI * 1.08, Math.PI * 1.92); ctx.stroke();
