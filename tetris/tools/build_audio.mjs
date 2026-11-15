@@ -13,8 +13,11 @@ const run = (args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { s
 run(["-i", path.join(OUT, "voice.mp3"), "-af", "loudnorm=I=-16:TP=-2:LRA=9", "-ar", "44100", "-ac", "2", path.join(OUT, "voice_n.wav")]);
 run(["-i", path.join(OUT, "sfx.wav"), "-af", "loudnorm=I=-30:TP=-9:LRA=20", "-ar", "44100", "-ac", "2", path.join(OUT, "sfx_n.wav")]);
 // фоновая музыка (если есть audio/music_src.wav): тихо, ~на 15 дБ ниже голоса, плавное начало и конец
-const MUS = path.join(OUT, "music_src.wav");
-if (fs.existsSync(MUS)) {
+const MUS = path.join(OUT, "music_src.wav"), READY = path.join(OUT, "music_ready.wav");
+// готовая музыка (уже сведённая по уровням, напр. shared/tools/music_tetris.py) — подмешиваем как есть
+if (fs.existsSync(READY)) {
+  run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-i", READY, "-filter_complex", "[2]aformat=channel_layouts=stereo[m];[0][1][m]amix=inputs=3:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "44100", path.join(OUT, "mix.wav")]);
+} else if (fs.existsSync(MUS)) {
   const T = tl.TOTAL;
   run(["-i", MUS, "-t", String(T), "-af", `loudnorm=I=-31:TP=-9:LRA=11,afade=t=in:d=1.2,afade=t=out:st=${(T - 2.5).toFixed(2)}:d=2.5`, "-ar", "44100", "-ac", "2", path.join(OUT, "music_n.wav")]);
   run(["-i", path.join(OUT, "voice_n.wav"), "-i", path.join(OUT, "sfx_n.wav"), "-i", path.join(OUT, "music_n.wav"), "-filter_complex", "[0][1][2]amix=inputs=3:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=9", "-ar", "44100", path.join(OUT, "mix.wav")]);
