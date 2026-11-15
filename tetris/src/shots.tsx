@@ -63,10 +63,10 @@ const mapChalk = chalk((g, Wd, H, s) => {
   // контуры «карты» мелом
   g.globalAlpha = 0.45; g.beginPath(); g.ellipse(Wd * 0.72, H * 0.42, Wd * 0.22, H * 0.25, 0, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.ellipse(Wd * 0.38, H * 0.5, Wd * 0.12, H * 0.2, 0.3, 0, Math.PI * 2); g.stroke();
   g.beginPath(); g.ellipse(Wd * 0.13, H * 0.42, Wd * 0.1, H * 0.3, 0, 0, Math.PI * 2); g.stroke(); g.globalAlpha = 1;
-  const pts: [string, number, number, number][] = [["МОСКВА", 0.78, 0.36, 0], ["ВЕНГРИЯ", 0.47, 0.6, t.p6hun], ["АНГЛИЯ", 0.35, 0.3, t.p6eng], ["США", 0.13, 0.5, t.p6usa]];
+  const pts: [string, number, number, number][] = [["МОСКВА", 0.78, 0.36, 0], ["ВЕНГРИЯ", 0.47, 0.6, P[6] + 0.5], ["АНГЛИЯ", 0.35, 0.3, P[6] + 1.0], ["США", 0.13, 0.5, P[6] + 1.5]];
   pts.forEach(([n, x, y, at], i) => { if (s < at) return; g.beginPath(); g.arc(Wd * x, H * y, Wd * 0.012, 0, Math.PI * 2); g.fill(); chalkText(g, n, Wd * x, H * (y - 0.1), Wd * 0.22, H * 0.09);
     if (i > 0) { const [, px, py] = pts[i - 1]; chalkArrow(g, Wd * px, H * py, Wd * x, H * y, clamp((s - at) / 0.35)); } });
-  if (s >= t.p6before) { chalkText(g, "ДОГОВОР?", Wd * 0.5, H * 0.86, Wd * 0.4, H * 0.12, YEL); g.strokeStyle = YEL; g.beginPath(); g.moveTo(Wd * 0.3, H * 0.93); g.lineTo(Wd * 0.7, H * 0.93); g.stroke(); }
+  if (s >= P[6] + 1.9) { chalkText(g, "ДОГОВОР?", Wd * 0.5, H * 0.86, Wd * 0.4, H * 0.12, YEL); g.strokeStyle = YEL; g.beginPath(); g.moveTo(Wd * 0.3, H * 0.93); g.lineTo(Wd * 0.7, H * 0.93); g.stroke(); }
 });
 const authorChalk = chalk((g, Wd, H, s) => {
   chalkText(g, "ИГРА", Wd * 0.22, H * 0.25, Wd * 0.3, H * 0.15); chalkArrow(g, Wd * 0.36, H * 0.25, Wd * 0.58, H * 0.25, 1); chalkText(g, "ГОСУДАРСТВО", Wd * 0.76, H * 0.25, Wd * 0.4, H * 0.13);
@@ -140,7 +140,7 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={t.p2young} light="lab" bg="#101828" cine focus={[-0.4, 1.05, -0.4]}
       cam={orbit(t.p2young, t.p2graph, [-0.35, 1.05, -0.6], { a0: 0.6, a1: 0.2, r0: 1.45, r1: 1.1, h0: 1.35, h1: 1.25, f0: 52, f1: 48 })}>
       <VC1984 term={termDraw(t.p2young)} />
-      <Doodle a={ap([-0.6, 0, -0.45], [[0, "neutral"], [t.p2young + 0.8, "smug"]], { handB: pointKeys(t.p2young + 0.6, 0.8, 0.3, 1.2, "b") })} />
+      <Doodle a={ap([-0.7, 0, -0.2], [[0, "neutral"], [t.p2young + 0.8, "smug"]], { handB: pointKeys(t.p2young + 0.6, 0.6, 0.15, 1.2, "b") })} />
     </Scene3D>)),
   // 6. Графики нет — только буквы и скобки: экран крупно
   S(t.p2graph, P[3], (
@@ -180,14 +180,14 @@ export const SHOTS: Shot[] = [
       <Doodle a={ap([-0.45, 0, -0.3], [[0, "proud"]], { handB: pointKeys(t.p4show, 0.8, 0.4, 1.5, "b") })} />
       <Doodle a={who(COL1, 21, [0.9, 0, -0.7], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
       <Doodle a={who(COL2, 22, [1.15, 0, -0.75], [[0, "neutral"], [t.p4show + 0.6, "hype"]])} />
-      <Doodle a={who(COL3, 23, [0.2, 0, -0.95], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
+      <Doodle a={who(COL3, 23, [1.45, 0, -1.0], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
     </Scene3D>)),
   // 11. Копируют на дискеты — дискеты сыплются на стол
   S(t.p4copy, t.p4carry, (
     <Scene3D t0={t.p4copy} light="lab" bg="#101828" cine focus={[0.2, 0.85, -0.6]}
-      cam={dolly(t.p4copy, t.p4carry, [0.2, 2.0, 0.15], [0.25, 1.3, 0.3], [0.2, 0.8, -0.6], [0.2, 0.8, -0.65], 48, 46)}>
+      cam={dolly(t.p4copy, t.p4carry, [0.45, 2.0, 0.1], [0.5, 1.3, 0.25], [0.45, 0.8, -0.6], [0.45, 0.8, -0.62], 48, 46)}>
       <VC1984 term={termDraw(P[4])} />
-      {Array.from({ length: 9 }, (_, i) => <After key={i} t={t.p4copy + i * 0.12}><Diskette p={[-0.05 + (i % 3) * 0.2, 0.8 + Math.floor(i / 3) * 0.015, -0.55 - (i % 2) * 0.1]} rot={[-Math.PI / 2, 0, i * 0.7]} col={["#1a1a22", "#2a2a5a", "#5a1a1a"][i % 3]} /></After>)}
+      {Array.from({ length: 9 }, (_, i) => <After key={i} t={t.p4copy + i * 0.12}><Diskette p={[0.2 + (i % 3) * 0.12, 0.765 + i * 0.014, -0.48 - (i % 2) * 0.04]} rot={[-Math.PI / 2, 0, i * 0.5]} col={["#1a1a22", "#2a2a5a", "#5a1a1a"][i % 3]} /></After>)}
     </Scene3D>), "cut"),
   // 12. …и носят по всей Москве: зимняя улица, у прохожих дискеты
   S(t.p4carry, P[5], (
@@ -203,7 +203,7 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={P[5]} light="lab" bg="#101828" cine focus={[-0.4, 1.0, -0.3]}
       cam={orbit(P[5], t.p5color - 0.4, [-0.3, 1.0, -0.5], { a0: -0.4, a1: 0.2, r0: 1.35, r1: 1.1, h0: 1.25, h1: 1.2, f0: 50, f1: 46 })}>
       <VC1984 term={termDraw(P[5])} clock="16:20" />
-      <Doodle a={who(VADIM, 31, [-0.55, 0, -0.3], [[0, "smug"], [t.p5ibm, "hype"]], { scale: 1.0, handB: pointKeys(t.p5ibm - 0.3, 0.8, 0.3, 1.2, "b") })} />
+      <Doodle a={who(VADIM, 31, [-0.6, 0, -0.15], [[0, "smug"], [t.p5ibm, "hype"]], { scale: 1.0, handB: pointKeys(t.p5ibm - 0.3, 0.8, 0.3, 1.2, "b") })} />
     </Scene3D>)),
   // 14. …и игра впервые становится цветной (вспышка)
   S(t.p5color - 0.4, P[6], (
@@ -213,17 +213,17 @@ export const SHOTS: Shot[] = [
     </Scene3D>), "flash"),
 
   // 15. Игра утекает за границу: мел на доске — Москва → Венгрия → Англия → США
-  S(P[6], t.p6hun + 0.5, (
+  S(P[6], t.p6hun - 0.6, (
     <Scene3D t0={P[6]} light="office" bg="#d8c8a0" cine={{ dof: 0 }} focus={[0, 1.6, -1.94]}
-      cam={cam([P[6], [0, 1.55, 0.6], [0, 1.6, -1.94], 50], [t.p6hun + 0.5, [0, 1.55, 0.3], [0, 1.6, -1.94], 48])}>
+      cam={cam([P[6], [0, 1.55, 0.6], [0, 1.6, -1.94], 50], [t.p6hun - 0.6, [0, 1.55, 0.3], [0, 1.6, -1.94], 48])}>
       <ChalkWall draw={mapChalk} />
     </Scene3D>), "cut"),
   // 16. Будапешт, 1986: иностранец у стенда, в восторге
-  S(t.p6hun + 0.5, t.p6eng + 0.2, (
-    <Scene3D t0={t.p6hun + 0.5} light="warm" bg="#2a2a3a" cine focus={[0.3, 1.1, -0.6]}
-      cam={orbit(t.p6hun + 0.5, t.p6eng + 0.2, [0.35, 1.15, -0.8], { a0: 0.5, a1: 0, r0: 1.45, r1: 1.1, h0: 1.35, h1: 1.3, f0: 52, f1: 48 })}>
-      <ExpoHall t0={t.p6hun} />
-      <Doodle a={who(STEIN, 41, [0.6, 0, -0.75], [[0, "realize"], [t.p6hun + 1.0, "hype"]], { handF: pointKeys(t.p6hun + 0.8, -0.8, 0.4, 1.0) })} />
+  S(t.p6hun - 0.6, t.p6eng + 0.2, (
+    <Scene3D t0={t.p6hun - 0.6} light="warm" bg="#2a2a3a" cine focus={[0.3, 1.1, -0.6]}
+      cam={orbit(t.p6hun - 0.6, t.p6eng + 0.2, [0.35, 1.15, -0.8], { a0: 0.5, a1: 0, r0: 1.45, r1: 1.1, h0: 1.35, h1: 1.3, f0: 52, f1: 48 })}>
+      <ExpoHall t0={t.p6hun - 0.8} />
+      <Doodle a={who(STEIN, 41, [0.6, 0, -0.75], [[0, "realize"], [t.p6hun + 0.2, "hype"]], { handF: pointKeys(t.p6hun, -0.8, 0.4, 1.2) })} />
     </Scene3D>)),
   // 17. Англия и Америка: коробки с игрой летят с полок
   S(t.p6eng + 0.2, t.p6before, (
@@ -281,9 +281,9 @@ export const SHOTS: Shot[] = [
   // 24. …в одно и то же ведомство: все трое у одной двери, косятся друг на друга
   S(t.p8same, P[9], (
     <Scene3D t0={t.p8same} light="office" bg="#c8b890" cine focus={[1.2, 1.1, -1.4]}
-      cam={dolly(t.p8same, P[9], [0.0, 1.35, 1.2], [1.6, 1.3, 1.0], [0.7, 1.2, -1.5], [1.6, 1.2, -1.5], 54, 50)}>
+      cam={dolly(t.p8same, P[9], [0.6, 1.35, 1.4], [1.8, 1.3, 1.1], [1.2, 1.2, -1.2], [1.7, 1.2, -1.2], 54, 50)}>
       <Ministry />
-      {[[STEIN, 0.55, 41], [ROGERS, 1.2, 42], [MAXWELL, 1.85, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -1.3 + (i % 2) * 0.15], [[0, "stern"], [t.p8same + 0.4 + i * 0.15, "angry"]])} />)}
+      {[[STEIN, 1.1, 41], [ROGERS, 1.65, 42], [MAXWELL, 2.2, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -0.7 - (i % 2) * 0.25], [[0, "stern"], [t.p8same + 0.4 + i * 0.15, "angry"]])} />)}
     </Scene3D>)),
 
   // 25. Побеждает Nintendo: Роджерс с договором, двое других злятся
@@ -292,8 +292,8 @@ export const SHOTS: Shot[] = [
       cam={orbit(P[9], t.p9box, [0, 1.1, -0.85], { a0: -0.5, a1: 0.4, r0: 1.85, r1: 1.45, h0: 1.4, f0: 56, f1: 52 })}>
       <Ministry door={false} />
       <Doodle a={who(ROGERS, 42, [0, 0, -0.75], [[0, "hype"]], { ...armsUp(P[9] + 0.3, 9), scale: 1.18 })} />
-      <Doodle a={who(STEIN, 41, [-0.9, 0, -1.0], [[0, "angry"]])} />
-      <Doodle a={who(MAXWELL, 43, [0.9, 0, -1.0], [[0, "cry"]])} />
+      <Doodle a={who(STEIN, 41, [-1.25, 0, -0.65], [[0, "angry"]])} />
+      <Doodle a={who(MAXWELL, 43, [1.25, 0, -0.65], [[0, "cry"]])} />
       <Confetti t0={P[9] + 0.2} n={30} area={[-1.2, 1.2, -1.2, 0]} />
     </Scene3D>), "cut"),
   // 26. В коробку к каждому Game Boy: большой Game Boy, игра на экране
@@ -395,7 +395,7 @@ export const SHOTS: Shot[] = [
   S(P[15], END, (
     <Scene3D t0={P[15]} light="night" bg="#0a1030" cine={{ dof: 0 }} focus={[0, 2, -3]}
       cam={dolly(P[15], END, [0, 1.2, 2.0], [0, 2.2, 4.4], [0, 2.4, -6], [0, 3.0, -7], 58, 62)}>
-      <SovietStreet night sign="ВЫЧИСЛИТЕЛЬНЫЙ ЦЕНТР" />
+      <SovietStreet night lamps={[-5.5, 5]} />
       <QuestionCard p={[0, 4.0, -4]} t={P[15] + 0.15} w={4.6} l1="ТЕТРИС ПРИДУМАЛИ" l2="В МОСКВЕ?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
       {crowd(10, -2.6, 2.6, -2.0, 0.4, 91, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, hat: i % 2 ? "ushanka" : "beanie", hatCol: ["#6a5040", "#c83a2a", "#3a3a4a"][i % 3], ink: 1.25 } }} />)}
       <Doodle a={ap([0, 0, 1.0], [[0, "smug"]], {}, AP)} />
@@ -406,7 +406,7 @@ export const SHOTS: Shot[] = [
 export type Bub = { t0: number; t1: number; text: string; x: number; y: number; col?: string };
 export const BUBBLES: Bub[] = [
   { t0: t.p4show + 0.5, t1: t.p4copy, text: "ДАЙ ПОИГРАТЬ! 😍", x: 640, y: 380 },
-  { t0: t.p6hun + 1.0, t1: t.p6eng + 0.2, text: "ЧТО ЭТО?! 🤩", x: 600, y: 400, col: YEL },
+  { t0: t.p6hun, t1: t.p6eng + 0.2, text: "ЧТО ЭТО?! 🤩", x: 600, y: 400, col: YEL },
   { t0: t.p7comp + 0.1, t1: P[8], text: "…СПАСИБО 🙂", x: 360, y: 420 },
   { t0: P[9] + 0.3, t1: t.p9box, text: "NINTENDO! 🎮", x: 540, y: 380, col: YEL },
 ];
@@ -415,7 +415,7 @@ export type Lab = { t0: number; t1: number; text: string };
 export const LABELS: Lab[] = [
   { t0: P[2], t1: P[3], text: "МОСКВА · 1984" },
   { t0: P[4], t1: P[5], text: "6 ИЮНЯ 1984" },
-  { t0: t.p6hun + 0.5, t1: t.p6eng + 0.2, text: "БУДАПЕШТ · 1986" },
+  { t0: t.p6hun - 0.6, t1: t.p6eng + 0.2, text: "БУДАПЕШТ · 1986" },
   { t0: P[8], t1: P[10], text: "МОСКВА · 1989" },
   { t0: P[12], t1: P[13], text: "1996" },
 ];

@@ -114,7 +114,7 @@ const panelTex = (lit: number, night: boolean) => canvasTex(512, 768, (g) => {
   for (let y = 16; y < 760; y += 64) for (let x = 24; x < 512; x += 64) { const on = ((x * 7 + y * 13) % 17) / 17 < lit; g.fillStyle = on ? (night ? "#ffcf6a" : "#cfe0ee") : (night ? "#1a2030" : "#5a6a80"); g.fillRect(x, y, 26, 32); }
 });
 // зимняя советская улица: панельные дома, сугробы, фонари, снег; night — ночь
-export const SovietStreet: React.FC<{ night?: boolean; sign?: string }> = ({ night = true, sign }) => {
+export const SovietStreet: React.FC<{ night?: boolean; sign?: string; lamps?: number[] }> = ({ night = true, sign, lamps = [-5, -0.5, 4] }) => {
   const t1 = useMemo(() => panelTex(0.55, night), [night]), t2 = useMemo(() => panelTex(0.4, night), [night]);
   const sky = useMemo(() => canvasTex(256, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); if (night) { gr.addColorStop(0, "#0a1030"); gr.addColorStop(1, "#3a3a6a"); } else { gr.addColorStop(0, "#9ab0d0"); gr.addColorStop(1, "#e8e8f0"); } g.fillStyle = gr; g.fillRect(0, 0, 256, 256); }), [night]);
   return (<>
@@ -125,8 +125,8 @@ export const SovietStreet: React.FC<{ night?: boolean; sign?: string }> = ({ nig
       <mesh position={[x as number, (h as number) / 2, -9]}><boxGeometry args={[4.6, h as number, 2.5]} /><meshStandardMaterial map={t as THREE.Texture} /></mesh>
       <Box p={[x as number, (h as number) + 0.08, -9]} s={[4.7, 0.16, 2.6]} c="#4a4a52" /></group>)}
     {[-7, -3, 1.5, 5.5, 9].map((x, i) => <mesh key={i} position={[x, 0.15, -3.6]} scale={[1.6, 0.5, 0.9]}><sphereGeometry args={[0.6, 16, 10]} /><meshStandardMaterial color={night ? "#d8e0f0" : "#ffffff"} /></mesh>)}
-    {[-5, -0.5, 4].map((x, i) => <StreetLamp key={i} p={[x, 0.05, -3.0]} on={night} />)}
-    {night ? [-5, -0.5, 4].map((x, i) => <pointLight key={i} position={[x + 0.5, 3, -2.8]} intensity={4} distance={6} color="#ffc880" />) : null}
+    {lamps.map((x, i) => <StreetLamp key={i} p={[x, 0.05, -3.0]} on={night} />)}
+    {night ? lamps.map((x, i) => <pointLight key={i} position={[x + 0.5, 3, -2.8]} intensity={4} distance={6} color="#ffc880" />) : null}
     {sign ? <Sign p={[-1.5, 3.2, -7.7]} w={3.2} h={0.6} text={sign} bg="#c83a2a" fg="#fff2d0" glow={night ? 0.9 : 0.3} /> : null}
     <Snow area={[-6, 6, 0, 5, -6, 1.5]} n={160} speed={0.4} />
   </>);
