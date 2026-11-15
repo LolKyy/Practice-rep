@@ -100,7 +100,7 @@ export const DeskLamp: React.FC<{ p: V3; rotY?: number }> = ({ p, rotY = 0 }) =>
   </group>);
 
 // экран терминала «Электроники-60»: зелёный текст, стакан из «<! . . !>», фигура из [] падает
-export const termDraw = (t0: number, label = ""): Draw => (g, s, W, H) => {
+export const termDraw = (t0: number, label = "", clearT = 1e9): Draw => (g, s, W, H) => {
   g.fillStyle = "#031208"; g.fillRect(0, 0, W, H);
   const fs = H / 22; g.font = `${fs}px monospace`; g.textBaseline = "top"; g.fillStyle = "#3fff8f";
   g.shadowColor = "#3fff8f"; g.shadowBlur = fs * 0.6;
@@ -111,12 +111,16 @@ export const termDraw = (t0: number, label = ""): Draw => (g, s, W, H) => {
   const pile = [[0, 17], [1, 17], [2, 17], [3, 17], [5, 17], [6, 17], [7, 17], [8, 17], [9, 17], [0, 16], [1, 16], [6, 16], [7, 16], [8, 16], [9, 16], [0, 15], [9, 15]];
   const cell = (c: number, r: number) => g.fillText("[]", x0 + fs * 1.24 + c * fs * 1.24, fs * (1.5 + r));
   g.fillStyle = "#031208"; for (const [c, r] of pile) g.fillRect(x0 + fs * 1.24 + c * fs * 1.24, fs * (1.5 + r), fs * 1.2, fs); g.fillStyle = "#3fff8f";
-  for (const [c, r] of pile) cell(c, r);
+  const flash = s >= clearT && s < clearT + 0.45, gone = s >= clearT + 0.45;
+  const pile2 = gone ? pile.filter(([, r]) => r !== 17).map(([c, r]) => [c, r + 1]) : pile;
+  if (!gone) { g.fillStyle = "#031208"; for (const [c, r] of pile) g.fillRect(x0 + fs * 1.24 + c * fs * 1.24, fs * (1.5 + r), fs * 1.2, fs); g.fillStyle = "#3fff8f"; }
+  for (const [c, r] of pile2) cell(c, r);
+  if (flash) { g.fillStyle = `rgba(184,255,208,${0.9 - (s - clearT) * 2})`; g.fillRect(x0 + fs * 1.2, fs * 18.5, fs * 12.4, fs); }
   // падающая «Т»
-  const u = Math.max(0, s - t0), row = Math.min(14, Math.floor(u * 3));
+  const u = Math.max(0, s - t0), row = Math.min(14, Math.floor(u * 3)); const hide = flash || gone;
   const T = [[3, 0], [4, 0], [5, 0], [4, 1]];
-  g.fillStyle = "#031208"; for (const [c, r] of T) g.fillRect(x0 + fs * 1.24 + c * fs * 1.24, fs * (1.5 + r + row), fs * 1.2, fs); g.fillStyle = "#b8ffd0";
-  for (const [c, r] of T) cell(c, r + row);
+  if (!hide) { g.fillStyle = "#031208"; for (const [c, r] of T) g.fillRect(x0 + fs * 1.24 + c * fs * 1.24, fs * (1.5 + r + row), fs * 1.2, fs); g.fillStyle = "#b8ffd0";
+  for (const [c, r] of T) cell(c, r + row); }
   if (label) fitText(g, label, W / 2, H * 0.03 + fs * 0.2, W * 0.9, fs, "#3fff8f", "monospace");
   g.shadowBlur = 0;
   // скан-линии и виньетка ЭЛТ

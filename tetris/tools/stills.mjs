@@ -14,7 +14,8 @@ const comp = await selectComposition({ serveUrl, id: "Tetris", chromiumOptions: 
   onBrowserLog: (l) => { if (l.text.startsWith("SHOTS ")) shots = JSON.parse(l.text.slice(6)); } });
 let secs;
 if (process.argv[2]) secs = process.argv[2].split(",").map(Number);
-else secs = shots.map(([a, b]) => (a + b) / 2);
+else { const tl = await import(path.join(ROOT, "src/timeline.js")); const ad = tl.AD_T ?? 1e9, adD = (tl.AD_F ?? 0) / 30;
+  secs = shots.map(([a, b]) => (a + b) / 2).map((m) => (m >= ad ? m + adD : m)); }
 fs.mkdirSync(path.join(ROOT, "checks"), { recursive: true });
 const files = [];
 for (const [i, s] of secs.entries()) {

@@ -4,7 +4,7 @@ import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, continueRender, 
 import words from "./words.json";
 import { setData, FPS, WORDS, AD_T, AD_F } from "./timeline.js";
 setData(words);
-import { SHOTS, BUBBLES } from "./shots";
+import { SHOTS, BUBBLES, LABELS } from "./shots";
 import { Captions } from "./captions";
 
 const FONTS: [string, string, string][] = [["Rubik", "fonts/Rubik.ttf", "800"], ["Russo One", "fonts/RussoOne.ttf", "400"], ["Oswald", "fonts/Oswald.ttf", "700"]];
@@ -43,6 +43,18 @@ const Bubbles: React.FC = () => {
   })}</>;
 };
 
+// подписи места и времени: красная точка + текст печатается по буквам
+const Labels: React.FC = () => {
+  const f = useCurrentFrame(); const t = f / FPS;
+  return <>{LABELS.filter((l) => t >= l.t0 && t < l.t1).map((l, i) => {
+    const n = Math.min(l.text.length, Math.floor((t - l.t0) * 28)); const op = Math.min(1, (l.t1 - t) * 4);
+    return <div key={i} style={{ position: "absolute", left: 70, top: 150, display: "flex", alignItems: "center", gap: 18, opacity: op }}>
+      <div style={{ width: 18, height: 18, borderRadius: 9, background: "#ff3b3b", boxShadow: "0 0 18px #ff3b3b", opacity: Math.floor(t * 2) % 2 ? 1 : 0.4 }} />
+      <div style={{ fontFamily: "Oswald", fontWeight: 700, fontSize: 46, letterSpacing: 6, color: "#fff", textShadow: "0 3px 10px rgba(0,0,0,0.8)" }}>{l.text.slice(0, n)}</div>
+    </div>;
+  })}</>;
+};
+
 // весь ролик без звука (звук целиком в public/audio.mp3, реклама уже вклеена туда)
 const Main: React.FC = () => (<AbsoluteFill style={{ backgroundColor: "black" }}>
   {SHOTS.map((s, i) => {
@@ -52,6 +64,7 @@ const Main: React.FC = () => (<AbsoluteFill style={{ backgroundColor: "black" }}
     return <Sequence key={i} from={from} durationInFrames={to - from + extra}><ShotWrap i={i}>{s.el}</ShotWrap></Sequence>;
   })}
   <Bubbles />
+  <Labels />
   <Captions />
 </AbsoluteFill>);
 

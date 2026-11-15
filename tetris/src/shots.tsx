@@ -1,325 +1,423 @@
-// РАСКАДРОВКА «А что, если GTA 6 переоценена?»: формат вопросов, без наездов. Герой — розовая гавайка, очки, цепь.
+// РАСКАДРОВКА «Тетрис»: реальная история в стиле «Титаника» — крупные планы, тёплый/холодный свет, облачка мыслей, мел на доске.
 import React from "react";
 import words from "./words.json";
-import { setData, wt, ps, TOTAL } from "./timeline.js";
+import { setData, wt, ps, TOTAL, AD_T } from "./timeline.js";
 setData(words);
-import { Scene3D, Doodle, Actor, Box, Sign, Screen, crowd, armsUp, padHands, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText, useSec } from "../../shared/remotion/kit";
-import { NewsStudio, SynthSunset, QuestionCard, Confetti, drawBg, drawStamp, rr, PINK, CYAN, YEL, RED, INK } from "../../shared/remotion/sets";
-import { titleDraw, loadDraw } from "../../shared/remotion/sets2";
-import { Apartment, City, Store2, Stage2, Car } from "../../shared/remotion/sets3";
-import { viceMapDraw, ClubFront, ShoeShop, GasStation, Gym, TrunkCar, Garage, FlippedCar, HotDog, wantedDraw, realismDraw, choresDraw, missionDraw, fpsDraw, yearsDraw } from "../../shared/remotion/sets4";
+import { Scene3D, Doodle, Actor, Box, Sign, Screen, Room, crowd, armsUp, pointKeys, HIP, HEAD_Z, CamKey, V3, fitText, useSec, clamp } from "../../shared/remotion/kit";
+import { QuestionCard, Confetti, drawBg, drawStamp, rr, PINK, CYAN, YEL, RED, INK } from "../../shared/remotion/sets";
+import { PaperSet } from "../../shared/remotion/sets2";
+import { City } from "../../shared/remotion/sets3";
+import { VC1984, termDraw, ThoughtCloud, Motes, Sparks, Snow } from "../../shared/remotion/sets5";
+import { SovietStreet, Ministry, ExpoHall, GameShop, ChalkWall, GameBoy, Diskette, GiftBox, Bills, colorTetrisDraw, counterDraw, yearFlipDraw, chalk, chalkText, chalkArrow, block, piece, TET } from "../../shared/remotion/sets6";
 import type { Look } from "../../shared/remotion/doodle";
 
 export type Shot = { t0: number; t1: number; el: React.ReactNode; tr?: "fade" | "cut" | "flash" };
 
-// ---------------------------------------------------------------- персонажи
-const HERO: Look = { body: "#ff4f9a", hair: "slick", outfit: "hawaii", accent: "#ffd23f", shades: true, chain: true };
-const HERO_PAD: Look = { ...HERO, pad: true };
-const HERO_OLD: Look = { ...HERO, beard: true, wrinkles: true, hairCol: "#b8b0a8" };
-const COP: Look = { body: "#2a3a8a", hair: "bowl", cap: "#1a2440", badge: true, mustache: true };
-const SELLER: Look = { body: "#ff9ac8", hair: "bun", glasses: true };
-const PED: Look = { body: "#2f8fe0", hair: "bald", hairCol: "#3a2a1a", mustache: true };
-const ROCK: Look = { body: "#1a1a2a", hair: "slick", glasses: true, tie: YEL };
-const ANCHOR: Look = { body: "#2f6fd6", hair: "slick", tie: "#f2c230" };
-const hero = (pos: V3, expr: [number, string][], extra: Partial<Actor> = {}, look: Look = HERO): Actor => ({ pos, seed: 1, look, expr, ...(look.pad ? padHands : {}), scale: 1.15, ...extra });
+// ---------------------------------------------------------------- персонажи (v5: узоры, шапки, жирный контур)
+const AP: Look = { body: "#7a4a6a", hair: "slick", glasses: true, mustache: true, pattern: "check", patCol: "#e8c890", scarf: "#c83a2a", ink: 1.25 };
+const AP_OLD: Look = { ...AP, hairCol: "#9a968e" };
+const COL1: Look = { body: "#3a5a8a", hair: "bald", hairCol: "#3a2a1a", pattern: "stripes", patCol: "#d8e0f0", hat: "ushanka", hatCol: "#6a5040", ink: 1.25 };
+const COL2: Look = { body: "#4a7a5a", hair: "bun", glasses: true, pattern: "dots", patCol: "#f4f0e0", ink: 1.25 };
+const COL3: Look = { body: "#8a6a3a", hair: "bald", hairCol: "#2a1a10", mustache: true, hat: "flatcap", hatCol: "#5a6a7a", ink: 1.25 };
+const VADIM: Look = { body: "#2f4f9a", hair: "bowl", outfit: "jacket", accent: "#f4f4f4", ink: 1.25 };
+const OFFICIAL: Look = { body: "#5a5a62", hair: "bald", hairCol: "#3a3a3a", glasses: true, tie: "#2a3a6a", ink: 1.25 };
+const STEIN: Look = { body: "#3a3a4a", hair: "slick", hairCol: "#8a6a4a", tie: RED, hat: "beret", hatCol: "#2a2a32", scarf: "#d8c8a0", ink: 1.25 };
+const ROGERS: Look = { body: "#2a4a7a", hair: "slick", glasses: true, hat: "flatcap", hatCol: "#6a5a4a", scarf: "#e64b4b", ink: 1.25 };
+const MAXWELL: Look = { body: "#4a2a2a", hair: "bald", hairCol: "#5a4a3a", tie: YEL, hat: "beanie", hatCol: "#2a3a5a", patCol: "#e8e0d0", ink: 1.25 };
+const ap = (pos: V3, expr: [number, string][], extra: Partial<Actor> = {}, look: Look = AP): Actor => ({ pos, seed: 3, look, expr, scale: 1.18, ...extra });
+const who = (look: Look, seed: number, pos: V3, expr: [number, string][], extra: Partial<Actor> = {}): Actor => ({ pos, seed, look, expr, scale: 1.12, ...extra });
 
 // ---------------------------------------------------------------- времена
 const W = (p: number, s: string, o = 0) => wt(p, s, o);
 const t = {
   p1a: W(1, "а"),
-  p2go: W(2, "рвануть"), p2shoe: W(2, "туфельке"), p2all: W(2, "все", 1), p2q: W(2, "а"), p2shoe2: W(2, "туфелька"), p2exp: W(2, "оправдает"),
-  p3jour: W(4, "журналисты"), p3slow: W(4, "медленнее"), p3red: W(4, "почти"), p3q: W(4, "а"),
-  p4cop: W(5, "а"), p4face: W(5, "лицо"), p4cloth: W(5, "одежду"), p4car: W(5, "машину"), p4flip: W(5, "перевернул"), p4back: W(5, "обратно"),
-  p5rem: W(6, "запомнил"), p5off: W(6, "обиделся"),
-  p6mech: W(7, "механики"), p6rut: W(7, "рутину"), p6gas: W(7, "заправь"), p6gym: W(7, "сходи"), p6eat: W(7, "поешь"), p6over: W(7, "переешь"), p6gun: W(7, "лишнее"),
-  p7drive: W(8, "доедь"), p7take: W(8, "забери"), p7run: W(8, "убеги"),
-  p8wait: W(9, "ждали"), p8fps: W(9, "чтобы"), p8thirty: W(9, "тридцать"), p8pro: W(9, "даже"),
-  p9there: W(10, "там"), p9cars: W(10, "тачки"), p9guns: W(10, "стволы"), p9plus: W(10, "плюшки"),
-  p9bug: W(3, "баги"), p9fly: W(3, "летающие"), p9sony: W(3, "и"), p9tho: W(3, "хотя"), p9move: W(3, "переносили"),
-  p10how: W(11, "как"),
+  p2vc: W(2, "вычислительный"), p2young: W(2, "молодой"), p2graph: W(2, "графики"), p2br: W(2, "скобки"),
+  p3five: W(3, "пять"), p3but: W(3, "но"), p3four: W(3, "четыре"), p3fig: W(3, "фигуры"), p3gone: W(3, "исчезают"),
+  p4show: W(4, "показывает"), p4copy: W(4, "копируют"), p4carry: W(4, "носят"),
+  p5ibm: W(5, "ай-би-эм"), p5color: W(5, "цветной"),
+  p6hun: W(6, "венгрии"), p6eng: W(6, "англии"), p6usa: W(6, "америке"), p6before: W(6, "ещё"),
+  p7state: W(7, "государству"), p7nothing: W(7, "ничего"), p7give: W(7, "в"), p7comp: W(7, "компьютер"),
+  p8three: W(8, "три"), p8day: W(8, "день"), p8same: W(8, "одно"),
+  p9box: W(9, "игру"), p9mario: W(9, "вместо"),
+  p10count: W(10, "больше"), p10world: W(10, "мир"),
+  p11kop: W(11, "копейки"),
+  p12back: W(12, "возвращает"), p12earn: W(12, "наконец"),
+  p13name: W(13, "алексей"), p13game: W(13, "игру") - 0.12, p13tet: W(13, "тетрис"),
+  p14row: W(14, "каждый"), p14wait: W(14, "свою"), p14twelve: W(14, "двенадцать"),
 };
-const P = [0, ...Array.from({ length: 12 }, (_, i) => ps(i + 1))];
+const P = [0, ...Array.from({ length: 15 }, (_, i) => ps(i + 1))];
+const AD_END = AD_T + 0.12; // после рекламы — новый кадр
 const END = TOTAL;
 const cam = (...k: CamKey[]) => k;
 const S = (t0: number, t1: number, el: React.ReactNode, tr?: Shot["tr"]): Shot => ({ t0, t1, el, tr });
-// показать детей только после секунды t
 const After: React.FC<{ t: number; children: React.ReactNode }> = ({ t: at, children }) => { const s = useSec(); return s >= at ? <>{children}</> : null; };
 
-const proDraw = (g: CanvasRenderingContext2D, s: number, W: number, H: number) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "ROCKSTAR", W / 2, H * 0.3, W * 0.7, H * 0.2, "#fff"); fitText(g, "СТАВКА НА РЕАЛИЗМ", W / 2, H * 0.62, W * 0.8, H * 0.13, YEL); };
-const previewDraw = (tRed: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
-  drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); g.fillStyle = RED; g.fillRect(W * 0.42, H * 0.06, W * 0.36, H * 0.14); fitText(g, "ПРЕВЬЮ", W * 0.6, H * 0.135, W * 0.3, H * 0.1, "#fff");
-  fitText(g, s < tRed ? "🐢" : "🤠🐎", W * 0.68, H * 0.47, W * 0.4, H * 0.32, "#fff"); fitText(g, s < tRed ? "МЕДЛЕННЕЕ" : "ПОЧТИ RED DEAD", W * 0.68, H * 0.82, W * 0.55, H * 0.14, YEL); };
-const soonDraw = (g: CanvasRenderingContext2D, s: number, W: number, H: number) => { titleDraw()(g, s, W, H); g.fillStyle = "rgba(0,0,0,0.55)"; rr(g, W * 0.1, H * 0.72, W * 0.8, H * 0.18, 20); g.fill(); fitText(g, "УВИДИМ ПОСЛЕ ВЫХОДА 👀", W / 2, H * 0.81, W * 0.75, H * 0.11, "#fff"); };
-const qDraw = (g: CanvasRenderingContext2D, s: number, W: number, H: number) => { drawBg(g, W, H, "#1a0f2a", "#3a1a4a"); for (let i = 0; i < 7; i++) fitText(g, "?", W * (0.1 + i * 0.13), H * (0.5 + 0.25 * Math.sin(s * 3 + i)), W * 0.12, H * 0.4, [YEL, PINK, CYAN][i % 3]); };
-
-const glitchDraw = (t0: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
-  titleDraw()(g, s, W, H); if (s < t0) return; const k = Math.min(1, (s - t0) / 0.8);
-  for (let i = 0; i < 8; i++) { const y = ((Math.sin(s * 37 + i * 13) + 1) / 2) * H, h = H * 0.03 * (1 + (i % 3));
-    g.drawImage(g.canvas, 0, y, W, h, (Math.sin(s * 53 + i) * W * 0.08) * k, y, W, h); g.fillStyle = ["rgba(255,0,80,0.35)", "rgba(0,255,220,0.35)"][i % 2]; g.fillRect(0, y, W * k, h * 0.4); }
+// ---------------------------------------------------------------- рисунки (облачка, мел, экраны)
+const pentoDraw = (tCross?: number) => (g: CanvasRenderingContext2D, s: number, Wd: number, H: number) => {
+  g.fillStyle = "#fff"; g.fillRect(0, 0, Wd, H); const c = Math.min(Wd, H) / 4.2, x0 = Wd / 2 - c * 1.5, y0 = H / 2 - c * 1.5;
+  const cells: [number, number][] = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]];
+  cells.forEach(([x, y], i) => { const cross = tCross !== undefined && s >= tCross && i === 4; g.globalAlpha = cross ? Math.max(0.25, 1 - (s - tCross!) * 1.5) : 1; block(g, x0 + x * c, y0 + y * c, c, TET.T); g.globalAlpha = 1;
+    if (cross) { g.strokeStyle = RED; g.lineWidth = c * 0.16; g.beginPath(); g.moveTo(x0 + x * c, y0 + y * c); g.lineTo(x0 + x * c + c, y0 + y * c + c); g.moveTo(x0 + x * c + c, y0 + y * c); g.lineTo(x0 + x * c, y0 + y * c + c); g.stroke(); } });
+  fitText(g, tCross !== undefined && s >= tCross ? "4" : "5", Wd * 0.88, H * 0.18, Wd * 0.2, H * 0.3, tCross !== undefined && s >= tCross ? "#2f8f4f" : RED);
 };
-const bugsDraw = (tFly: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
-  g.fillStyle = "#7ac0f0"; g.fillRect(0, 0, W, H * 0.6); g.fillStyle = "#4a4a56"; g.fillRect(0, H * 0.6, W, H * 0.4);
-  const fy = s < tFly ? H * 0.62 : H * 0.62 - Math.min(1, (s - tFly) / 0.6) * H * 0.42, x = W * 0.62, r = (s - tFly) * 2;
-  g.save(); g.translate(x, fy); if (s >= tFly) g.rotate(r); g.fillStyle = "#ffd23f"; rr(g, -W * 0.14, -H * 0.06, W * 0.28, H * 0.1, 14); g.fill(); rr(g, -W * 0.07, -H * 0.13, W * 0.14, H * 0.08, 12); g.fill();
-  g.fillStyle = "#111"; for (const dx of [-0.09, 0.09]) { g.beginPath(); g.arc(W * dx, H * 0.04, W * 0.035, 0, 7); g.fill(); } g.restore();
-  g.strokeStyle = "#1a1020"; g.lineWidth = W * 0.012; const px = W * 0.22, py = H * 0.5; g.beginPath(); g.arc(px, py - H * 0.13, W * 0.035, 0, 7); g.stroke();
-  g.beginPath(); g.moveTo(px, py - H * 0.09); g.lineTo(px, py); g.moveTo(px - W * 0.12, py - H * 0.07); g.lineTo(px + W * 0.12, py - H * 0.07); g.moveTo(px, py); g.lineTo(px - W * 0.03, py + H * 0.1); g.moveTo(px, py); g.lineTo(px + W * 0.03, py + H * 0.1); g.stroke();
-  fitText(g, "T-POSE", px, py + H * 0.16, W * 0.25, H * 0.06, RED);
-  if (Math.floor(s * 6) % 2) { g.fillStyle = "rgba(255,0,80,0.25)"; g.fillRect(0, H * 0.3, W, H * 0.05); }
-  g.fillStyle = RED; rr(g, W * 0.05, H * 0.05, W * 0.5, H * 0.13, 12); g.fill(); fitText(g, "⚠ ERROR 0xBUG", W * 0.3, H * 0.115, W * 0.45, H * 0.08, "#fff");
+const mapChalk = chalk((g, Wd, H, s) => {
+  // контуры «карты» мелом
+  g.globalAlpha = 0.45; g.beginPath(); g.ellipse(Wd * 0.72, H * 0.42, Wd * 0.22, H * 0.25, 0, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.ellipse(Wd * 0.38, H * 0.5, Wd * 0.12, H * 0.2, 0.3, 0, Math.PI * 2); g.stroke();
+  g.beginPath(); g.ellipse(Wd * 0.13, H * 0.42, Wd * 0.1, H * 0.3, 0, 0, Math.PI * 2); g.stroke(); g.globalAlpha = 1;
+  const pts: [string, number, number, number][] = [["МОСКВА", 0.78, 0.36, 0], ["ВЕНГРИЯ", 0.47, 0.6, t.p6hun], ["АНГЛИЯ", 0.35, 0.3, t.p6eng], ["США", 0.13, 0.5, t.p6usa]];
+  pts.forEach(([n, x, y, at], i) => { if (s < at) return; g.beginPath(); g.arc(Wd * x, H * y, Wd * 0.012, 0, Math.PI * 2); g.fill(); chalkText(g, n, Wd * x, H * (y - 0.1), Wd * 0.22, H * 0.09);
+    if (i > 0) { const [, px, py] = pts[i - 1]; chalkArrow(g, Wd * px, H * py, Wd * x, H * y, clamp((s - at) / 0.35)); } });
+  if (s >= t.p6before) { chalkText(g, "ДОГОВОР?", Wd * 0.5, H * 0.86, Wd * 0.4, H * 0.12, YEL); g.strokeStyle = YEL; g.beginPath(); g.moveTo(Wd * 0.3, H * 0.93); g.lineTo(Wd * 0.7, H * 0.93); g.stroke(); }
+});
+const authorChalk = chalk((g, Wd, H, s) => {
+  chalkText(g, "ИГРА", Wd * 0.22, H * 0.25, Wd * 0.3, H * 0.15); chalkArrow(g, Wd * 0.36, H * 0.25, Wd * 0.58, H * 0.25, 1); chalkText(g, "ГОСУДАРСТВО", Wd * 0.76, H * 0.25, Wd * 0.4, H * 0.13);
+  chalkText(g, "АВТОР", Wd * 0.22, H * 0.62, Wd * 0.3, H * 0.15); chalkArrow(g, Wd * 0.36, H * 0.62, Wd * 0.58, H * 0.62, clamp((s - (AD_END + 0.3)) / 0.4));
+  if (s >= t.p7nothing) { chalkText(g, "0 ₽", Wd * 0.76, H * 0.62, Wd * 0.3, H * 0.2, YEL); g.strokeStyle = YEL; g.beginPath(); g.ellipse(Wd * 0.76, H * 0.62, Wd * 0.13, H * 0.14, 0, 0, Math.PI * 2); g.stroke(); }
+});
+const stampDraw = (g: CanvasRenderingContext2D, s: number, Wd: number, H: number) => {
+  g.fillStyle = "#f4efe0"; g.fillRect(0, 0, Wd, H); fitText(g, "ДОГОВОР № 1", Wd / 2, H * 0.1, Wd * 0.6, H * 0.06, INK);
+  g.fillStyle = "#b8b0a0"; for (let i = 0; i < 9; i++) g.fillRect(Wd * 0.1, H * (0.2 + i * 0.055), Wd * (0.8 - (i % 3) * 0.12), H * 0.012);
+  block(g, Wd * 0.4, H * 0.7, Wd * 0.08, TET.T); block(g, Wd * 0.48, H * 0.7, Wd * 0.08, TET.T); block(g, Wd * 0.56, H * 0.7, Wd * 0.08, TET.T); block(g, Wd * 0.48, H * 0.78, Wd * 0.08, TET.T);
+  drawStamp(g, Wd, H, s, t.p7state, "СОБСТВЕННОСТЬ ГОСУДАРСТВА", H * 0.55);
 };
-const refundDraw = (tStamp: number) => (g: CanvasRenderingContext2D, s: number, W: number, H: number) => {
-  drawBg(g, W, H, "#0a1a4a", "#1d3a9a"); fitText(g, "PS STORE", W / 2, H * 0.14, W * 0.5, H * 0.11, "#fff");
-  g.fillStyle = "#fff"; rr(g, W * 0.12, H * 0.27, W * 0.76, H * 0.36, 20); g.fill(); fitText(g, "ИГРА УДАЛЕНА", W / 2, H * 0.45, W * 0.66, H * 0.13, RED);
-  if (s >= tStamp) { const k = Math.min(1, (s - tStamp) / 0.3); g.globalAlpha = k; fitText(g, "💸 ВОЗВРАТ ДЕНЕГ", W / 2, H * 0.8, W * 0.8 * (2 - k), H * 0.12, YEL); g.globalAlpha = 1; }
+const contractDraw = (signT: number) => (g: CanvasRenderingContext2D, s: number, Wd: number, H: number) => {
+  g.fillStyle = "#f4efe0"; g.fillRect(0, 0, Wd, H); fitText(g, "THE TETRIS COMPANY · 1996", Wd / 2, H * 0.1, Wd * 0.8, H * 0.06, INK);
+  g.fillStyle = "#b8b0a0"; for (let i = 0; i < 8; i++) g.fillRect(Wd * 0.1, H * (0.2 + i * 0.055), Wd * (0.8 - (i % 3) * 0.12), H * 0.012);
+  const k = clamp((s - signT) / 0.8); g.strokeStyle = "#1a2a8a"; g.lineWidth = Wd * 0.008; g.beginPath();
+  for (let i = 0; i <= 40 * k; i++) { const x = Wd * (0.3 + i * 0.01), y = H * 0.78 + Math.sin(i * 0.7) * H * 0.03; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+  g.fillStyle = "#1a2a8a"; fitText(g, "А. Пажитнов", Wd * 0.45, H * 0.86, Wd * 0.4, H * 0.04, "#6a6a7a");
 };
+const titleDraw = (g: CanvasRenderingContext2D, s: number, Wd: number, H: number) => {
+  const gr = g.createRadialGradient(Wd / 2, H / 2, 10, Wd / 2, H / 2, Wd * 0.8); gr.addColorStop(0, "#2a1450"); gr.addColorStop(1, "#08040f"); g.fillStyle = gr; g.fillRect(0, 0, Wd, H);
+  const c = Wd / 16; for (let i = 0; i < 14; i++) { const k = "IOTSZJL"[i % 7], x = ((i * 211) % 14) * c, y = ((s * (60 + i * 7) + i * 97) % (H + 200)) - 150; g.globalAlpha = 0.35; piece(g, k, x, y, c * 0.7); } g.globalAlpha = 1;
+  const L = "ТЕТРИС", cols = [TET.Z, TET.L, TET.O, TET.S, TET.I, TET.T];
+  [...L].forEach((ch, i) => { const at = t.p13tet - 0.1 + i * 0.07; if (s < at) return; const k = clamp((s - at) / 0.25), y = H * 0.5 - (1 - k) * H * 0.5;
+    const x = Wd * (0.14 + i * 0.145); g.fillStyle = cols[i]; rr(g, x - c * 1.05, y - c * 1.3, c * 2.1, c * 2.6, c * 0.2); g.fill(); g.strokeStyle = "#1a1020"; g.lineWidth = c * 0.18; g.stroke(); fitText(g, ch, x, y + c * 0.08, c * 1.8, c * 2.1, "#fff"); });
+  if (s >= t.p13tet + 0.5) fitText(g, "МОСКВА · 1984", Wd / 2, H * 0.72, Wd * 0.6, H * 0.05, "#d8c8ff");
+};
+const rowsDraw = (g: CanvasRenderingContext2D, s: number, Wd: number, H: number) => {
+  colorTetrisDraw(t.p14row - 1.5, t.p14row + 0.3)(g, s, Wd, H);
+  if (s >= t.p14row + 0.3) { const k = clamp((s - t.p14row - 0.3) / 0.6); fitText(g, "+100", Wd / 2, H * 0.62 - k * H * 0.15, Wd * 0.5, H * 0.1, YEL); }
+};
+const Void: React.FC<{ draw: (g: CanvasRenderingContext2D, s: number, W: number, H: number) => void }> = ({ draw }) => (<>
+  <mesh position={[0, 1.6, -3]}><planeGeometry args={[12, 8]} /><meshBasicMaterial color="#08040f" /></mesh>
+  <Screen p={[0, 1.6, -2.9]} w={2.4} h={4.27} res={900} draw={draw} glow={1.0} basic />
+</>);
 
 // ================================================================= ШОТЫ
 export const SHOTS: Shot[] = [
-  // 1. 13 лет ждал: герой у ТВ с заставкой, горящие глаза
+  // 1. Он придумал игру, в которую сыграл весь мир — крупно у терминала, падает фигура
   S(0, t.p1a, (
-    <Scene3D t0={0} light="night" bg="#0b0f2a" focus={[0.2, 1.0, -0.8]}
-      cam={cam([0, [0.7, 1.2, 1.4], [0.3, 1.1, -1.4], 56], [t.p1a, [0.4, 1.15, 0.8], [0.2, 1.05, -1.2], 50])}>
-      <Apartment tv={titleDraw()} night clock={() => "23:59"} />
-      <Doodle a={hero([-0.2, 0, -0.75], [[0, "hype"]], {}, HERO_PAD)} />
+    <Scene3D t0={0} light="lab" bg="#101828" cine focus={[-0.45, 1.1, -0.2]}
+      cam={cam([0, [-0.1, 1.25, 1.0], [-0.25, 1.1, -0.5], 50], [t.p1a, [-0.25, 1.2, 0.65], [-0.35, 1.1, -0.4], 44])}>
+      <VC1984 term={termDraw(0)} />
+      <Doodle a={ap([-0.5, 0, -0.2], [[0, "proud"]])} />
     </Scene3D>), "cut"),
-  // 2. «А что, если зря?» — крупно, улыбка сползает
+  // 2. …а в награду получил компьютер: коробка с бантом, лицо без эмоций
   S(t.p1a, P[2], (
-    <Scene3D t0={t.p1a} light="night" bg="#0b0f2a" focus={[-0.2, 1.0, -0.75]} shakes={[[t.p1a + 0.6, 0.5]]}
-      cam={cam([t.p1a, [-0.1, 1.08, 0.6], [-0.2, 1.0, -0.75], 44], [P[2], [-0.15, 1.05, 0.35], [-0.2, 1.0, -0.75], 40])}>
-      <Apartment tv={titleDraw()} night />
-      <Doodle a={hero([-0.2, 0, -0.75], [[0, "hype"], [t.p1a + 0.5, "realize"]], {}, HERO_PAD)} />
+    <Scene3D t0={t.p1a} light="lab" bg="#101828" cine focus={[-0.3, 1.05, -0.2]}
+      cam={cam([t.p1a, [-0.1, 1.15, 0.85], [-0.2, 1.0, -0.4], 46], [P[2], [-0.15, 1.12, 0.6], [-0.2, 1.0, -0.4], 42])}>
+      <VC1984 term={termDraw(0)} />
+      <Doodle a={ap([-0.5, 0, -0.2], [[0, "realize"], [W(1, "компьютер") + 0.2, "blank"]], { handB: [[0, 0.32, HIP + 0.28]] })} />
+      <After t={W(1, "компьютер") - 0.1}><GiftBox p={[0.08, 0.62, -0.05]} scale={0.8} /></After>
     </Scene3D>)),
 
-  // 3. Пролог пройден!
-  S(P[2], t.p2go, (
-    <Scene3D t0={P[2]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([P[2], [0.8, 1.2, 0.6], [0.8, 1.15, -1.85], 52], [t.p2go, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={loadDraw("ПРОЛОГ ПРОЙДЕН ✓", [[0, 100]])} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "hype"]], armsUp(P[2] + 0.6, 9), HERO_PAD)} />
-      <Confetti t0={P[2] + 0.5} n={30} area={[-1.5, 1.8, -1.5, 0.3]} />
-    </Scene3D>)),
-  // 4. Карта: туфелька в красном круге со стрелкой (как в меме)
-  S(t.p2go, t.p2all, (
-    <Scene3D t0={t.p2go} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
-      cam={cam([t.p2go, [1.0, 1.18, -0.1], [1.0, 1.18, -1.85], 46], [t.p2all, [1.0, 1.18, -0.5], [1.0, 1.18, -1.85], 44])}>
-      <Apartment tv={viceMapDraw(t.p2shoe)} night />
+  // 3. Москва, 1984 — ночная улица, снег, вывеска ВЦ
+  S(P[2], t.p2vc, (
+    <Scene3D t0={P[2]} light="night" bg="#0a1030" cine={{ dof: 1.5, range: 3 }} focus={[-1.5, 2.5, -6]}
+      cam={cam([P[2], [0.5, 1.4, 4.2], [-0.8, 2.6, -6], 58], [t.p2vc, [0.1, 1.6, 3.2], [-1.0, 2.8, -6], 56])}>
+      <SovietStreet night sign="ВЫЧИСЛИТЕЛЬНЫЙ ЦЕНТР" />
+      {crowd(3, -3, 2, -2.2, -1.2, 41, [[0, "neutral"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, hat: "ushanka", hatCol: ["#6a5040", "#3a3a4a", "#8a6a4a"][i], ink: 1.25 }, walk: [[P[2], -3 + i * 2, -1.6 - i * 0.3], [t.p2vc, -1.5 + i * 2, -1.6 - i * 0.3]] }} />)}
     </Scene3D>), "cut"),
-  // 5. Все её ждут: очередь к клубу-«туфельке», герой бежит туда
-  S(t.p2all, t.p2q, (
-    <Scene3D t0={t.p2all} light="night" bg="#120a2a" focus={[0, 1.4, -2]}
-      cam={cam([t.p2all, [0, 1.6, 3.6], [0, 2.0, -2.5], 58], [t.p2q, [0, 1.5, 2.8], [0, 1.9, -2.5], 56])}>
-      <ClubFront />
-      {crowd(7, -2.6, 2.6, -1.3, -0.4, 31, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={a} />)}
-      <Doodle a={hero([-2.6, 0, 0.4], [[0, "hype"]], { walk: [[t.p2all, -3.2, 0.5], [t.p2q, -0.4, 0.2]], hop: 14 })} />
+  // 4. ВЦ: шкафы ЭВМ, бобины, лампы
+  S(t.p2vc, t.p2young, (
+    <Scene3D t0={t.p2vc} light="lab" bg="#101828" cine focus={[1.6, 1.2, -1.4]}
+      cam={cam([t.p2vc, [-0.2, 1.6, 1.4], [1.4, 1.3, -1.6], 56], [t.p2young, [0.2, 1.5, 1.1], [1.6, 1.3, -1.6], 52])}>
+      <VC1984 term={termDraw(0)} />
+      <Doodle a={who(COL2, 11, [1.75, 0, -0.8], [[0, "neutral"]])} />
     </Scene3D>)),
-  // 6. А внутри… обувной магазин. «Вам какой размер?»
-  S(t.p2q, P[3], (
-    <Scene3D t0={t.p2q} light="office" bg="#ffd8e8" focus={[0, 1.0, -0.6]} shakes={[[t.p2exp, 0.6]]}
-      cam={cam([t.p2q, [0, 1.3, 1.7], [0, 1.15, -0.6], 52], [P[3], [0, 1.25, 1.2], [0, 1.1, -0.6], 48])}>
-      <ShoeShop />
-      <Doodle a={{ pos: [0.6, 0, -0.6], seed: 41, look: SELLER, expr: [[0, "proud"]], scale: 1.12, talk: [[t.p2shoe2, t.p2shoe2 + 1.2]], handB: pointKeys(t.p2shoe2, 0.3, 0.6, 2, "b") }} />
-      <Doodle a={hero([-0.6, 0, -0.5], [[0, "hype"], [t.p2shoe2 + 0.3, "blank"], [t.p2exp, "shock"]])} />
+  // 5. Молодой программист за «Электроникой-60»
+  S(t.p2young, t.p2graph, (
+    <Scene3D t0={t.p2young} light="lab" bg="#101828" cine focus={[-0.4, 1.05, -0.4]}
+      cam={cam([t.p2young, [0.6, 1.3, 1.1], [-0.1, 1.05, -0.7], 52], [t.p2graph, [0.4, 1.25, 0.8], [-0.1, 1.05, -0.7], 48])}>
+      <VC1984 term={termDraw(t.p2young)} />
+      <Doodle a={ap([-0.6, 0, -0.45], [[0, "neutral"], [t.p2young + 0.8, "smug"]], { handB: pointKeys(t.p2young + 0.6, 0.8, 0.3, 1.2, "b") })} />
+    </Scene3D>)),
+  // 6. Графики нет — только буквы и скобки: экран крупно
+  S(t.p2graph, P[3], (
+    <Scene3D t0={t.p2graph} light="lab" bg="#101828" cine={{ dof: 0 }} focus={[-0.15, 1.04, -0.83]}
+      cam={cam([t.p2graph, [-0.15, 1.04, -0.05], [-0.15, 1.04, -0.83], 46], [P[3], [-0.15, 1.04, -0.3], [-0.15, 1.04, -0.83], 44])}>
+      <VC1984 term={termDraw(t.p2graph, "ЭЛЕКТРОНИКА-60")} />
     </Scene3D>), "cut"),
 
-  // 22a. А вдруг как с Киберпанком? — картинка на ТВ начинает глючить
-  S(P[3], t.p9bug, (
-    <Scene3D t0={P[3]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]} shakes={[[P[3] + 1.6, 0.5]]}
-      cam={cam([P[3], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [t.p9bug, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50])}>
-      <Apartment tv={glitchDraw(P[3] + 1.2)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [P[3] + 1.3, "nervous"]], {}, HERO_PAD)} />
+  // 7. Головоломка из пяти квадратиков — облачко мыслей
+  S(P[3], t.p3but, (
+    <Scene3D t0={P[3]} light="lab" bg="#101828" cine focus={[-0.4, 1.1, -0.2]}
+      cam={cam([P[3], [-0.05, 1.45, 1.1], [-0.2, 1.4, -0.4], 52], [t.p3but, [-0.1, 1.45, 0.9], [-0.2, 1.4, -0.4], 50])}>
+      <VC1984 term={termDraw(P[3])} />
+      <Doodle a={ap([-0.45, 0, -0.2], [[0, "proud"]])} />
+      <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3five - 0.3} w={0.8} draw={pentoDraw()} />
     </Scene3D>)),
-  // 22b. Баги, летающие тачки: ТВ крупно
-  S(t.p9bug, t.p9sony, (
-    <Scene3D t0={t.p9bug} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
-      cam={cam([t.p9bug, [1.0, 1.18, -0.2], [1.0, 1.18, -1.85], 46], [t.p9sony, [1.0, 1.18, -0.45], [1.0, 1.18, -1.85], 44])}>
-      <Apartment tv={bugsDraw(t.p9fly)} night />
+  // 8. Машина слабая — оставляет четыре: один квадрат зачёркнут
+  S(t.p3but, t.p3fig, (
+    <Scene3D t0={t.p3but} light="lab" bg="#101828" cine focus={[-0.4, 1.1, -0.2]} shakes={[[t.p3four, 0.4]]}
+      cam={cam([t.p3but, [-0.1, 1.45, 0.9], [-0.2, 1.4, -0.4], 50], [t.p3fig, [-0.1, 1.5, 0.75], [-0.15, 1.5, -0.4], 46])}>
+      <VC1984 term={termDraw(P[3])} />
+      <Doodle a={ap([-0.45, 0, -0.2], [[0, "nervous"], [t.p3four, "realize"]])} />
+      <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3but - 1} w={0.8} draw={pentoDraw(t.p3four - 0.15)} />
+    </Scene3D>)),
+  // 9. Фигуры падают, полные ряды исчезают — экран крупно
+  S(t.p3fig, P[4], (
+    <Scene3D t0={t.p3fig} light="lab" bg="#101828" cine={{ dof: 0 }} focus={[-0.15, 1.04, -0.83]}
+      cam={cam([t.p3fig, [-0.15, 1.04, -0.15], [-0.15, 1.04, -0.83], 46], [P[4], [-0.15, 1.04, -0.35], [-0.15, 1.04, -0.83], 44])}>
+      <VC1984 term={termDraw(t.p3fig - 2.5, "", t.p3gone)} />
     </Scene3D>), "cut"),
-  // 22c. Sony возвращает деньги
-  S(t.p9sony, t.p9tho, (
-    <Scene3D t0={t.p9sony} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p9sony, [0.8, 1.18, 0.3], [0.95, 1.15, -1.85], 50], [t.p9tho, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={refundDraw(t.p9sony + 0.3)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "shock"], [t.p9sony + 0.8, "cry"]], {}, HERO_PAD)} />
+
+  // 10. Шестого июня показывает коллегам — все столпились у терминала
+  S(P[4], t.p4copy, (
+    <Scene3D t0={P[4]} light="lab" bg="#101828" cine focus={[0, 1.1, -0.4]}
+      cam={cam([P[4], [0.3, 1.4, 1.5], [0, 1.15, -0.6], 56], [t.p4copy, [0.2, 1.35, 1.2], [0, 1.15, -0.6], 52])}>
+      <VC1984 term={termDraw(P[4])} clock="18:05" />
+      <Doodle a={ap([-0.75, 0, -0.35], [[0, "proud"]], { handB: pointKeys(t.p4show, 0.8, 0.4, 1.5, "b") })} />
+      <Doodle a={who(COL1, 21, [0.55, 0, -0.45], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
+      <Doodle a={who(COL2, 22, [0.95, 0, -0.75], [[0, "neutral"], [t.p4show + 0.6, "hype"]])} />
+      <Doodle a={who(COL3, 23, [0.15, 0, -0.1], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
+    </Scene3D>)),
+  // 11. Копируют на дискеты — дискеты сыплются на стол
+  S(t.p4copy, t.p4carry, (
+    <Scene3D t0={t.p4copy} light="lab" bg="#101828" cine focus={[0.2, 0.85, -0.6]}
+      cam={cam([t.p4copy, [0.25, 1.35, 0.4], [0.2, 0.8, -0.65], 48], [t.p4carry, [0.25, 1.25, 0.2], [0.2, 0.8, -0.65], 44])}>
+      <VC1984 term={termDraw(P[4])} />
+      {Array.from({ length: 9 }, (_, i) => <After key={i} t={t.p4copy + i * 0.12}><Diskette p={[-0.05 + (i % 3) * 0.2, 0.8 + Math.floor(i / 3) * 0.015, -0.55 - (i % 2) * 0.1]} rot={[-Math.PI / 2, 0, i * 0.7]} col={["#1a1a22", "#2a2a5a", "#5a1a1a"][i % 3]} /></After>)}
     </Scene3D>), "cut"),
-  // 22d. Хотя игру переносили как раз поэтому — штамп «ПЕРЕНЕСЕНО»
-  S(t.p9tho, P[4], (
-    <Scene3D t0={t.p9tho} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]} shakes={[[t.p9move + 0.2, 0.7]]}
-      cam={cam([t.p9tho, [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [P[4], [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
-      <Stage2 screen={(g, s, W, H) => { drawBg(g, W, H, "#0e1a3a", "#1d3a7a"); fitText(g, "GTA 6", W / 2, H * 0.3, W * 0.6, H * 0.22, "#fff"); drawStamp(g, W, H, s, t.p9move + 0.1, "ПЕРЕНЕСЕНО", H * 0.65); }} />
+  // 12. …и носят по всей Москве: зимняя улица, у прохожих дискеты
+  S(t.p4carry, P[5], (
+    <Scene3D t0={t.p4carry} light="day" bg="#9ab0d0" cine={{ dof: 1.5, range: 2.5 }} focus={[0, 1, -1.5]}
+      cam={cam([t.p4carry, [-0.8, 1.4, 3.2], [0, 1.4, -4], 58], [P[5], [0.2, 1.4, 2.8], [0.2, 1.4, -4], 56])}>
+      <SovietStreet night={false} />
+      {crowd(5, -2.6, 2.6, -2.0, -0.8, 51, [[0, "grin"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, hat: (["ushanka", "beanie", "flatcap", "ushanka", "beret"] as const)[i], hatCol: ["#6a5040", "#c83a2a", "#4a5a6a", "#3a3a4a", "#2a2a32"][i], ink: 1.25 },
+        walk: [[t.p4carry, -3 + i * 1.4, -1.0 - (i % 2) * 0.8], [P[5] + 1, -1.8 + i * 1.4, -1.0 - (i % 2) * 0.8]], sign: ["💾", "#ffffff", INK] }} />)}
+    </Scene3D>), "cut"),
+
+  // 13. 16-летний школьник за IBM
+  S(P[5], t.p5color - 0.4, (
+    <Scene3D t0={P[5]} light="lab" bg="#101828" cine focus={[-0.4, 1.0, -0.3]}
+      cam={cam([P[5], [0.5, 1.25, 1.0], [-0.05, 1.0, -0.6], 50], [t.p5color - 0.4, [0.35, 1.2, 0.75], [-0.05, 1.0, -0.6], 46])}>
+      <VC1984 term={termDraw(P[5])} clock="16:20" />
+      <Doodle a={who(VADIM, 31, [-0.55, 0, -0.3], [[0, "smug"], [t.p5ibm, "hype"]], { scale: 1.0, handB: pointKeys(t.p5ibm - 0.3, 0.8, 0.3, 1.2, "b") })} />
+    </Scene3D>)),
+  // 14. …и игра впервые становится цветной (вспышка)
+  S(t.p5color - 0.4, P[6], (
+    <Scene3D t0={t.p5color - 0.4} light="lab" bg="#101828" cine={{ dof: 0, bloom: 0.8 }} focus={[-0.15, 1.04, -0.83]}
+      cam={cam([t.p5color - 0.4, [-0.15, 1.04, -0.2], [-0.15, 1.04, -0.83], 46], [P[6], [-0.15, 1.04, -0.4], [-0.15, 1.04, -0.83], 44])}>
+      <VC1984 term={(g, s, Wd, H) => (s < t.p5color ? termDraw(P[5])(g, s, Wd, H) : colorTetrisDraw(t.p5color)(g, s, Wd, H))} />
+      <Sparks p={[-0.15, 0.95, -0.7]} t0={t.p5color} n={30} col="#ffd060" spread={0.35} />
+    </Scene3D>), "flash"),
+
+  // 15. Игра утекает за границу: мел на доске — Москва → Венгрия → Англия → США
+  S(P[6], t.p6hun + 0.5, (
+    <Scene3D t0={P[6]} light="office" bg="#d8c8a0" cine={{ dof: 0 }} focus={[0, 1.6, -1.94]}
+      cam={cam([P[6], [0, 1.55, 0.6], [0, 1.6, -1.94], 50], [t.p6hun + 0.5, [0, 1.55, 0.3], [0, 1.6, -1.94], 48])}>
+      <ChalkWall draw={mapChalk} />
+    </Scene3D>), "cut"),
+  // 16. Будапешт, 1986: иностранец у стенда, в восторге
+  S(t.p6hun + 0.5, t.p6eng + 0.2, (
+    <Scene3D t0={t.p6hun + 0.5} light="studio" bg="#2a2a3a" cine focus={[0.3, 1.1, -0.6]}
+      cam={cam([t.p6hun + 0.5, [0.6, 1.35, 1.1], [0.1, 1.15, -0.9], 52], [t.p6eng + 0.2, [0.45, 1.3, 0.85], [0.1, 1.15, -0.9], 48])}>
+      <ExpoHall t0={t.p6hun} />
+      <Doodle a={who(STEIN, 41, [0.6, 0, -0.75], [[0, "realize"], [t.p6hun + 1.0, "hype"]], { handF: pointKeys(t.p6hun + 0.8, -0.8, 0.4, 1.0) })} />
+    </Scene3D>)),
+  // 17. Англия и Америка: коробки с игрой летят с полок
+  S(t.p6eng + 0.2, t.p6before, (
+    <Scene3D t0={t.p6eng + 0.2} light="neon" bg="#1a1030" cine focus={[0, 1.1, -0.8]}
+      cam={cam([t.p6eng + 0.2, [0, 1.4, 1.6], [0, 1.2, -1.2], 56], [t.p6before, [0, 1.35, 1.2], [0, 1.2, -1.2], 52])}>
+      <GameShop />
+      {crowd(4, -1.6, 1.6, -0.9, -0.3, 61, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, ink: 1.25 }, ...armsUp(t.p6eng + 0.4 + i * 0.1, 9) }} />)}
+    </Scene3D>), "cut"),
+  // 18. …ещё до того, как кто-то договорился с Москвой: доска «ДОГОВОР?» + чиновник ничего не знает
+  S(t.p6before, P[7], (
+    <Scene3D t0={t.p6before} light="office" bg="#c8b890" cine focus={[0, 1.1, -0.9]}
+      cam={cam([t.p6before, [0, 1.3, 1.2], [0, 1.15, -1.2], 52], [P[7], [0, 1.28, 0.9], [0, 1.15, -1.2], 48])}>
+      <Ministry />
+      <Doodle a={who(OFFICIAL, 51, [0, 0, -1.65], [[0, "blank"], [t.p6before + 1.0, "realize"]], { scale: 1.18 })} />
+      <ThoughtCloud p={[0.55, 2.2, -1.5]} t={t.p6before + 0.3} w={0.7} draw={(g, s, Wd, H) => { g.fillStyle = "#fff"; g.fillRect(0, 0, Wd, H); fitText(g, "???", Wd / 2, H / 2, Wd * 0.8, H * 0.7, RED); }} />
+    </Scene3D>), "cut"),
+
+  // 19. Права — государству: печать на договоре
+  S(P[7], AD_END, (
+    <Scene3D t0={P[7]} light="office" bg="#3a2a24" cine={{ dof: 0 }} focus={[0, 0, -0.6]} shakes={[[t.p7state, 0.9]]}
+      cam={cam([P[7], [0, 1.25, 0.1], [0, 0, -0.6], 50], [AD_END, [0, 1.05, -0.2], [0, 0, -0.6], 48])}>
+      <PaperSet draw={stampDraw} />
+    </Scene3D>), "cut"),
+  // 20. Автор не получает ничего: мел «АВТОР → 0 ₽», грустный герой у доски
+  S(AD_END, t.p7give, (
+    <Scene3D t0={AD_END} light="office" bg="#d8c8a0" cine={{ dof: 1.8, range: 1.2 }} focus={[-0.7, 1.1, -0.6]}
+      cam={cam([AD_END, [-0.3, 1.35, 1.0], [-0.2, 1.4, -1.2], 54], [t.p7give, [-0.35, 1.3, 0.8], [-0.25, 1.35, -1.2], 50])}>
+      <ChalkWall draw={authorChalk} />
+      <Doodle a={ap([-0.95, 0, -0.65], [[0, "neutral"], [t.p7nothing, "tired"]])} />
+    </Scene3D>), "cut"),
+  // 21. В награду ему дают… компьютер: чиновник вручает коробку
+  S(t.p7give, P[8], (
+    <Scene3D t0={t.p7give} light="office" bg="#c8b890" cine focus={[0, 1.05, -0.5]}
+      cam={cam([t.p7give, [0, 1.3, 1.3], [0, 1.1, -0.7], 54], [P[8], [0, 1.25, 1.0], [0, 1.1, -0.7], 50])}>
+      <Ministry door={false} />
+      <Doodle a={who(OFFICIAL, 51, [0.55, 0, -0.55], [[0, "proud"]], { scale: 1.18, handF: [[0, -0.3, HIP + 0.3]] })} />
+      <Doodle a={ap([-0.6, 0, -0.45], [[0, "realize"], [t.p7comp + 0.2, "blank"]])} />
+      <GiftBox p={[0.0, 0.5, -0.35]} scale={0.85} />
+      <After t={t.p7comp}><Confetti t0={t.p7comp} n={14} area={[-0.6, 0.6, -0.6, 0]} /></After>
     </Scene3D>)),
 
-  // 7. Rockstar: ставка на реализм
-  S(P[4], t.p3jour, (
-    <Scene3D t0={P[4]} light="studio" bg="#0a0d18" focus={[0, 1.6, -1.6]}
-      cam={cam([P[4], [0, 1.6, 2.2], [0, 1.6, -1.9], 56], [t.p3jour, [0, 1.6, 1.7], [0, 1.6, -1.9], 54])}>
-      <Stage2 screen={proDraw} />
+  // 22. 1989: снова зимняя Москва
+  S(P[8], t.p8three, (
+    <Scene3D t0={P[8]} light="night" bg="#0a1030" cine={{ dof: 1.5, range: 3 }} focus={[-1.5, 2.5, -6]}
+      cam={cam([P[8], [-0.5, 1.2, 4.6], [-1.2, 3.0, -6], 58], [t.p8three, [0, 1.4, 3.6], [-1.2, 2.8, -6], 56])}>
+      <SovietStreet night sign="ЭЛЕКТРОНОРГТЕХНИКА" />
     </Scene3D>), "cut"),
-  // 8. Журналисты: медленнее, серьёзнее, почти Red Dead
-  S(t.p3jour, t.p3q, (
-    <Scene3D t0={t.p3jour} light="studio" bg="#0c1224" focus={[0, 1.6, -1.6]}
-      cam={cam([t.p3jour, [0.3, 1.8, 2.6], [0.2, 1.65, -1.6], 56], [t.p3q, [0.3, 1.75, 1.8], [0.25, 1.65, -1.6], 54])}>
-      <NewsStudio ticker="ПРЕВЬЮ GTA 6: МЕДЛЕННЕЕ  •  СЕРЬЁЗНЕЕ  •  ПОЧТИ КАК RED DEAD  •  " screen={previewDraw(t.p3red)} />
-      <Doodle a={{ pos: [-0.75, 0, -1.15], seed: 5, look: ANCHOR, expr: [[0, "stern"], [t.p3red, "realize"]], talk: [[t.p3jour, t.p3q]], scale: 1.2 }} />
+  // 23. Три иностранца идут по снегу с дипломатами
+  S(t.p8three, t.p8same, (
+    <Scene3D t0={t.p8three} light="night" bg="#0a1030" cine={{ dof: 1.4, range: 2 }} focus={[0, 1.1, -1.2]}
+      cam={cam([t.p8three, [0, 1.35, 2.4], [0, 1.2, -1.5], 56], [t.p8same, [0, 1.3, 1.9], [0, 1.2, -1.5], 52])}>
+      <SovietStreet night />
+      {[[STEIN, -1.3, 41], [ROGERS, 0, 42], [MAXWELL, 1.3, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -1.2], [[0, "stern"]], { walk: [[t.p8three, (x as number) * 1.6, -2.4], [t.p8same, x as number, -1.2]], handB: [[0, 0.3, HIP + 0.05]] })} />)}
     </Scene3D>)),
-  // 9. «А что, если реализм начнёт мешать игре?» — шкала: реализм ↑, веселье ↓
-  S(t.p3q, P[5], (
-    <Scene3D t0={t.p3q} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p3q, [0.7, 1.2, 0.4], [0.9, 1.15, -1.85], 50], [P[5], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={realismDraw(t.p3q + 0.2)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p3q + 1.2, "nervous"]], {}, HERO_PAD)} />
+  // 24. …в одно и то же ведомство: все трое у одной двери, косятся друг на друга
+  S(t.p8same, P[9], (
+    <Scene3D t0={t.p8same} light="office" bg="#c8b890" cine focus={[1.2, 1.1, -1.4]}
+      cam={cam([t.p8same, [0.4, 1.35, 1.2], [1.1, 1.2, -1.6], 54], [P[9], [0.6, 1.3, 0.9], [1.2, 1.2, -1.6], 50])}>
+      <Ministry />
+      {[[STEIN, 0.55, 41], [ROGERS, 1.2, 42], [MAXWELL, 1.85, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -1.3 + (i % 2) * 0.15], [[0, "stern"], [t.p8same + 0.4 + i * 0.15, "angry"]])} />)}
     </Scene3D>)),
 
-  // 10. Хочу хаос, как в GTA 5!
-  S(P[5], t.p4cop, (
-    <Scene3D t0={P[5]} light="day" bg="#5aa0e8" focus={[0, 1, -0.6]}
-      cam={cam([P[5], [0, 1.4, 3.2], [0, 1.4, -3], 58], [t.p4cop, [0, 1.3, 2.4], [0, 1.3, -3], 54])}>
+  // 25. Побеждает Nintendo: Роджерс с договором, двое других злятся
+  S(P[9], t.p9box, (
+    <Scene3D t0={P[9]} light="office" bg="#c8b890" cine focus={[0, 1.1, -0.8]}
+      cam={cam([P[9], [0, 1.35, 1.5], [0, 1.15, -0.9], 56], [t.p9box, [0, 1.3, 1.15], [0, 1.15, -0.9], 52])}>
+      <Ministry door={false} />
+      <Doodle a={who(ROGERS, 42, [0, 0, -0.75], [[0, "hype"]], { ...armsUp(P[9] + 0.3, 9), scale: 1.18 })} />
+      <Doodle a={who(STEIN, 41, [-0.9, 0, -1.0], [[0, "angry"]])} />
+      <Doodle a={who(MAXWELL, 43, [0.9, 0, -1.0], [[0, "cry"]])} />
+      <Confetti t0={P[9] + 0.2} n={30} area={[-1.2, 1.2, -1.2, 0]} />
+    </Scene3D>), "cut"),
+  // 26. В коробку к каждому Game Boy: большой Game Boy, игра на экране
+  S(t.p9box, t.p9mario, (
+    <Scene3D t0={t.p9box} light="studio" bg="#2a1450" cine={{ dof: 0, bloom: 0.7 }} focus={[0, 1.2, -0.6]}
+      cam={cam([t.p9box, [0, 1.3, 1.6], [0, 1.25, -0.6], 50], [t.p9mario, [0, 1.3, 1.1], [0, 1.25, -0.6], 46])}>
+      <mesh position={[0, 1.5, -2.2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#2a1450" /></mesh>
+      <GameBoy p={[0, 1.25, -0.6]} t0={t.p9box} scale={1.1} rot={[0, -0.15, 0.05]} />
+      <Motes area={[-1.2, 1.2, 0.3, 2.4, -1.5, -0.2]} n={30} col="#d8c8ff" size={0.008} />
+    </Scene3D>), "cut"),
+  // 27. …вместо Марио: облачко — картридж «?» зачёркнут, вместо него фигуры
+  S(t.p9mario, P[10], (
+    <Scene3D t0={t.p9mario} light="studio" bg="#2a1450" cine={{ dof: 0 }} focus={[0, 1.4, -0.6]}
+      cam={cam([t.p9mario, [0, 1.4, 1.1], [0, 1.4, -0.6], 48], [P[10], [0, 1.4, 0.9], [0, 1.4, -0.6], 46])}>
+      <mesh position={[0, 1.5, -2.2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#2a1450" /></mesh>
+      <ThoughtCloud p={[0, 1.4, -0.6]} t={t.p9mario - 0.05} w={1.25} tail={[0, -0.6, 0]} draw={(g, s, Wd, H) => {
+        g.fillStyle = "#fff"; g.fillRect(0, 0, Wd, H);
+        g.fillStyle = "#c83a2a"; rr(g, Wd * 0.05, H * 0.2, Wd * 0.35, H * 0.6, 12); g.fill(); fitText(g, "?", Wd * 0.225, H * 0.5, Wd * 0.2, H * 0.4, "#fff");
+        if (s > t.p9mario + 0.3) { g.strokeStyle = "#1a1020"; g.lineWidth = Wd * 0.03; g.beginPath(); g.moveTo(Wd * 0.03, H * 0.18); g.lineTo(Wd * 0.42, H * 0.82); g.moveTo(Wd * 0.42, H * 0.18); g.lineTo(Wd * 0.03, H * 0.82); g.stroke(); }
+        fitText(g, "→", Wd * 0.5, H * 0.5, Wd * 0.12, H * 0.3, "#1a1020");
+        g.fillStyle = "#c8c4bc"; rr(g, Wd * 0.6, H * 0.2, Wd * 0.35, H * 0.6, 12); g.fill(); piece(g, "T", Wd * 0.64, H * 0.3, Wd * 0.08); piece(g, "O", Wd * 0.75, H * 0.55, Wd * 0.08); }} />
+    </Scene3D>), "cut"),
+
+  // 28. 35 миллионов копий — счётчик на большом экране
+  S(P[10], t.p10world, (
+    <Scene3D t0={P[10]} light="studio" bg="#0a0d18" cine={{ dof: 0, bloom: 0.7 }} focus={[0, 1.8, -1.92]}
+      cam={cam([P[10], [0, 1.7, 1.6], [0, 1.75, -1.92], 54], [t.p10world, [0, 1.7, 1.1], [0, 1.75, -1.92], 50])}>
+      <Room wall="#141a2e" floor="#20263c" wain="#10152a" ceil="#0a0d18" />
+      <Screen p={[0, 1.75, -1.92]} w={3.6} h={2.0} res={900} draw={counterDraw(t.p10count - 0.3, t.p10world - 0.1, 35000000, "КОПИЙ НА GAME BOY")} />
+      {crowd(8, -2.2, 2.2, -1.0, 0.2, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, pad: true, ink: 1.25 } }} />)}
+    </Scene3D>)),
+  // 29. Мир сходит с ума: город, все играют
+  S(t.p10world, P[11], (
+    <Scene3D t0={t.p10world} light="day" bg="#5aa0e8" cine={{ dof: 1.4, range: 2.5 }} focus={[0, 1, -0.8]} shakes={[[t.p10world + 0.2, 0.5]]}
+      cam={cam([t.p10world, [0, 1.3, 2.8], [0, 1.3, -3], 58], [P[11], [0, 1.3, 2.3], [0, 1.3, -3], 56])}>
       <City />
-      <Doodle a={hero([0, 0, -0.4], [[0, "hype"]], { ...armsUp(P[5] + 0.2, 9), hop: 10 })} />
-    </Scene3D>)),
-  // 11. Коп с плакатом: лицо ✓ одежда ✓ машина ✓
-  S(t.p4cop, t.p4flip, (
-    <Scene3D t0={t.p4cop} light="day" bg="#5aa0e8" focus={[0.1, 1.1, -0.7]}
-      cam={cam([t.p4cop, [0.1, 1.25, 1.6], [0.15, 1.15, -0.8], 52], [t.p4flip, [0.1, 1.2, 1.1], [0.15, 1.15, -0.8], 48])}>
-      <City cars={false} />
-      <Doodle a={{ pos: [-0.45, 0, -0.85], seed: 61, look: COP, expr: [[0, "stern"]], scale: 1.15, handB: [[0, 0.32, HIP + 0.35]] }} />
-      <Screen p={[0.3, 1.05, -0.6]} w={0.55} h={0.75} res={500} draw={wantedDraw([t.p4face, t.p4cloth, t.p4car])} glow={0.4} />
-    </Scene3D>), "cut"),
-  // 12. Перевернул тачку — обратно не поставить
-  S(t.p4flip, P[6], (
-    <Scene3D t0={t.p4flip} light="day" bg="#5aa0e8" focus={[-0.3, 0.8, -1.2]} shakes={[[t.p4back, 0.4]]}
-      cam={cam([t.p4flip, [0.2, 1.6, 3.4], [0.2, 0.9, -1.2], 60], [P[6], [0.1, 1.5, 2.8], [0.1, 0.9, -1.2], 58])}>
-      <City cars={false} />
-      <FlippedCar p={[0.5, 0, -1.4]} col="#2f8fe0" t0={t.p4flip + 0.3} />
-      <Doodle a={hero([-0.95, 0, -1.0], [[0, "nervous"], [t.p4back, "angry"]], { handF: [[0, 0.32, HIP + 0.3]], handB: [[0, 0.45, HIP + 0.32]], shiver: 2 })} />
-    </Scene3D>)),
-
-  // 13. Толкнул прохожего — запомнил — обиделся
-  S(P[6], P[7], (
-    <Scene3D t0={P[6]} light="day" bg="#5aa0e8" focus={[0, 1.0, -0.6]} shakes={[[P[6] + 0.55, 0.6]]}
-      cam={cam([P[6], [0, 1.35, 2.2], [0, 1.15, -0.8], 56], [P[7], [0.2, 1.25, 1.4], [0.2, 1.1, -0.8], 50])}>
-      <City cars={false} />
-      <Doodle a={hero([-1.6, 0, -0.6], [[0, "smug"]], { walk: [[P[6], -1.6, -0.6], [P[6] + 0.55, -0.4, -0.6], [P[6] + 0.9, -0.55, -0.6]] })} />
-      <Doodle a={{ pos: [0.35, 0, -0.6], seed: 71, look: PED, expr: [[0, "neutral"], [P[6] + 0.55, "shock"], [t.p5rem - 0.4, "angry"], [t.p5off + 0.3, "cry"]], scale: 1.1, back: [[t.p5off + 0.2, 999]], shiver: 0 }} />
-    </Scene3D>)),
-
-  // 14. А что, если механики превратят игру в рутину? Список дел на ТВ
-  S(P[7], t.p6gas, (
-    <Scene3D t0={P[7]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([P[7], [0.8, 1.2, 0.5], [0.85, 1.15, -1.85], 50], [t.p6gas, [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={choresDraw([[P[7] + 0.3, "⛽ ЗАПРАВИТЬСЯ"], [P[7] + 0.8, "💪 ЗАЛ"], [P[7] + 1.3, "🌭 ПОЕСТЬ"], [P[7] + 1.8, "🔫 В БАГАЖНИК"]])} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p6rut, "tired"]], {}, HERO_PAD)} />
-    </Scene3D>)),
-  // 15. Заправь машину
-  S(t.p6gas, t.p6gym, (
-    <Scene3D t0={t.p6gas} light="day" bg="#8ac0f0" focus={[-0.4, 1.0, -1.0]}
-      cam={cam([t.p6gas, [-0.2, 1.4, 2.2], [-0.2, 1.0, -1.2], 56], [t.p6gym, [-0.3, 1.3, 1.7], [-0.3, 1.0, -1.2], 52])}>
-      <GasStation t0={t.p6gas} />
-      <Doodle a={hero([-0.35, 0, -0.75], [[0, "tired"]])} />
-    </Scene3D>), "cut"),
-  // 16. Сходи в зал
-  S(t.p6gym, t.p6eat, (
-    <Scene3D t0={t.p6gym} light="office" bg="#3a4256" focus={[0, 1.0, -0.7]}
-      cam={cam([t.p6gym, [0.3, 1.3, 1.5], [0.35, 1.1, -0.9], 52], [t.p6eat, [0.3, 1.25, 1.2], [0.35, 1.1, -0.9], 48])}>
-      <Gym />
-      <Doodle a={hero([0, 0, -0.7], [[0, "nervous"]], { ...armsUp(t.p6gym + 0.15, 0.25), shiver: 2 })} />
-      <Sign p={[0, 2.0, -0.6]} w={0.9} h={0.24} text="ДЕНЬ 1 ИЗ 3" bg="#fff" fg={INK} glow={0.4} />
-    </Scene3D>), "cut"),
-  // 17. Поешь, но не переешь: гора хот-догов → «+5 КГ»
-  S(t.p6eat, t.p6gun, (
-    <Scene3D t0={t.p6eat} light="office" bg="#e8f0f0" focus={[0.1, 1.0, -0.6]} shakes={[[t.p6over, 0.6]]}
-      cam={cam([t.p6eat, [0.1, 1.3, 1.6], [0.15, 1.1, -0.8], 52], [t.p6gun, [0.1, 1.25, 1.2], [0.15, 1.1, -0.8], 48])}>
-      <Store2 />
-      {Array.from({ length: 9 }, (_, i) => <HotDog key={i} p={[0.0 + (i % 3) * 0.36, 1.1 + Math.floor(i / 3) * 0.12, -0.8 + (i % 2) * 0.06]} scale={1.4} />)}
-      <Doodle a={hero([-0.45, 0, -0.45], [[0, "hype"], [t.p6over, "shock"]])} />
-      <After t={t.p6over}><Sign p={[-0.45, 2.0, -0.4]} w={0.8} h={0.26} text="⚠️ +5 КГ" bg={RED} fg="#fff" glow={0.6} /></After>
-    </Scene3D>), "cut"),
-  // 18. Лишнее оружие — в багажник
-  S(t.p6gun, P[8], (
-    <Scene3D t0={t.p6gun} light="day" bg="#9ad0f8" focus={[0, 0.8, -0.6]}
-      cam={cam([t.p6gun, [0.2, 2.1, 2.4], [-0.3, 0.8, -0.6], 58], [P[8], [0.1, 2.0, 2.0], [-0.3, 0.8, -0.6], 56])}>
-      <TrunkCar t0={t.p6gun} />
-      <Doodle a={hero([-0.95, 0, -0.4], [[0, "tired"]], { handB: pointKeys(t.p6gun + 0.3, 0.6, 0.2, 1.2, "b") })} />
+      {crowd(10, -3, 3, -1.2, 0.6, 81, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, pad: true, ink: 1.25 } }} />)}
     </Scene3D>), "cut"),
 
-  // 19. Миссии: доедь / забери / убеги — герой зевает
-  S(P[8], P[9], (
-    <Scene3D t0={P[8]} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([P[8], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54], [P[9], [0.85, 1.18, 0.2], [0.95, 1.15, -1.85], 50])}>
-      <Apartment tv={missionDraw([t.p7drive, t.p7take, t.p7run])} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "neutral"], [t.p7take, "tired"]], {}, HERO_PAD)} />
+  // 30. Больше 10 лет — ни копейки: одинокий герой в ВЦ, календарь 1984 → 1995
+  S(P[11], P[12], (
+    <Scene3D t0={P[11]} light="night" bg="#0a1030" cine focus={[-0.4, 1.05, -0.3]}
+      cam={cam([P[11], [0.2, 1.3, 1.3], [-0.1, 1.2, -0.8], 54], [P[12], [0.05, 1.2, 0.85], [-0.2, 1.15, -0.6], 48])}>
+      <VC1984 term={termDraw(0)} clock="02:10" />
+      <Screen p={[0.95, 1.9, -1.98]} w={0.5} h={0.62} res={300} draw={yearFlipDraw(P[11] + 0.3, t.p11kop, 1984, 1995)} glow={0.5} />
+      <Doodle a={ap([-0.5, 0, -0.3], [[0, "tired"]], { shiver: 0 })} />
     </Scene3D>)),
 
-  // 20. Ждали 13 лет: на ТВ 2013 → 2026, герой постарел
-  S(P[9], t.p8fps, (
-    <Scene3D t0={P[9]} light="night" bg="#0b0f2a" focus={[0.4, 1.1, -1.4]}
-      cam={cam([P[9], [0.3, 1.2, 1.1], [0.4, 1.1, -1.6], 54], [t.p8fps, [0.25, 1.15, 0.8], [0.35, 1.1, -1.6], 50])}>
-      <Apartment tv={yearsDraw(t.p8wait - 0.2, t.p8fps - 0.3)} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "tired"]], {}, { ...HERO_OLD, pad: true })} />
-    </Scene3D>)),
-  // 21. …чтобы играть в 30 кадров: ТВ крупно, картинка дёргается
-  S(t.p8fps, t.p8pro, (
-    <Scene3D t0={t.p8fps} light="night" bg="#0b0f2a" focus={[1.0, 1.18, -1.85]}
-      cam={cam([t.p8fps, [1.0, 1.18, -0.2], [1.0, 1.18, -1.85], 46], [t.p8pro, [1.0, 1.18, -0.45], [1.0, 1.18, -1.85], 44])}>
-      <Apartment tv={fpsDraw} night />
+  // 31. 1996: подписывает договор
+  S(P[12], t.p12earn, (
+    <Scene3D t0={P[12]} light="office" bg="#3a2a24" cine={{ dof: 0 }} focus={[0, 0, -0.6]}
+      cam={cam([P[12], [0, 1.2, 0.05], [0, 0, -0.6], 50], [t.p12earn, [0, 1.05, -0.2], [0, 0, -0.6], 48])}>
+      <PaperSet draw={contractDraw(t.p12back)} />
     </Scene3D>), "cut"),
-  // 22. Даже на PS5 Pro: коробка Pro, герой плачет
-  S(t.p8pro, P[10], (
-    <Scene3D t0={t.p8pro} light="office" bg="#eceaf4" focus={[0, 1.0, -0.8]} shakes={[[t.p8pro + 0.5, 0.5]]}
-      cam={cam([t.p8pro, [0.2, 1.25, 1.5], [0.1, 1.15, -0.8], 52], [P[10], [0.1, 1.2, 1.0], [0.1, 1.1, -0.8], 48])}>
-      <Apartment tv={fpsDraw} />
-      <Doodle a={hero([-0.15, 0, -0.85], [[0, "cry"]], { handB: [[0, 0.3, HIP + 0.3]] })} />
-      <group position={[0.35, 0.62, -0.7]} rotation={[0, -0.3, 0.1]}><Box p={[0, 0, 0]} s={[0.3, 0.38, 0.14]} c="#f4f4f8" /><Sign p={[0, 0.03, 0.071]} w={0.27} h={0.1} text="PS5 PRO" bg="#1a1a2a" fg="#fff" glow={0.4} /></group>
+  // 32. …и наконец начинает зарабатывать: деньги сыплются, седой герой счастлив
+  S(t.p12earn, P[13], (
+    <Scene3D t0={t.p12earn} light="warm" bg="#2a1a20" cine focus={[0, 1.05, -0.4]}
+      cam={cam([t.p12earn, [0, 1.3, 1.2], [0, 1.15, -0.6], 52], [P[13], [0, 1.25, 0.9], [0, 1.15, -0.6], 48])}>
+      <VC1984 term={colorTetrisDraw(t.p12earn)} clock="12:00" />
+      <Doodle a={ap([0, 0, -0.35], [[0, "proud"], [t.p12earn + 0.6, "laugh"]], armsUp(t.p12earn + 0.3, 9), AP_OLD)} />
+      <Bills t0={t.p12earn} />
     </Scene3D>)),
 
-  // 23. Зато Ultimate за $100 — без вопросов: шоурум, золотая тачка
-  S(P[10], t.p9there, (
-    <Scene3D t0={P[10]} light="office" bg="#1a1a2a" focus={[0, 0.9, -0.6]}
-      cam={cam([P[10], [1.6, 1.5, 2.8], [0, 0.9, -0.8], 58], [t.p9there, [0.8, 1.4, 2.2], [0, 0.9, -0.8], 56])}>
-      <Garage />
-      <Doodle a={hero([1.35, 0, 0.2], [[0, "hype"]])} />
-    </Scene3D>)),
-  // 24. Тачки, стволы и прочие плюшки — конфетти
-  S(t.p9there, P[11], (
-    <Scene3D t0={t.p9there} light="office" bg="#1a1a2a" focus={[-0.5, 1.0, -0.8]}
-      cam={cam([t.p9there, [-0.2, 1.4, 2.0], [-0.4, 1.0, -0.8], 56], [P[11], [-0.5, 1.4, 1.5], [-0.6, 1.0, -1.0], 54])}>
-      <Garage />
-      <Doodle a={hero([-1.1, 0, 0.1], [[0, "proud"], [t.p9plus, "hype"]], armsUp(t.p9plus, 9))} />
-      <Confetti t0={t.p9plus} n={40} area={[-2, 1.8, -1.5, 0.5]} />
+  // 33. Его зовут Алексей Пажитнов: портрет в луче света, табличка с именем
+  S(P[13], t.p13game, (
+    <Scene3D t0={P[13]} light="studio" bg="#06040c" cine={{ dof: 0, bloom: 0.8 }} focus={[0, 1.1, -0.5]}
+      cam={cam([P[13], [0, 1.2, 1.1], [0, 1.1, -0.5], 46], [t.p13game, [0, 1.15, 0.8], [0, 1.08, -0.5], 42])}>
+      <mesh position={[0, 1.5, -2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#06040c" /></mesh>
+      <spotLight position={[0, 3.2, 0.6]} angle={0.4} penumbra={0.5} intensity={30} decay={1} color="#ffe8c8" />
+      <Doodle a={ap([0, 0, -0.5], [[0, "smug"]], {}, AP_OLD)} />
+      <After t={t.p13name}><Sign p={[0, 0.42, -0.25]} w={1.1} h={0.2} text="АЛЕКСЕЙ ПАЖИТНОВ" bg="#f4e8c8" fg={INK} glow={0.6} /></After>
+      <Motes area={[-0.8, 0.8, 0.5, 2.6, -1, 0]} n={25} size={0.006} />
+    </Scene3D>), "cut"),
+  // 34. А игру ты знаешь с детства — ТЕТРИС: буквы падают как фигуры
+  S(t.p13game, P[14], (
+    <Scene3D t0={t.p13game} light="studio" bg="#08040f" cine={{ dof: 0, bloom: 0.9 }} focus={[0, 1.6, -2.9]}
+      cam={cam([t.p13game, [0, 1.6, 0.6], [0, 1.6, -2.9], 50], [P[14], [0, 1.6, 0.2], [0, 1.6, -2.9], 48])}>
+      <Void draw={titleDraw} />
+      <Sparks p={[0, 1.2, -2.6]} t0={t.p13tet} n={50} col="#ffd060" spread={1.2} />
+    </Scene3D>), "cut"),
+
+  // 35. Каждый собранный ряд — награда
+  S(P[14], t.p14wait, (
+    <Scene3D t0={P[14]} light="lab" bg="#101828" cine={{ dof: 0, bloom: 0.8 }} focus={[-0.15, 1.04, -0.83]}
+      cam={cam([P[14], [-0.15, 1.04, -0.15], [-0.15, 1.04, -0.83], 46], [t.p14wait, [-0.15, 1.04, -0.35], [-0.15, 1.04, -0.83], 44])}>
+      <VC1984 term={rowsDraw} />
+      <Sparks p={[-0.15, 0.95, -0.75]} t0={t.p14row + 0.3} n={25} col="#ffd060" spread={0.3} />
+    </Scene3D>), "cut"),
+  // 36. Свою награду он ждал 12 лет: седой герой у окна, снег
+  S(t.p14wait, P[15], (
+    <Scene3D t0={t.p14wait} light="night" bg="#0a1030" cine focus={[-1.0, 1.1, -1.3]}
+      cam={cam([t.p14wait, [-0.6, 1.3, 0.6], [-1.3, 1.5, -1.9], 50], [P[15], [-0.75, 1.3, 0.3], [-1.35, 1.5, -1.9], 46])}>
+      <VC1984 term={termDraw(0)} clock="23:40" />
+      <Doodle a={ap([-0.75, 0, -1.25], [[0, "tired"], [t.p14twelve, "smug"]], {}, AP_OLD)} />
+      <Screen p={[0.05, 1.45, -1.97]} w={0.5} h={0.62} res={300} draw={yearFlipDraw(t.p14wait, t.p14twelve, 1984, 1996)} glow={0.5} />
     </Scene3D>)),
 
-  // 25. Это всё только вопросы — герой разводит руками, на ТВ знаки вопроса
-  S(P[11], t.p10how, (
-    <Scene3D t0={P[11]} light="night" bg="#0b0f2a" focus={[0.2, 1.0, -1.0]}
-      cam={cam([P[11], [0.5, 1.2, 1.2], [0.4, 1.1, -1.4], 54], [t.p10how, [0.4, 1.15, 0.8], [0.3, 1.05, -1.3], 50])}>
-      <Apartment tv={qDraw} night />
-      <Doodle a={hero([-0.2, 0, -0.85], [[0, "nervous"]], { handF: [[0, -0.42, HIP + 0.3]], handB: [[0, 0.42, HIP + 0.3]] })} />
-    </Scene3D>)),
-  // 26. Как на самом деле — увидим после выхода
-  S(t.p10how, P[12], (
-    <Scene3D t0={t.p10how} light="night" bg="#0b0f2a" focus={[0.6, 1.1, -1.5]}
-      cam={cam([t.p10how, [0.9, 1.18, 0.2], [1.0, 1.18, -1.85], 50], [P[12], [0.5, 1.2, 1.0], [0.6, 1.1, -1.6], 54])}>
-      <Apartment tv={soonDraw} night />
-      <Doodle a={hero([-0.2, 0, -0.9], [[0, "smug"]], {}, HERO_PAD)} />
-    </Scene3D>)),
-
-  // 27. Финал: неоновый закат GTA и вопрос
-  S(P[12], END, (
-    <Scene3D t0={P[12]} light="neon" bg="#1A0B33" focus={[0, 1.2, -1]}
-      cam={cam([P[12], [0, 1.2, 1.6], [0, 1.6, -6], 58], [END, [0, 2.0, 5.2], [0, 3.0, -8], 62])}>
-      <SynthSunset />
-      <QuestionCard p={[0, 4.3, -5]} t={P[12] + 0.15} w={5.2} l1="GTA 6" l2="ПЕРЕОЦЕНЕНА?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
-      {crowd(16, -3.2, 3.2, -2.4, 0.6, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, sign: i % 4 === 0 ? [["ДА", "НЕТ!", "ШЕДЕВР", "ПОСМОТРИМ"][(i / 4) % 4], ["#fff", YEL, PINK, CYAN][(i / 4) % 4], INK] : undefined }} />)}
-      <Doodle a={hero([0, 0, 0.9], [[0, "smug"]])} />
+  // 37. Финал: зимняя Москва, падающие фигуры и вопрос
+  S(P[15], END, (
+    <Scene3D t0={P[15]} light="night" bg="#0a1030" cine={{ dof: 0 }} focus={[0, 2, -3]}
+      cam={cam([P[15], [0, 1.4, 2.4], [0, 2.6, -6], 58], [END, [0, 1.8, 4.0], [0, 3.0, -7], 60])}>
+      <SovietStreet night sign="ВЫЧИСЛИТЕЛЬНЫЙ ЦЕНТР" />
+      <QuestionCard p={[0, 4.0, -4]} t={P[15] + 0.15} w={4.6} l1="ТЕТРИС ПРИДУМАЛИ" l2="В МОСКВЕ?" pill="СТАВЬ ❤️ И ПИШИ В КОММЕНТЫ" />
+      {crowd(10, -2.6, 2.6, -2.0, 0.4, 91, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, hat: i % 2 ? "ushanka" : "beanie", hatCol: ["#6a5040", "#c83a2a", "#3a3a4a"][i % 3], ink: 1.25 } }} />)}
+      <Doodle a={ap([0, 0, 1.0], [[0, "smug"]], {}, AP)} />
     </Scene3D>)),
 ];
 
-// ---------------------------------------------------------------- облачка-реплики: плоский слой поверх видео (всегда в кадре)
-// x, y — центр в пикселях кадра 1080×1920; зона субтитров (y≈1430–1530) и правый край (x>940) не заняты
+// ---------------------------------------------------------------- облачка-реплики
 export type Bub = { t0: number; t1: number; text: string; x: number; y: number; col?: string };
 export const BUBBLES: Bub[] = [
-  { t0: t.p2shoe2, t1: P[3], text: "ВАМ КАКОЙ РАЗМЕР? 👠", x: 600, y: 420 },
-  { t0: P[5] + 0.3, t1: t.p4cop, text: "ХАОС! 💥", x: 540, y: 400, col: YEL },
-  { t0: t.p4back, t1: P[6], text: "НУ ВСТАВАЙ ЖЕ 😤", x: 480, y: 420 },
-  { t0: t.p5rem, t1: t.p5off + 0.2, text: "Я ЗАПОМНИЛ 😤", x: 640, y: 420 },
+  { t0: t.p4show + 0.5, t1: t.p4copy, text: "ДАЙ ПОИГРАТЬ! 😍", x: 640, y: 380 },
+  { t0: t.p6hun + 1.0, t1: t.p6eng + 0.2, text: "ЧТО ЭТО?! 🤩", x: 600, y: 400, col: YEL },
+  { t0: t.p7comp + 0.1, t1: P[8], text: "…СПАСИБО 🙂", x: 360, y: 420 },
+  { t0: P[9] + 0.3, t1: t.p9box, text: "NINTENDO! 🎮", x: 540, y: 380, col: YEL },
+];
+// подписи места и времени сверху (как в «документальных» шортсах)
+export type Lab = { t0: number; t1: number; text: string };
+export const LABELS: Lab[] = [
+  { t0: P[2], t1: P[3], text: "МОСКВА · 1984" },
+  { t0: P[4], t1: P[5], text: "6 ИЮНЯ 1984" },
+  { t0: t.p6hun + 0.5, t1: t.p6eng + 0.2, text: "БУДАПЕШТ · 1986" },
+  { t0: P[8], t1: P[10], text: "МОСКВА · 1989" },
+  { t0: P[12], t1: P[13], text: "1996" },
 ];
