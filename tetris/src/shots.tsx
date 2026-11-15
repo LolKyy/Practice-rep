@@ -360,7 +360,7 @@ export const SHOTS: Shot[] = [
 
   // 33. Его зовут Алексей Пажитнов: портрет в луче света, табличка с именем
   S(P[13], t.p13game, (
-    <Scene3D t0={P[13]} light="studio" bg="#06040c" cine={{ dof: 0, bloom: 0.3, exposure: 1.0 }} focus={[0, 1.1, -0.5]}
+    <Scene3D t0={P[13]} light="warm" bg="#06040c" cine={{ dof: 0, bloom: 0.3, exposure: 1.0 }} focus={[0, 1.1, -0.5]}
       cam={orbit(P[13], t.p13game, [0, 0.95, -0.5], { a0: -0.3, a1: 0.3, r0: 2.05, r1: 1.75, h0: 1.12, h1: 1.08, f0: 50, f1: 48 })}>
       <mesh position={[0, 1.5, -2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#06040c" /></mesh>
       <spotLight position={[0, 3.2, 0.6]} angle={0.4} penumbra={0.5} intensity={7} decay={1} color="#ffe8c8" />

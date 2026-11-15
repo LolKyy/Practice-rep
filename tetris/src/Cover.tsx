@@ -22,7 +22,7 @@ export const Cover: React.FC = () => {
         <VC1984 term={termDraw(-1)} />
         <Doodle a={{ pos: [-0.45, 0, -0.2], seed: 3, look: { body: "#7a4a6a", hair: "slick", glasses: true, mustache: true, pattern: "check", patCol: "#e8c890", scarf: "#c83a2a", ink: 1.25 }, expr: [[-5, "realize"]], scale: 1.2, handB: [[0, 0.32, 0.68]] }} />
         <GiftBox p={[0.1, 0.62, -0.05]} scale={0.8} />
-        <ThoughtCloud p={[0.25, 2.1, -0.2]} t={-5} w={0.8} draw={blocks} />
+        <ThoughtCloud p={[0.42, 1.62, -0.25]} t={-5} w={0.62} draw={blocks} tail={[-0.3, -0.4, 0]} />
       </Scene3D>
       <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(10,14,30,0.9) 0%, rgba(10,14,30,0) 30%, rgba(10,14,30,0) 72%, rgba(10,14,30,0.85) 100%)" }} />
       <div style={{ position: "absolute", top: 250, left: 40, width: 880, textAlign: "center", fontFamily: "Russo One", lineHeight: 1.02, transform: "rotate(-2deg)" }}>
