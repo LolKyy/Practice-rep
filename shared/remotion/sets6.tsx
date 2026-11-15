@@ -94,9 +94,9 @@ export const Diskette: React.FC<{ p: V3; rot?: V3; col?: string; scale?: number 
 export const GiftBox: React.FC<{ p: V3; scale?: number; label?: string }> = ({ p, scale = 1, label = "IBM PC" }) => (
   <group position={p} scale={scale}>
     <Box p={[0, 0.2, 0]} s={[0.55, 0.4, 0.4]} c="#d8c8a0" />
-    <Box p={[0, 0.2, 0.002]} s={[0.08, 0.41, 0.41]} c={RED} line={false} /><Box p={[0, 0.2, 0.002]} s={[0.56, 0.41, 0.08]} c={RED} line={false} />
-    {[-1, 1].map((sx) => <mesh key={sx} position={[sx * 0.07, 0.45, 0]} rotation={[0, 0, sx * 0.6]}><torusGeometry args={[0.06, 0.02, 8, 16]} /><meshStandardMaterial color={RED} /></mesh>)}
-    <Sign p={[0, 0.16, 0.205]} w={0.3} h={0.09} text={label} bg="#f4f0e4" fg="#1a2a6a" glow={0.2} />
+    <Box p={[0.19, 0.2, 0.002]} s={[0.07, 0.41, 0.41]} c={RED} line={false} /><Box p={[0, 0.2, 0.002]} s={[0.56, 0.41, 0.08]} c={RED} line={false} />
+    {[-1, 1].map((sx) => <mesh key={sx} position={[0.19 + sx * 0.07, 0.45, 0]} rotation={[0, 0, sx * 0.6]}><torusGeometry args={[0.06, 0.02, 8, 16]} /><meshStandardMaterial color={RED} /></mesh>)}
+    <Sign p={[-0.08, 0.27, 0.205]} w={0.28} h={0.09} text={label} bg="#f4f0e4" fg="#1a2a6a" glow={0.2} />
   </group>);
 // падающие купюры
 export const Bills: React.FC<{ t0: number; area?: [number, number, number, number]; n?: number }> = ({ t0, area = [-1.5, 1.5, -1.2, 0.6], n = 36 }) => {

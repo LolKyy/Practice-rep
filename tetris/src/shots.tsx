@@ -155,7 +155,7 @@ export const SHOTS: Shot[] = [
       cam={dolly(P[3], t.p3but, [0.3, 1.1, 1.4], [0, 1.5, 1.5], [-0.2, 1.1, -0.4], [-0.15, 1.5, -0.4], 54, 52)}>
       <VC1984 term={termDraw(P[3])} />
       <Doodle a={ap([-0.45, 0, -0.2], [[0, "proud"]])} />
-      <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3five - 0.3} w={0.8} draw={pentoDraw()} />
+      <ThoughtCloud p={[-0.08, 1.98, -0.1]} t={t.p3five - 0.3} w={0.8} draw={pentoDraw()} />
     </Scene3D>)),
   // 8. Машина слабая — оставляет четыре: один квадрат зачёркнут
   S(t.p3but, t.p3fig, (
@@ -163,7 +163,7 @@ export const SHOTS: Shot[] = [
       cam={orbit(t.p3but, t.p3fig, [-0.15, 1.45, -0.3], { a0: 0, a1: -0.3, r0: 1.4, r1: 1.15, h0: 1.5, f0: 52, f1: 50 })}>
       <VC1984 term={termDraw(P[3])} />
       <Doodle a={ap([-0.45, 0, -0.2], [[0, "nervous"], [t.p3four, "realize"]])} />
-      <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3but - 1} w={0.8} draw={pentoDraw(t.p3four - 0.15)} />
+      <ThoughtCloud p={[-0.08, 1.98, -0.1]} t={t.p3but - 1} w={0.8} draw={pentoDraw(t.p3four - 0.15)} />
     </Scene3D>)),
   // 9. Фигуры падают, полные ряды исчезают — экран крупно
   S(t.p3fig, P[4], (
@@ -177,8 +177,8 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={P[4]} light="lab" bg="#101828" cine focus={[0, 1.1, -0.4]}
       cam={orbit(P[4], t.p4copy, [0.2, 1.1, -0.6], { a0: -0.5, a1: 0.3, r0: 1.85, r1: 1.5, h0: 1.45, h1: 1.35, f0: 56, f1: 54 })}>
       <VC1984 term={termDraw(P[4])} clock="18:05" />
-      <Doodle a={ap([-0.75, 0, -0.35], [[0, "proud"]], { handB: pointKeys(t.p4show, 0.8, 0.4, 1.5, "b") })} />
-      <Doodle a={who(COL1, 21, [0.65, 0, -0.4], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
+      <Doodle a={ap([-0.45, 0, -0.3], [[0, "proud"]], { handB: pointKeys(t.p4show, 0.8, 0.4, 1.5, "b") })} />
+      <Doodle a={who(COL1, 21, [0.9, 0, -0.7], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
       <Doodle a={who(COL2, 22, [1.15, 0, -0.75], [[0, "neutral"], [t.p4show + 0.6, "hype"]])} />
       <Doodle a={who(COL3, 23, [0.2, 0, -0.95], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
     </Scene3D>)),
@@ -220,7 +220,7 @@ export const SHOTS: Shot[] = [
     </Scene3D>), "cut"),
   // 16. Будапешт, 1986: иностранец у стенда, в восторге
   S(t.p6hun + 0.5, t.p6eng + 0.2, (
-    <Scene3D t0={t.p6hun + 0.5} light="studio" bg="#2a2a3a" cine focus={[0.3, 1.1, -0.6]}
+    <Scene3D t0={t.p6hun + 0.5} light="warm" bg="#2a2a3a" cine focus={[0.3, 1.1, -0.6]}
       cam={orbit(t.p6hun + 0.5, t.p6eng + 0.2, [0.35, 1.15, -0.8], { a0: 0.5, a1: 0, r0: 1.45, r1: 1.1, h0: 1.35, h1: 1.3, f0: 52, f1: 48 })}>
       <ExpoHall t0={t.p6hun} />
       <Doodle a={who(STEIN, 41, [0.6, 0, -0.75], [[0, "realize"], [t.p6hun + 1.0, "hype"]], { handF: pointKeys(t.p6hun + 0.8, -0.8, 0.4, 1.0) })} />
@@ -319,7 +319,7 @@ export const SHOTS: Shot[] = [
 
   // 28. 35 миллионов копий — счётчик на большом экране
   S(P[10], t.p10world, (
-    <Scene3D t0={P[10]} light="studio" bg="#0a0d18" cine={{ dof: 0, bloom: 0.7 }} focus={[0, 1.8, -1.92]}
+    <Scene3D t0={P[10]} light="office" bg="#0a0d18" cine={{ dof: 0, bloom: 0.5 }} focus={[0, 1.8, -1.92]}
       cam={dolly(P[10], t.p10world, [0, 2.3, 2.9], [0, 1.5, 2.2], [0, 1.4, -1.92], [0, 1.6, -1.92], 58, 56)}>
       <Room wall="#141a2e" floor="#20263c" wain="#10152a" ceil="#0a0d18" />
       <Screen p={[0, 1.75, -1.92]} w={3.6} h={2.0} res={900} draw={counterDraw(t.p10count - 0.3, t.p10world - 0.1, 35000000, "КОПИЙ НА GAME BOY")} />
