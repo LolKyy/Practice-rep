@@ -384,7 +384,7 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[] | CamFn; focus: V3; l
             <Lights preset={light} />
             {children}
             {C ? <EffectComposer multisampling={4}>
-              <N8AO aoRadius={0.55} distanceFalloff={0.8} intensity={C.ao!} quality="medium" />
+              <N8AO aoRadius={0.55} distanceFalloff={0.8} intensity={C.ao!} quality="medium" halfRes depthAwareUpsampling />
               {C.dof! > 0 ? <DepthOfField target={focus} worldFocusRange={C.range!} bokehScale={C.dof!} height={1440} /> : <></>}
               <Bloom luminanceThreshold={1.0} luminanceSmoothing={0.15} intensity={C.bloom!} mipmapBlur />
               <HueSaturation saturation={C.sat!} />
