@@ -355,7 +355,7 @@ export const dolly = (t0: number, t1: number, p0: V3, p1: V3, l0: V3, l1: V3, f0
 };
 export const Scene3D: React.FC<{ t0: number; cam: CamKey[] | CamFn; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; cine?: boolean | Cine; children: React.ReactNode }> =
   ({ t0, cam: camIn, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, cine, children }) => {
-    const C: Cine | null = cine ? { ao: 2.4, dof: 3.5, range: 0.9, sat: 0.12, contrast: 0.1, bloom: 0.5, exposure: 1.25, ...(cine === true ? {} : cine) } : null;
+    const C: Cine | null = cine ? { ao: 2.4, dof: 2.4, range: 1.6, sat: 0.12, contrast: 0.1, bloom: 0.5, exposure: 1.25, ...(cine === true ? {} : cine) } : null;
     const frame = useCurrentFrame();
     const { width, height } = useVideoConfig();
     const t = t0 + frame / FPS;
@@ -387,7 +387,6 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[] | CamFn; focus: V3; l
               <Bloom luminanceThreshold={1.0} luminanceSmoothing={0.15} intensity={C.bloom!} mipmapBlur />
               <HueSaturation saturation={C.sat!} />
               <BrightnessContrast contrast={C.contrast!} />
-              <Noise opacity={0.03} blendFunction={BlendFunction.OVERLAY} />
               <Vignette eskil={false} offset={0.25} darkness={0.55} />
             </EffectComposer> : <EffectComposer multisampling={4}>
               {dof > 0 ? <DepthOfField target={focus} focalLength={0.05} bokehScale={dof * 0.3} height={1080} /> : <></>}

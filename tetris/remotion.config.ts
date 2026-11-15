@@ -7,7 +7,7 @@ if (process.platform === "win32" && fs.existsSync(CHROME)) {
   Config.setChromeMode("chrome-for-testing");
   Config.setBrowserExecutable(CHROME);
 }
-Config.setVideoBitrate("2200k");
+Config.setVideoBitrate("8000k");
 // Общий движок лежит в ../shared/remotion: его импорты (three, react, remotion…) ищем в node_modules ЭТОГО ролика,
 // чтобы React/three были в одном экземпляре
 import path from "node:path";

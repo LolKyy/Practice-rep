@@ -234,7 +234,7 @@ export const SHOTS: Shot[] = [
     </Scene3D>), "cut"),
   // 18. …ещё до того, как кто-то договорился с Москвой: доска «ДОГОВОР?» + чиновник ничего не знает
   S(t.p6before, P[7], (
-    <Scene3D t0={t.p6before} light="office" bg="#c8b890" cine focus={[0, 1.1, -0.9]}
+    <Scene3D t0={t.p6before} light="office" bg="#c8b890" cine focus={[0, 1.0, -1.65]}
       cam={dolly(t.p6before, P[7], [0, 1.6, 1.6], [0, 1.3, 1.0], [0, 1.3, -1.3], [0, 1.2, -1.3], 54, 48)}>
       <Ministry />
       <Doodle a={who(OFFICIAL, 51, [0, 0, -1.65], [[0, "blank"], [t.p6before + 1.0, "realize"]], { scale: 1.18 })} />
@@ -273,14 +273,14 @@ export const SHOTS: Shot[] = [
     </Scene3D>), "cut"),
   // 23. Три иностранца идут по снегу с дипломатами
   S(t.p8three, t.p8same, (
-    <Scene3D t0={t.p8three} light="night" bg="#0a1030" cine={{ dof: 1.4, range: 2 }} focus={[0, 1.1, -1.2]}
+    <Scene3D t0={t.p8three} light="night" bg="#0a1030" cine={{ dof: 1.2, range: 3 }} focus={[0, 1.1, -1.6]}
       cam={dolly(t.p8three, t.p8same, [0, 0.75, 1.6], [0, 1.0, 2.2], [0, 1.3, -1.5], [0, 1.25, -1.5], 56, 54)}>
       <SovietStreet night />
       {[[STEIN, -1.3, 41], [ROGERS, 0, 42], [MAXWELL, 1.3, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -1.2], [[0, "stern"]], { walk: [[t.p8three, (x as number) * 1.6, -2.4], [t.p8same, x as number, -1.2]], handB: [[0, 0.3, HIP + 0.05]] })} />)}
     </Scene3D>)),
   // 24. …в одно и то же ведомство: все трое у одной двери, косятся друг на друга
   S(t.p8same, P[9], (
-    <Scene3D t0={t.p8same} light="office" bg="#c8b890" cine focus={[1.2, 1.1, -1.4]}
+    <Scene3D t0={t.p8same} light="office" bg="#c8b890" cine focus={[1.65, 1.1, -0.8]}
       cam={dolly(t.p8same, P[9], [0.6, 1.35, 1.4], [1.8, 1.3, 1.1], [1.2, 1.2, -1.2], [1.7, 1.2, -1.2], 54, 50)}>
       <Ministry />
       {[[STEIN, 1.1, 41], [ROGERS, 1.65, 42], [MAXWELL, 2.2, 43]].map(([lk, x, sd], i) => <Doodle key={i} a={who(lk as Look, sd as number, [x as number, 0, -0.7 - (i % 2) * 0.25], [[0, "stern"], [t.p8same + 0.4 + i * 0.15, "angry"]])} />)}
