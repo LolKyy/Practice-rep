@@ -24,7 +24,7 @@ export type Pose = {
 
 const INK = "#2a1d1a";
 export const PLANE_W = 1.4, PLANE_H = 2.1;
-export const CW = 960, CH = Math.round((CW * PLANE_H) / PLANE_W);
+export const CW = 1600, CH = Math.round((CW * PLANE_H) / PLANE_W);
 const K = CW / PLANE_W;
 const X = (x: number) => CW / 2 + x * K;
 const Y = (z: number) => CH - z * K;

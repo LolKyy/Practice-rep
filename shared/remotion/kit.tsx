@@ -80,7 +80,8 @@ export const label = (txt: string, bg: string, fg: string, w = 512, h = 176, sz 
 // Табличка/вывеска (смотрит на +z)
 export const Sign: React.FC<{ p: V3; w: number; h: number; text: string; bg: string; fg: string; glow?: number; rot?: V3; sz?: number; scale?: number }> =
   ({ p, w, h, text, bg, fg, glow = 0.25, rot = [0, 0, 0], sz, scale = 1 }) => {
-    const tex = useMemo(() => label(text, bg, fg, 512, Math.round((512 * h) / w), sz ?? Math.round(((512 * h) / w) * 0.62)), [text, bg, fg, w, h]);
+    // v5: таблички в 1024 px по ширине (вдвое чётче); sz задаётся в «старых» единицах (512) и масштабируется
+    const tex = useMemo(() => label(text, bg, fg, 1024, Math.round((1024 * h) / w), sz ? sz * 2 : Math.round(((1024 * h) / w) * 0.62)), [text, bg, fg, w, h]);
     return <mesh position={p} rotation={rot} scale={scale}><planeGeometry args={[w, h]} />
       <meshStandardMaterial map={tex} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={glow} /></mesh>;
   };
@@ -89,7 +90,8 @@ export const Sign: React.FC<{ p: V3; w: number; h: number; text: string; bg: str
 export const Screen: React.FC<{ p: V3; w: number; h: number; draw: (g: CanvasRenderingContext2D, sec: number, W: number, H: number) => void; rot?: V3; glow?: number; res?: number; scale?: number; basic?: boolean; transparent?: boolean }> =
   ({ p, w, h, draw, rot = [0, 0, 0], glow = 0.9, res = 512, scale = 1, basic = true, transparent = false }) => {
     const sec = useSec();
-    const W = res, H = Math.round((res * h) / w);
+    // v5: экраны рисуются в 1.8 раза чётче (крупные планы и 4K), но не больше 2048 px
+    const W = Math.min(2048, Math.round(res * 1.8)), H = Math.round((W * h) / w);
     const { cv, tex } = useMemo(() => {
       const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
       const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; return { cv, tex };
