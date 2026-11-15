@@ -51,7 +51,9 @@ for k in range(int((end_mel - R) / (0.5 * b))):
     L = int(0.06 * SR); nz = rng.uniform(-1, 1, L) * np.exp(-np.arange(L) / SR * 60)
     put(nz, R + k * 0.5 * b, 0.018 if k % 2 else 0.03)
 # хвост: мягкое затухание к концу ролика
-tail = np.ones(N); k0 = int(max(R, T - 1.8) * SR); tail[k0:] = np.linspace(1, 0, N - k0); mix *= tail
+# долгое мягкое затухание «в ноль»: последние ~6 с по косинусу, к концу совсем тихо
+FADE = 6.0; k0 = int(max(R + 2.0, T - FADE) * SR); k1 = int((T - 0.15) * SR)
+tail = np.ones(N); x = np.linspace(0, 1, max(1, k1 - k0)); tail[k0:k1] = (0.5 + 0.5 * np.cos(np.pi * x)) ** 1.6; tail[k1:] = 0; mix *= tail
 mix = np.clip(mix, -1, 1)
 w = wave.open(out, "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((mix * 32767).astype(np.int16).tobytes()); w.close()
 print("music", out, round(T, 2), "s, reveal at", R, "melody ends", round(end_mel, 2))
