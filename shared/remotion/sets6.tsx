@@ -77,7 +77,7 @@ export const boxArtDraw = (col: string): Draw => (g, s, W, H) => {
 // ------------------------------------------------------------------ реквизит
 export const GameBoy: React.FC<{ p: V3; t0: number; scale?: number; rot?: V3 }> = ({ p, t0, scale = 1, rot = [0, 0, 0] }) => (
   <group position={p} scale={scale} rotation={rot}>
-    <Box p={[0, 0, 0]} s={[0.9, 1.48, 0.2]} c="#c8c4bc" r={0.5} />
+    <Box p={[0, 0, 0]} s={[0.9, 1.48, 0.2]} c="#a8a49c" r={0.5} />
     <Box p={[0, 0.3, 0.101]} s={[0.74, 0.6, 0.01]} c="#5a5a6a" line={false} />
     <Screen p={[0, 0.3, 0.108]} w={0.52} h={0.47} res={420} draw={gbDraw(t0)} glow={0.6} />
     <Sign p={[-0.12, -0.06, 0.106]} w={0.5} h={0.07} text="Nintendo GAME BOY" bg="#c8c4bc" fg="#2a2a6a" glow={0.1} />
@@ -162,7 +162,7 @@ export const ExpoHall: React.FC<{ t0: number }> = ({ t0 }) => (<>
     <Box p={[0, 1.15, -0.05]} s={[0.55, 0.45, 0.4]} c="#d8d0b8" />
     <Screen p={[0, 1.15, 0.155]} w={0.44} h={0.33} res={400} draw={colorTetrisDraw(t0 + i * 0.7)} glow={1.0} />
   </group>)}
-  {[-1.5, 1.5].map((x) => <spotLight key={x} position={[x, 2.9, 0.8]} angle={0.5} penumbra={0.6} intensity={22} decay={1} color="#fff0d8" />)}
+  {[-1.5, 1.5].map((x) => <spotLight key={x} position={[x, 2.9, 0.8]} angle={0.5} penumbra={0.6} intensity={9} decay={1} color="#fff0d8" />)}
 </>);
 // западный магазин игр: стеллажи с коробками, неон, касса
 export const GameShop: React.FC = () => (<>

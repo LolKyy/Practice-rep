@@ -109,16 +109,16 @@ export const SHOTS: Shot[] = [
   // 1. Он придумал игру, в которую сыграл весь мир — крупно у терминала, падает фигура
   S(0, t.p1a, (
     <Scene3D t0={0} light="lab" bg="#101828" cine focus={[-0.45, 1.1, -0.2]}
-      cam={cam([0, [-0.1, 1.25, 1.0], [-0.25, 1.1, -0.5], 50], [t.p1a, [-0.25, 1.2, 0.65], [-0.35, 1.1, -0.4], 44])}>
+      cam={cam([0, [0.0, 1.3, 1.5], [-0.15, 1.1, -0.5], 52], [t.p1a, [-0.1, 1.25, 1.15], [-0.2, 1.1, -0.45], 48])}>
       <VC1984 term={termDraw(0)} />
       <Doodle a={ap([-0.5, 0, -0.2], [[0, "proud"]])} />
     </Scene3D>), "cut"),
   // 2. …а в награду получил компьютер: коробка с бантом, лицо без эмоций
   S(t.p1a, P[2], (
     <Scene3D t0={t.p1a} light="lab" bg="#101828" cine focus={[-0.3, 1.05, -0.2]}
-      cam={cam([t.p1a, [-0.1, 1.15, 0.85], [-0.2, 1.0, -0.4], 46], [P[2], [-0.15, 1.12, 0.6], [-0.2, 1.0, -0.4], 42])}>
+      cam={cam([t.p1a, [0.0, 1.2, 1.25], [-0.15, 1.0, -0.4], 50], [P[2], [-0.05, 1.18, 1.0], [-0.15, 1.0, -0.4], 46])}>
       <VC1984 term={termDraw(0)} />
-      <Doodle a={ap([-0.5, 0, -0.2], [[0, "realize"], [W(1, "компьютер") + 0.2, "blank"]], { handB: [[0, 0.32, HIP + 0.28]] })} />
+      <Doodle a={ap([-0.5, 0, -0.2], [[0, "neutral"], [W(1, "компьютер") + 0.2, "blank"]], { handB: [[0, 0.32, HIP + 0.28]] })} />
       <After t={W(1, "компьютер") - 0.1}><GiftBox p={[0.08, 0.62, -0.05]} scale={0.8} /></After>
     </Scene3D>)),
 
@@ -153,7 +153,7 @@ export const SHOTS: Shot[] = [
   // 7. Головоломка из пяти квадратиков — облачко мыслей
   S(P[3], t.p3but, (
     <Scene3D t0={P[3]} light="lab" bg="#101828" cine focus={[-0.4, 1.1, -0.2]}
-      cam={cam([P[3], [-0.05, 1.45, 1.1], [-0.2, 1.4, -0.4], 52], [t.p3but, [-0.1, 1.45, 0.9], [-0.2, 1.4, -0.4], 50])}>
+      cam={cam([P[3], [0.0, 1.5, 1.6], [-0.15, 1.45, -0.4], 54], [t.p3but, [-0.05, 1.5, 1.35], [-0.15, 1.45, -0.4], 52])}>
       <VC1984 term={termDraw(P[3])} />
       <Doodle a={ap([-0.45, 0, -0.2], [[0, "proud"]])} />
       <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3five - 0.3} w={0.8} draw={pentoDraw()} />
@@ -161,7 +161,7 @@ export const SHOTS: Shot[] = [
   // 8. Машина слабая — оставляет четыре: один квадрат зачёркнут
   S(t.p3but, t.p3fig, (
     <Scene3D t0={t.p3but} light="lab" bg="#101828" cine focus={[-0.4, 1.1, -0.2]} shakes={[[t.p3four, 0.4]]}
-      cam={cam([t.p3but, [-0.1, 1.45, 0.9], [-0.2, 1.4, -0.4], 50], [t.p3fig, [-0.1, 1.5, 0.75], [-0.15, 1.5, -0.4], 46])}>
+      cam={cam([t.p3but, [-0.05, 1.5, 1.35], [-0.15, 1.45, -0.4], 52], [t.p3fig, [-0.05, 1.5, 1.15], [-0.15, 1.45, -0.4], 50])}>
       <VC1984 term={termDraw(P[3])} />
       <Doodle a={ap([-0.45, 0, -0.2], [[0, "nervous"], [t.p3four, "realize"]])} />
       <ThoughtCloud p={[0.12, 1.95, -0.1]} t={t.p3but - 1} w={0.8} draw={pentoDraw(t.p3four - 0.15)} />
@@ -179,9 +179,9 @@ export const SHOTS: Shot[] = [
       cam={cam([P[4], [0.3, 1.4, 1.5], [0, 1.15, -0.6], 56], [t.p4copy, [0.2, 1.35, 1.2], [0, 1.15, -0.6], 52])}>
       <VC1984 term={termDraw(P[4])} clock="18:05" />
       <Doodle a={ap([-0.75, 0, -0.35], [[0, "proud"]], { handB: pointKeys(t.p4show, 0.8, 0.4, 1.5, "b") })} />
-      <Doodle a={who(COL1, 21, [0.55, 0, -0.45], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
-      <Doodle a={who(COL2, 22, [0.95, 0, -0.75], [[0, "neutral"], [t.p4show + 0.6, "hype"]])} />
-      <Doodle a={who(COL3, 23, [0.15, 0, -0.1], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
+      <Doodle a={who(COL1, 21, [0.65, 0, -0.4], [[0, "neutral"], [t.p4show + 0.4, "shock"]])} />
+      <Doodle a={who(COL2, 22, [1.15, 0, -0.75], [[0, "neutral"], [t.p4show + 0.6, "hype"]])} />
+      <Doodle a={who(COL3, 23, [0.2, 0, -0.95], [[0, "neutral"], [t.p4show + 0.5, "grin"]], { scale: 1.05 })} />
     </Scene3D>)),
   // 11. Копируют на дискеты — дискеты сыплются на стол
   S(t.p4copy, t.p4carry, (
@@ -211,7 +211,6 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={t.p5color - 0.4} light="lab" bg="#101828" cine={{ dof: 0, bloom: 0.8 }} focus={[-0.15, 1.04, -0.83]}
       cam={cam([t.p5color - 0.4, [-0.15, 1.04, -0.2], [-0.15, 1.04, -0.83], 46], [P[6], [-0.15, 1.04, -0.4], [-0.15, 1.04, -0.83], 44])}>
       <VC1984 term={(g, s, Wd, H) => (s < t.p5color ? termDraw(P[5])(g, s, Wd, H) : colorTetrisDraw(t.p5color)(g, s, Wd, H))} />
-      <Sparks p={[-0.15, 0.95, -0.7]} t0={t.p5color} n={30} col="#ffd060" spread={0.35} />
     </Scene3D>), "flash"),
 
   // 15. Игра утекает за границу: мел на доске — Москва → Венгрия → Англия → США
@@ -245,16 +244,16 @@ export const SHOTS: Shot[] = [
 
   // 19. Права — государству: печать на договоре
   S(P[7], AD_END, (
-    <Scene3D t0={P[7]} light="office" bg="#3a2a24" cine={{ dof: 0 }} focus={[0, 0, -0.6]} shakes={[[t.p7state, 0.9]]}
+    <Scene3D t0={P[7]} light="office" bg="#3a2a24" cine={{ dof: 0, bloom: 0.15, exposure: 1.0 }} focus={[0, 0, -0.6]} shakes={[[t.p7state, 0.9]]}
       cam={cam([P[7], [0, 1.25, 0.1], [0, 0, -0.6], 50], [AD_END, [0, 1.05, -0.2], [0, 0, -0.6], 48])}>
       <PaperSet draw={stampDraw} />
     </Scene3D>), "cut"),
   // 20. Автор не получает ничего: мел «АВТОР → 0 ₽», грустный герой у доски
   S(AD_END, t.p7give, (
     <Scene3D t0={AD_END} light="office" bg="#d8c8a0" cine={{ dof: 1.8, range: 1.2 }} focus={[-0.7, 1.1, -0.6]}
-      cam={cam([AD_END, [-0.3, 1.35, 1.0], [-0.2, 1.4, -1.2], 54], [t.p7give, [-0.35, 1.3, 0.8], [-0.25, 1.35, -1.2], 50])}>
+      cam={cam([AD_END, [0, 1.4, 1.5], [0, 1.4, -1.2], 58], [t.p7give, [0, 1.38, 1.25], [0, 1.4, -1.2], 56])}>
       <ChalkWall draw={authorChalk} />
-      <Doodle a={ap([-0.95, 0, -0.65], [[0, "neutral"], [t.p7nothing, "tired"]])} />
+      <Doodle a={ap([-0.6, 0, -0.5], [[0, "neutral"], [t.p7nothing, "tired"]], { scale: 1.0 })} />
     </Scene3D>), "cut"),
   // 21. В награду ему дают… компьютер: чиновник вручает коробку
   S(t.p7give, P[8], (
@@ -300,7 +299,7 @@ export const SHOTS: Shot[] = [
     </Scene3D>), "cut"),
   // 26. В коробку к каждому Game Boy: большой Game Boy, игра на экране
   S(t.p9box, t.p9mario, (
-    <Scene3D t0={t.p9box} light="studio" bg="#2a1450" cine={{ dof: 0, bloom: 0.7 }} focus={[0, 1.2, -0.6]}
+    <Scene3D t0={t.p9box} light="office" bg="#2a1450" cine={{ dof: 0, bloom: 0.25, exposure: 1.05 }} focus={[0, 1.2, -0.6]}
       cam={cam([t.p9box, [0, 1.3, 1.6], [0, 1.25, -0.6], 50], [t.p9mario, [0, 1.3, 1.1], [0, 1.25, -0.6], 46])}>
       <mesh position={[0, 1.5, -2.2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#2a1450" /></mesh>
       <GameBoy p={[0, 1.25, -0.6]} t0={t.p9box} scale={1.1} rot={[0, -0.15, 0.05]} />
@@ -322,7 +321,7 @@ export const SHOTS: Shot[] = [
   // 28. 35 миллионов копий — счётчик на большом экране
   S(P[10], t.p10world, (
     <Scene3D t0={P[10]} light="studio" bg="#0a0d18" cine={{ dof: 0, bloom: 0.7 }} focus={[0, 1.8, -1.92]}
-      cam={cam([P[10], [0, 1.7, 1.6], [0, 1.75, -1.92], 54], [t.p10world, [0, 1.7, 1.1], [0, 1.75, -1.92], 50])}>
+      cam={cam([P[10], [0, 1.6, 2.6], [0, 1.6, -1.92], 58], [t.p10world, [0, 1.6, 2.2], [0, 1.6, -1.92], 56])}>
       <Room wall="#141a2e" floor="#20263c" wain="#10152a" ceil="#0a0d18" />
       <Screen p={[0, 1.75, -1.92]} w={3.6} h={2.0} res={900} draw={counterDraw(t.p10count - 0.3, t.p10world - 0.1, 35000000, "КОПИЙ НА GAME BOY")} />
       {crowd(8, -2.2, 2.2, -1.0, 0.2, 71, [[0, "hype"]]).map((a, i) => <Doodle key={i} a={{ ...a, look: { ...a.look, pad: true, ink: 1.25 } }} />)}
@@ -346,7 +345,7 @@ export const SHOTS: Shot[] = [
 
   // 31. 1996: подписывает договор
   S(P[12], t.p12earn, (
-    <Scene3D t0={P[12]} light="office" bg="#3a2a24" cine={{ dof: 0 }} focus={[0, 0, -0.6]}
+    <Scene3D t0={P[12]} light="office" bg="#3a2a24" cine={{ dof: 0, bloom: 0.15, exposure: 1.0 }} focus={[0, 0, -0.6]}
       cam={cam([P[12], [0, 1.2, 0.05], [0, 0, -0.6], 50], [t.p12earn, [0, 1.05, -0.2], [0, 0, -0.6], 48])}>
       <PaperSet draw={contractDraw(t.p12back)} />
     </Scene3D>), "cut"),
@@ -361,12 +360,12 @@ export const SHOTS: Shot[] = [
 
   // 33. Его зовут Алексей Пажитнов: портрет в луче света, табличка с именем
   S(P[13], t.p13game, (
-    <Scene3D t0={P[13]} light="studio" bg="#06040c" cine={{ dof: 0, bloom: 0.8 }} focus={[0, 1.1, -0.5]}
-      cam={cam([P[13], [0, 1.2, 1.1], [0, 1.1, -0.5], 46], [t.p13game, [0, 1.15, 0.8], [0, 1.08, -0.5], 42])}>
+    <Scene3D t0={P[13]} light="studio" bg="#06040c" cine={{ dof: 0, bloom: 0.3, exposure: 1.0 }} focus={[0, 1.1, -0.5]}
+      cam={cam([P[13], [0, 1.1, 1.6], [0, 0.95, -0.5], 50], [t.p13game, [0, 1.08, 1.3], [0, 0.95, -0.5], 48])}>
       <mesh position={[0, 1.5, -2]}><planeGeometry args={[10, 6]} /><meshBasicMaterial color="#06040c" /></mesh>
-      <spotLight position={[0, 3.2, 0.6]} angle={0.4} penumbra={0.5} intensity={30} decay={1} color="#ffe8c8" />
+      <spotLight position={[0, 3.2, 0.6]} angle={0.4} penumbra={0.5} intensity={7} decay={1} color="#ffe8c8" />
       <Doodle a={ap([0, 0, -0.5], [[0, "smug"]], {}, AP_OLD)} />
-      <After t={t.p13name}><Sign p={[0, 0.42, -0.25]} w={1.1} h={0.2} text="АЛЕКСЕЙ ПАЖИТНОВ" bg="#f4e8c8" fg={INK} glow={0.6} /></After>
+      <After t={t.p13name}><Sign p={[0, 0.55, -0.2]} w={1.0} h={0.18} text="АЛЕКСЕЙ ПАЖИТНОВ" bg="#c83a2a" fg="#fff2d0" glow={0.25} /></After>
       <Motes area={[-0.8, 0.8, 0.5, 2.6, -1, 0]} n={25} size={0.006} />
     </Scene3D>), "cut"),
   // 34. А игру ты знаешь с детства — ТЕТРИС: буквы падают как фигуры
@@ -382,15 +381,14 @@ export const SHOTS: Shot[] = [
     <Scene3D t0={P[14]} light="lab" bg="#101828" cine={{ dof: 0, bloom: 0.8 }} focus={[-0.15, 1.04, -0.83]}
       cam={cam([P[14], [-0.15, 1.04, -0.15], [-0.15, 1.04, -0.83], 46], [t.p14wait, [-0.15, 1.04, -0.35], [-0.15, 1.04, -0.83], 44])}>
       <VC1984 term={rowsDraw} />
-      <Sparks p={[-0.15, 0.95, -0.75]} t0={t.p14row + 0.3} n={25} col="#ffd060" spread={0.3} />
     </Scene3D>), "cut"),
   // 36. Свою награду он ждал 12 лет: седой герой у окна, снег
   S(t.p14wait, P[15], (
     <Scene3D t0={t.p14wait} light="night" bg="#0a1030" cine focus={[-1.0, 1.1, -1.3]}
-      cam={cam([t.p14wait, [-0.6, 1.3, 0.6], [-1.3, 1.5, -1.9], 50], [P[15], [-0.75, 1.3, 0.3], [-1.35, 1.5, -1.9], 46])}>
+      cam={cam([t.p14wait, [-0.4, 1.35, 1.0], [-0.75, 1.45, -1.9], 54], [P[15], [-0.5, 1.35, 0.75], [-0.8, 1.45, -1.9], 50])}>
       <VC1984 term={termDraw(0)} clock="23:40" />
-      <Doodle a={ap([-0.75, 0, -1.25], [[0, "tired"], [t.p14twelve, "smug"]], {}, AP_OLD)} />
-      <Screen p={[0.05, 1.45, -1.97]} w={0.5} h={0.62} res={300} draw={yearFlipDraw(t.p14wait, t.p14twelve, 1984, 1996)} glow={0.5} />
+      <Doodle a={ap([-1.15, 0, -1.25], [[0, "tired"], [t.p14twelve, "smug"]], {}, AP_OLD)} />
+      <Screen p={[-0.45, 1.35, -1.97]} w={0.42} h={0.52} res={300} draw={yearFlipDraw(t.p14wait, t.p14twelve, 1984, 1996)} glow={0.4} />
     </Scene3D>)),
 
   // 37. Финал: зимняя Москва, падающие фигуры и вопрос
