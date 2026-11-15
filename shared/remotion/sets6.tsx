@@ -186,3 +186,24 @@ export const ChalkWall: React.FC<{ draw: Draw }> = ({ draw }) => (<>
   {[[-0.9, YEL], [-0.75, "#fff"], [0.6, "#7ac8ff"]].map(([x, c], i) => <Box key={i} p={[x as number, 0.74, -1.86]} s={[0.1, 0.025, 0.025]} c={c as string} line={false} />)}
   <TubeLight p={[0, 2.95, -0.8]} len={1.6} />
 </>);
+
+// вагон метро (89-й год, любой мегаполис мира): сиденья вдоль стен, поручни, окна с бегущими огнями туннеля, лампы
+export const SubwayCar: React.FC = () => {
+  const sec = useSec();
+  const tunnel = useMemo(() => canvasTex(512, 128, (g) => { g.fillStyle = "#0a0a10"; g.fillRect(0, 0, 512, 128); for (let i = 0; i < 6; i++) { g.fillStyle = "#ffcf7a"; g.fillRect(i * 90 + 20, 50, 30, 8); } }), []);
+  tunnel.wrapS = THREE.RepeatWrapping; tunnel.offset.x = (sec * 1.6) % 1;
+  return (<>
+    <Box p={[0, -0.05, -0.6]} s={[8, 0.1, 2.6]} c="#5a5a62" line={false} />
+    <Box p={[0, 2.45, -0.6]} s={[8, 0.1, 2.6]} c="#e8e4d8" />
+    <Box p={[0, 1.2, -1.95]} s={[8, 2.5, 0.1]} c="#c8c0a8" />
+    {[-2.6, -0.9, 0.8, 2.5].map((x, i) => <group key={i} position={[x, 1.55, -1.89]}>
+      <mesh><planeGeometry args={[1.2, 0.6]} /><meshBasicMaterial map={tunnel} /></mesh>
+      <Box p={[0, 0.32, 0.01]} s={[1.28, 0.05, 0.04]} c="#8a8a90" /><Box p={[0, -0.32, 0.01]} s={[1.28, 0.05, 0.04]} c="#8a8a90" /></group>)}
+    <Box p={[0, 0.42, -1.65]} s={[7.6, 0.1, 0.5]} c="#b8783a" /><Box p={[0, 0.75, -1.85]} s={[7.6, 0.6, 0.08]} c="#a8683a" />
+    <Box p={[0, 0.2, -1.65]} s={[7.6, 0.4, 0.45]} c="#6a4a32" />
+    {[-3.2, -1.6, 0, 1.6, 3.2].map((x) => <Cyl key={x} p={[x, 1.2, -1.1]} r={0.025} h={2.5} c="#c8c8d0" />)}
+    <mesh position={[0, 2.1, -1.1]} rotation={[0, 0, Math.PI / 2]}><cylinderGeometry args={[0.02, 0.02, 8, 8]} /><meshStandardMaterial color="#c8c8d0" metalness={0.6} /></mesh>
+    {[-2.4, 0, 2.4].map((x) => <TubeLight key={x} p={[x, 2.38, -0.6]} len={1.6} />)}
+    <Sign p={[0, 2.18, -1.88]} w={1.4} h={0.18} text="◀ ▶  ЛИНИЯ 1" bg="#1a2a6a" fg="#fff" glow={0.3} />
+  </>);
+};

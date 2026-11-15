@@ -17,7 +17,7 @@ export const LINE = "#20180f";
 export type V3 = [number, number, number];
 export const FONT = "'Russo One', Arial Black, sans-serif";
 
-const ShotCtx = createContext<{ t0: number; cam: THREE.Vector3 }>({ t0: 0, cam: new THREE.Vector3() });
+const ShotCtx = createContext<{ t0: number; cam: THREE.Vector3; cine?: boolean }>({ t0: 0, cam: new THREE.Vector3() });
 export const useSec = () => { const f = useCurrentFrame(); const { t0 } = useContext(ShotCtx); return t0 + f / FPS; };
 export const clamp = (x: number, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 export const ease = (x: number) => Easing.out(Easing.cubic)(clamp(x));
@@ -235,7 +235,7 @@ export const padHands = { handF: [[0, ...PAD_F]] as Key[], handB: [[0, ...PAD_B]
 
 export const Doodle: React.FC<{ a: Actor }> = ({ a }) => {
   const sec = useSec();
-  const { cam } = useContext(ShotCtx);
+  const { cam, cine: cineMode } = useContext(ShotCtx);
   const { canvas, tex } = useMemo(() => {
     const cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
     const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return { canvas: cv, tex: t };
@@ -266,7 +266,7 @@ export const Doodle: React.FC<{ a: Actor }> = ({ a }) => {
     <group position={[pos[0], pos[1] + hop, pos[2]]} rotation={[0, yaw, 0]} scale={sc}>
       <mesh position={[0, PLANE_H / 2, 0]}>
         <planeGeometry args={[PLANE_W, PLANE_H]} />
-        <meshLambertMaterial map={tex} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={0.55} transparent alphaTest={0.5} side={THREE.DoubleSide} />
+        <meshLambertMaterial map={tex} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={cineMode ? 0.32 : 0.55} transparent alphaTest={0.5} side={THREE.DoubleSide} />
       </mesh>
       {a.sign ? <group position={[0.3, 1.95, -0.02]} rotation={[0, 0, Math.sin(t * 5 + a.seed) * 0.08]}>
         <mesh position={[0, -0.45, -0.01]}><boxGeometry args={[0.04, 0.9, 0.02]} /><meshStandardMaterial color="#8a5a3a" /></mesh>
@@ -340,13 +340,27 @@ export type Shake = [number, number, number?]; // [секунда, сила, д�
 // cine: «киношный» режим (v5): мягкие тени в углах (AO), размытие только фона (персонаж в фокусе резкий),
 // свечение ламп, сочнее цвет и контраст, сильнее виньетка. Старые ролики без cine рендерятся как раньше.
 export type Cine = { ao?: number; dof?: number; range?: number; sat?: number; contrast?: number; bloom?: number; exposure?: number };
-export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; cine?: boolean | Cine; children: React.ReactNode }> =
-  ({ t0, cam, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, cine, children }) => {
+// камера-функция (v5): плавные облёты/краны вместо ключей; t — секунды голоса → [позиция, цель, fov]
+export type CamFn = (t: number) => [V3, V3, number];
+const smooth = (x: number) => { const k = clamp(x); return k * k * (3 - 2 * k); };
+// облёт вокруг точки c: угол a0→a1 (рад, 0 = камера на +z), радиус r0→r1, высота h0→h1, fov f0→f1
+export const orbit = (t0: number, t1: number, c: V3, o: { a0: number; a1: number; r0: number; r1?: number; h0: number; h1?: number; f0?: number; f1?: number; look?: V3 }): CamFn => (t) => {
+  const k = smooth((t - t0) / Math.max(0.01, t1 - t0)); const a = lerp(o.a0, o.a1, k), r = lerp(o.r0, o.r1 ?? o.r0, k), h = lerp(o.h0, o.h1 ?? o.h0, k);
+  const lk = o.look ?? c; return [[c[0] + Math.sin(a) * r, h, c[2] + Math.cos(a) * r], [lk[0], lk[1], lk[2]], lerp(o.f0 ?? 50, o.f1 ?? o.f0 ?? 50, k)];
+};
+// проезд/кран: позиция p0→p1, цель l0→l1 с плавным разгоном и торможением
+export const dolly = (t0: number, t1: number, p0: V3, p1: V3, l0: V3, l1: V3, f0 = 50, f1 = f0): CamFn => (t) => {
+  const k = smooth((t - t0) / Math.max(0.01, t1 - t0)); const L = (a: V3, b: V3): V3 => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+  return [L(p0, p1), L(l0, l1), lerp(f0, f1, k)];
+};
+export const Scene3D: React.FC<{ t0: number; cam: CamKey[] | CamFn; focus: V3; light?: LightPreset; bg?: string; roll?: [number, number]; shakes?: Shake[]; dof?: number; fog?: string; cine?: boolean | Cine; children: React.ReactNode }> =
+  ({ t0, cam: camIn, focus, light = "day", bg = "#9fbfe0", roll = [0, 0], shakes = [], dof = 0, fog, cine, children }) => {
     const C: Cine | null = cine ? { ao: 2.4, dof: 3.5, range: 0.9, sat: 0.12, contrast: 0.1, bloom: 0.5, exposure: 1.25, ...(cine === true ? {} : cine) } : null;
     const frame = useCurrentFrame();
     const { width, height } = useVideoConfig();
     const t = t0 + frame / FPS;
-    const [, p, l, fov] = camAt(t, cam);
+    const cam: CamKey[] = typeof camIn === "function" ? [[t0, ...camIn(t0)] as CamKey, [t0 + 600, ...camIn(t0 + 600)] as CamKey] : camIn;
+    const [, p, l, fov] = typeof camIn === "function" ? [t, ...camIn(t)] as CamKey : camAt(t, cam);
     // общий отъезд: камера дальше от цели в CAM_DIST раз и чуть шире угол — чтобы ничего не обрезалось
     const look = new THREE.Vector3(...l);
     const pos = new THREE.Vector3(...p).sub(look).multiplyScalar(CAM_DIST).add(look);
@@ -359,10 +373,10 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
     const rk = clamp((t - cam[0][0]) / Math.max(0.01, cam[cam.length - 1][0] - cam[0][0]));
     const r = lerp(roll[0], roll[1], Easing.out(Easing.cubic)(rk));
     return (
-      <ShotCtx.Provider value={{ t0, cam: pos }}>
+      <ShotCtx.Provider value={{ t0, cam: pos, cine: !!C }}>
         <ThreeCanvas width={width} height={height} shadows={{ type: THREE.PCFSoftShadowMap }}
           gl={{ toneMapping: THREE.AgXToneMapping, toneMappingExposure: C ? C.exposure! : 1.55, antialias: false }} style={{ backgroundColor: bg }}>
-          <ShotCtx.Provider value={{ t0, cam: pos }}>
+          <ShotCtx.Provider value={{ t0, cam: pos, cine: !!C }}>
             <CamRig pos={pos} look={look} fov={(fov ?? 60) + CAM_FOV} roll={r} />
             {fog ? <fog attach="fog" args={[fog, 8, 40]} /> : null}
             <Lights preset={light} />
@@ -370,7 +384,7 @@ export const Scene3D: React.FC<{ t0: number; cam: CamKey[]; focus: V3; light?: L
             {C ? <EffectComposer multisampling={4}>
               <N8AO aoRadius={0.55} distanceFalloff={0.8} intensity={C.ao!} quality="medium" />
               {C.dof! > 0 ? <DepthOfField target={focus} worldFocusRange={C.range!} bokehScale={C.dof!} height={1440} /> : <></>}
-              <Bloom luminanceThreshold={0.9} luminanceSmoothing={0.2} intensity={C.bloom!} mipmapBlur />
+              <Bloom luminanceThreshold={1.0} luminanceSmoothing={0.15} intensity={C.bloom!} mipmapBlur />
               <HueSaturation saturation={C.sat!} />
               <BrightnessContrast contrast={C.contrast!} />
               <Noise opacity={0.03} blendFunction={BlendFunction.OVERLAY} />
